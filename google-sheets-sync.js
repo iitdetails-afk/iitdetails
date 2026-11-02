@@ -324,10 +324,10 @@ class GoogleSheetsSync {
       })).filter(s => s.staffId || s.name);
 
       // 2. Student conversion
-      const rawStudents = data.students || [];
+      const rawStudents = data.students || data.users || [];
       const studentList = rawStudents.map(row => ({
-        submissionId: row['Submission ID'] || row['submissionId'] || '',
-        name: row['Student Name'] || row['Name'] || row['name'] || '',
+        submissionId: row['User / Submission ID'] || row['Submission ID'] || row['submissionId'] || row['User ID'] || '',
+        name: row['User / Student Name'] || row['Student Name'] || row['Name'] || row['name'] || '',
         fatherName: row['Father / Guardian Name'] || row['fatherName'] || '',
         title: row['Course / Applied Title'] || row['Course'] || row['title'] || '',
         email: row['Email Address'] || row['Email'] || row['email'] || '',

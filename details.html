@@ -643,19 +643,43 @@
         body: JSON.stringify(data)
       });
     } catch (err) {
-      console.warn('Unable to save details to server', err);
+      console.warn('Unable to save details draft to server', err);
     }
     
-    if (editingSubmissionId) {
+    // Automatically save as permanent submission into local database & Google Sheets
+    if (data.name && data.name.trim()) {
       try {
-        await fetch('/api/submit', {
+        const response = await fetch('/api/submit', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(data)
         });
+        const resData = await response.json().catch(() => ({}));
+        if (response.ok && resData.success && resData.saved) {
+          const savedId = resData.saved.submissionId;
+          const submissions = getStoredSubmissions();
+          if (editingSubmissionId) {
+            const idx = submissions.findIndex(s => s.submissionId === editingSubmissionId);
+            if (idx !== -1) submissions[idx] = resData.saved; else submissions.push(resData.saved);
+          } else {
+            submissions.push(resData.saved);
+          }
+          saveStoredSubmissions(submissions);
+          window.location.href = `form.html?submissionId=${encodeURIComponent(savedId)}`;
+          return;
+        } else if (!response.ok) {
+          alert('⚠️ Submission notice: ' + (resData.error || 'Server rejected submission.'));
+          return;
+        }
       } catch (err) {
-        console.warn('Unable to update submission on server during save', err);
+        console.warn('Unable to save permanent submission to server', err);
+        if (window.location.protocol === 'file:') {
+          alert('⚠️ Note: You opened this file directly (file:/// protocol).\n\nTo permanently save entries into database.xlsx and sync to Google Sheets, start the server using start-server.bat and open http://localhost:5000 in your browser.');
+        }
       }
+    }
+
+    if (editingSubmissionId) {
       window.location.href = `form.html?submissionId=${encodeURIComponent(editingSubmissionId)}`;
     } else {
       window.location.href = 'form.html';

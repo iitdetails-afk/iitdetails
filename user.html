@@ -908,6 +908,9 @@
       }
     } catch(e) {
       // Offline fallback for network failures
+      if (window.location.protocol === 'file:') {
+        showToast('⚠️ Running via file:///. Start server via start-server.bat for permanent Excel & Google Sheets sync!', 'warning');
+      }
       const id = editId || generateId();
       data.submissionId = id;
       data.submittedAt = new Date().toLocaleString();

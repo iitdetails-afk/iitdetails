@@ -1047,28 +1047,30 @@
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(data)
       });
-      if (response.ok) {
-        const responseData = await response.json();
-        if (responseData.success && responseData.saved) {
-          const savedSubmission = responseData.saved;
-          const submissions = getSubmissions();
-          if (editingId) {
-            const idx = submissions.findIndex(s => s.submissionId === editingId);
-            if (idx !== -1) {
-              submissions[idx] = savedSubmission;
-            } else {
-              submissions.push(savedSubmission);
-            }
+      const responseData = await response.json().catch(() => ({}));
+      if (response.ok && responseData.success && responseData.saved) {
+        const savedSubmission = responseData.saved;
+        const submissions = getSubmissions();
+        if (editingId) {
+          const idx = submissions.findIndex(s => s.submissionId === editingId);
+          if (idx !== -1) {
+            submissions[idx] = savedSubmission;
           } else {
             submissions.push(savedSubmission);
           }
-          saveSubmissions(submissions);
+        } else {
+          submissions.push(savedSubmission);
         }
+        saveSubmissions(submissions);
       } else {
-        throw new Error('Server error');
+        alert('❌ Error saving submission: ' + (responseData.error || 'Server rejected application.'));
+        return;
       }
     } catch (err) {
       console.warn('Unable to save submission to server, falling back to local storage', err);
+      if (window.location.protocol === 'file:') {
+        alert('⚠️ Warning: Opened as local file (file:/// protocol).\n\nDetails are saved only in your temporary browser storage, NOT in database.xlsx or Google Sheets.\n\nTo save permanently, run start-server.bat and open http://localhost:5000 in your browser.');
+      }
       if (!editingId) {
         data.submissionId = generateSubmissionId();
         data.submittedAt = new Date().toLocaleString();
