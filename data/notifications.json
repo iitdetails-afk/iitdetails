@@ -1,0 +1,34 @@
+[
+  {
+    "id": "NTF-155F5681",
+    "staffId": "STF20260001",
+    "message": "New task assigned: \"web dev\" (Due: 2026-07-30)",
+    "type": "task",
+    "read": true,
+    "createdAt": "2026-07-21T08:10:59.688Z"
+  },
+  {
+    "id": "NTF-3A99C07A",
+    "staffId": "admin",
+    "message": "New student application submitted by \"Ananya Krishnan\" (ID: ID-0001)",
+    "type": "submission",
+    "read": true,
+    "createdAt": "2026-10-31T08:16:17.258Z"
+  },
+  {
+    "id": "NTF-A4D66A70",
+    "staffId": "admin",
+    "message": "New student application submitted by \"KISHOOR .n\" (ID: ID-0001)",
+    "type": "submission",
+    "read": true,
+    "createdAt": "2026-11-02T04:53:04.571Z"
+  },
+  {
+    "id": "NTF-749A54F2",
+    "staffId": "admin",
+    "message": "New student application submitted by \"KISHOOR .n\" (ID: ID-0001)",
+    "type": "submission",
+    "read": true,
+    "createdAt": "2026-11-02T05:23:50.858Z"
+  }
+]

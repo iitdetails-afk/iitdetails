@@ -1,0 +1,780 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Indian Info Tech — Scan to Apply</title>
+<meta name="description" content="Scan the QR code to access the Indian Info Tech student application portal.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="theme.css">
+<!-- QR Code library -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<style>
+  :root {
+    --navy: #0f2744;
+    --navy-mid: #1a3a5c;
+    --accent: #f5c842;
+    --accent-glow: rgba(245,200,66,0.18);
+    --paper: #fdfaf4;
+    --rule: #ddd5c0;
+    --brass: #9a7634;
+    --ink: #1e3248;
+    --white: #ffffff;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Inter', sans-serif;
+    min-height: 100vh;
+    background: var(--theme-bg-gradient, linear-gradient(145deg, #0b1a2e 0%, #0f2744 40%, #132d52 70%, #0d2040 100%));
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    overflow: hidden;
+    padding: 24px 16px;
+  }
+
+  /* Animated background rings */
+  .bg-rings {
+    position: fixed;
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    pointer-events: none;
+    z-index: 0;
+  }
+  .ring {
+    position: absolute;
+    border-radius: 50%;
+    border: 1px solid var(--theme-ring-color, rgba(245,200,66,0.08));
+    transform: translate(-50%, -50%);
+    animation: pulse-ring 4s ease-in-out infinite;
+  }
+  .ring:nth-child(1) { width: 320px; height: 320px; animation-delay: 0s; }
+  .ring:nth-child(2) { width: 520px; height: 520px; animation-delay: 0.6s; border-color: rgba(245,200,66,0.05); }
+  .ring:nth-child(3) { width: 720px; height: 720px; animation-delay: 1.2s; border-color: rgba(245,200,66,0.03); }
+  .ring:nth-child(4) { width: 960px; height: 960px; animation-delay: 1.8s; border-color: rgba(245,200,66,0.02); }
+
+  @keyframes pulse-ring {
+    0%, 100% { opacity: 0.4; transform: translate(-50%, -50%) scale(1); }
+    50% { opacity: 1; transform: translate(-50%, -50%) scale(1.03); }
+  }
+
+  /* Floating orbs */
+  .orbs { position: fixed; inset: 0; pointer-events: none; z-index: 0; overflow: hidden; }
+  .orb {
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(80px);
+    opacity: 0.12;
+    animation: drift linear infinite;
+  }
+  .orb-1 { width: 300px; height: 300px; background: var(--theme-orb1, var(--accent)); top: -100px; left: -100px; animation-duration: 20s; }
+  .orb-2 { width: 200px; height: 200px; background: var(--theme-orb2, #60a5fa); bottom: -80px; right: -60px; animation-duration: 15s; animation-direction: reverse; }
+  .orb-3 { width: 150px; height: 150px; background: var(--theme-orb3, #a78bfa); top: 60%; left: 10%; animation-duration: 25s; }
+
+  @keyframes drift {
+    0% { transform: translate(0, 0); }
+    33% { transform: translate(30px, -40px); }
+    66% { transform: translate(-20px, 20px); }
+    100% { transform: translate(0, 0); }
+  }
+
+  /* Main card */
+  .card {
+    position: relative;
+    z-index: 10;
+    background: var(--theme-card-bg, rgba(255,255,255,0.04));
+    backdrop-filter: var(--theme-backdrop-blur, blur(24px));
+    border: 1px solid var(--theme-card-border, rgba(255,255,255,0.1));
+    border-radius: 28px;
+    padding: 44px 48px;
+    max-width: 460px;
+    width: 100%;
+    text-align: center;
+    box-shadow: var(--theme-card-shadow, 0 32px 80px rgba(0,0,0,0.5));
+    animation: card-in 0.6s cubic-bezier(0.34,1.56,0.64,1);
+  }
+  @keyframes card-in {
+    from { transform: translateY(30px) scale(0.96); opacity: 0; }
+    to   { transform: translateY(0) scale(1); opacity: 1; }
+  }
+
+  /* Logo */
+  .logo-ring {
+    width: 76px; height: 76px;
+    border-radius: 50%;
+    border: 2px solid var(--theme-accent, rgba(245,200,66,0.35));
+    background: var(--theme-logo-bg, #ffffff);
+    display: flex; align-items: center; justify-content: center;
+    margin: 0 auto 20px;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.1);
+  }
+  .logo-ring img { width: 58px; height: 58px; border-radius: 50%; object-fit: contain; }
+
+  .institute-name {
+    font-family: 'Playfair Display', serif;
+    font-size: 22px;
+    font-weight: 700;
+    color: var(--theme-text, #fff);
+    margin-bottom: 4px;
+    letter-spacing: 0.02em;
+  }
+  .institute-tagline {
+    font-size: 11px;
+    color: var(--theme-accent, var(--accent));
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    margin-bottom: 28px;
+    font-weight: 500;
+  }
+
+  /* QR wrapper */
+  .qr-frame {
+    position: relative;
+    display: inline-block;
+    margin-bottom: 24px;
+  }
+  .qr-bg {
+    background: #fff;
+    border-radius: 20px;
+    padding: 18px;
+    display: inline-block;
+    box-shadow:
+      0 8px 32px rgba(0,0,0,0.35),
+      0 0 0 6px rgba(245,200,66,0.12),
+      0 0 0 12px rgba(245,200,66,0.05);
+    position: relative;
+  }
+
+  /* Corner accents */
+  .qr-corner {
+    position: absolute;
+    width: 20px; height: 20px;
+    border-color: var(--accent);
+    border-style: solid;
+  }
+  .qr-corner.tl { top: 6px; left: 6px; border-width: 3px 0 0 3px; border-radius: 4px 0 0 0; }
+  .qr-corner.tr { top: 6px; right: 6px; border-width: 3px 3px 0 0; border-radius: 0 4px 0 0; }
+  .qr-corner.bl { bottom: 6px; left: 6px; border-width: 0 0 3px 3px; border-radius: 0 0 0 4px; }
+  .qr-corner.br { bottom: 6px; right: 6px; border-width: 0 3px 3px 0; border-radius: 0 0 4px 0; }
+
+  #qrcode canvas, #qrcode img { display: block; border-radius: 8px; }
+
+  /* Scan instruction */
+  .scan-label {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--theme-text-secondary, rgba(255,255,255,0.85));
+    margin-bottom: 6px;
+  }
+  .scan-icon { font-size: 20px; animation: bounce 2s ease-in-out infinite; }
+  @keyframes bounce {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-5px); }
+  }
+  .scan-sub {
+    font-size: 12px;
+    color: var(--theme-text-muted, rgba(255,255,255,0.4));
+    margin-bottom: 24px;
+    line-height: 1.5;
+  }
+
+  /* Direct link button */
+  .btn-apply {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    padding: 14px 32px;
+    background: var(--theme-btn-bg, var(--accent));
+    color: var(--theme-btn-text, var(--navy));
+    border-radius: 999px;
+    font-family: 'Inter', sans-serif;
+    font-size: 15px;
+    font-weight: 700;
+    text-decoration: none;
+    border: none;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.25,0.8,0.25,1);
+    box-shadow: 0 6px 24px var(--theme-accent-glow, rgba(245,200,66,0.3));
+    width: 100%;
+    justify-content: center;
+    letter-spacing: 0.02em;
+  }
+  .btn-apply:hover {
+    background: var(--theme-btn-hover, #ffd84d);
+    transform: translateY(-2px);
+    box-shadow: 0 10px 32px var(--theme-accent-glow, rgba(245,200,66,0.45));
+  }
+  .btn-apply:active { transform: translateY(0); }
+
+  /* Divider */
+  .divider {
+    display: flex; align-items: center; gap: 12px;
+    margin: 18px 0;
+  }
+  .divider::before, .divider::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--theme-border, rgba(255,255,255,0.08));
+  }
+  .divider span { font-size: 11px; color: var(--theme-text-muted, rgba(255,255,255,0.25)); font-weight: 500; }
+
+  /* URL chip */
+  .url-chip {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    background: var(--theme-surface, rgba(255,255,255,0.05));
+    border: 1px solid var(--theme-border, rgba(255,255,255,0.08));
+    border-radius: 10px;
+    padding: 10px 16px;
+    font-size: 12px;
+    color: var(--theme-text-muted, rgba(255,255,255,0.5));
+    font-family: monospace;
+    margin-bottom: 18px;
+    word-break: break-all;
+  }
+
+  /* Footer admin link — very subtle */
+  .footer-area {
+    margin-top: 32px;
+    position: relative;
+    z-index: 10;
+    text-align: center;
+  }
+  .admin-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 11px;
+    color: rgba(255,255,255,0.18);
+    text-decoration: none;
+    padding: 6px 12px;
+    border-radius: 6px;
+    border: 1px solid rgba(255,255,255,0.06);
+    transition: all 0.3s ease;
+    cursor: pointer;
+    background: none;
+    font-family: 'Inter', sans-serif;
+    letter-spacing: 0.06em;
+  }
+  .admin-link:hover { color: rgba(255,255,255,0.45); border-color: rgba(255,255,255,0.15); background: rgba(255,255,255,0.03); }
+
+  .copyright {
+    font-size: 10px;
+    color: rgba(255,255,255,0.12);
+    margin-top: 10px;
+    letter-spacing: 0.08em;
+  }
+
+  /* ── PIN Modal ── */
+  .modal-overlay {
+    position: fixed; inset: 0;
+    background: rgba(0,0,0,0.75);
+    backdrop-filter: blur(10px);
+    z-index: 200;
+    display: none; align-items: center; justify-content: center;
+    padding: 20px;
+  }
+  .modal-overlay.active { display: flex; }
+
+  .modal {
+    background: linear-gradient(145deg, #111827, #1a2235);
+    border: 1px solid rgba(167,139,250,0.2);
+    border-radius: 24px;
+    padding: 36px 32px;
+    width: 100%; max-width: 380px;
+    box-shadow: 0 32px 80px rgba(0,0,0,0.6);
+    animation: modal-in 0.35s cubic-bezier(0.34,1.56,0.64,1);
+    position: relative;
+  }
+  @keyframes modal-in {
+    from { transform: translateY(20px) scale(0.95); opacity: 0; }
+    to   { transform: translateY(0) scale(1); opacity: 1; }
+  }
+
+  .modal-icon {
+    width: 60px; height: 60px; border-radius: 50%;
+    background: rgba(167,139,250,0.12);
+    border: 1px solid rgba(167,139,250,0.25);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 26px; margin: 0 auto 18px;
+  }
+  .modal h2 {
+    font-family: 'Playfair Display', serif;
+    font-size: 22px; color: #fff; text-align: center; margin-bottom: 6px;
+  }
+  .modal p { font-size: 12px; color: rgba(255,255,255,0.4); text-align: center; margin-bottom: 24px; line-height: 1.5; }
+
+  /* PIN dots */
+  .pin-dots { display: flex; justify-content: center; gap: 14px; margin-bottom: 18px; }
+  .pin-dot {
+    width: 14px; height: 14px; border-radius: 50%;
+    border: 2px solid rgba(167,139,250,0.35);
+    background: transparent;
+    transition: all 0.2s ease;
+  }
+  .pin-dot.filled { background: #a78bfa; border-color: #a78bfa; box-shadow: 0 0 10px rgba(167,139,250,0.5); }
+
+  .pin-input {
+    width: 100%; padding: 13px 16px;
+    background: rgba(255,255,255,0.05);
+    border: 1.5px solid rgba(167,139,250,0.2);
+    border-radius: 12px;
+    font-size: 22px; letter-spacing: 0.5em; text-align: center;
+    color: #fff; outline: none; font-family: monospace;
+    transition: border-color 0.2s;
+    margin-bottom: 14px;
+  }
+  .pin-input:focus { border-color: #a78bfa; box-shadow: 0 0 0 3px rgba(167,139,250,0.12); }
+  .pin-input.shake { animation: shake 0.35s ease; border-color: #f87171; }
+  @keyframes shake {
+    0%,100% { transform: translateX(0); }
+    20%,60% { transform: translateX(-8px); }
+    40%,80% { transform: translateX(8px); }
+  }
+
+  .error-msg { min-height: 18px; font-size: 12px; color: #f87171; text-align: center; margin-bottom: 12px; }
+
+  .modal-actions { display: flex; gap: 10px; }
+  .btn-cancel {
+    flex: 1; padding: 12px; background: transparent;
+    border: 1px solid rgba(255,255,255,0.1); border-radius: 12px;
+    color: rgba(255,255,255,0.4); font-family: 'Inter', sans-serif; font-size: 14px; cursor: pointer;
+    transition: all 0.2s;
+  }
+  .btn-cancel:hover { background: rgba(255,255,255,0.05); color: rgba(255,255,255,0.7); }
+  .btn-enter {
+    flex: 2; padding: 12px; background: #a78bfa; border: none; border-radius: 12px;
+    color: #1a0a2e; font-family: 'Inter', sans-serif; font-size: 14px; font-weight: 700;
+    cursor: pointer; transition: all 0.2s;
+    display: flex; align-items: center; justify-content: center; gap: 8px;
+  }
+  .btn-enter:hover { background: #c4b5fd; transform: translateY(-1px); box-shadow: 0 6px 20px rgba(167,139,250,0.35); }
+  .btn-enter:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
+
+  .hint-text { font-size: 10px; color: rgba(255,255,255,0.18); text-align: center; margin-top: 14px; }
+
+  /* Loading spinner inside button */
+  .btn-spinner {
+    width: 16px; height: 16px;
+    border: 2px solid rgba(26,10,46,0.3);
+    border-top-color: #1a0a2e;
+    border-radius: 50%;
+    animation: spin 0.7s linear infinite;
+    display: none;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  /* Session busy notice */
+  .session-notice {
+    display: none;
+    background: rgba(251,146,60,0.1);
+    border: 1px solid rgba(251,146,60,0.3);
+    border-radius: 10px;
+    padding: 10px 14px;
+    font-size: 12px;
+    color: #fb923c;
+    text-align: center;
+    margin-bottom: 14px;
+    line-height: 1.5;
+  }
+
+  /* ── Top bar ── */
+  .topbar {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    z-index: 50;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 24px;
+    background: var(--theme-topbar-bg, rgba(11, 26, 46, 0.75));
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border-bottom: 1px solid var(--theme-topbar-border, rgba(255,255,255,0.07));
+  }
+  .topbar-brand {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .topbar-logo {
+    width: 34px; height: 34px;
+    border-radius: 50%;
+    object-fit: contain;
+    background: var(--theme-logo-bg, #ffffff);
+    padding: 3px;
+  }
+  .topbar-name {
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--theme-text-secondary, rgba(255,255,255,0.85));
+    letter-spacing: 0.02em;
+  }
+  .topbar-name span {
+    color: var(--theme-accent, var(--accent));
+  }
+  .btn-admin-top {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 22px;
+    background: rgba(167,139,250,0.12);
+    border: 1.5px solid rgba(167,139,250,0.45);
+    border-radius: 999px;
+    color: #c4b5fd;
+    font-family: 'Inter', sans-serif;
+    font-size: 13px;
+    font-weight: 700;
+    cursor: pointer;
+    letter-spacing: 0.04em;
+    transition: all 0.25s ease;
+    box-shadow: 0 0 16px rgba(167,139,250,0.1);
+  }
+  .btn-admin-top:hover {
+    background: rgba(167,139,250,0.22);
+    border-color: rgba(167,139,250,0.7);
+    color: #e9d5ff;
+    box-shadow: 0 0 24px rgba(167,139,250,0.25);
+    transform: translateY(-1px);
+  }
+  .btn-admin-top:active { transform: translateY(0); }
+
+  /* push body content below topbar */
+  body { padding-top: 72px; }
+
+  /* Footer — clean copyright only */
+  .footer-area {
+    margin-top: 20px;
+    position: relative;
+    z-index: 10;
+    text-align: center;
+  }
+  .copyright {
+    font-size: 11px;
+    color: var(--theme-copyright, rgba(255,255,255,0.18));
+    letter-spacing: 0.06em;
+  }
+
+  /* Responsive */
+  @media (max-width: 480px) {
+    .card { padding: 32px 24px; }
+    .institute-name { font-size: 19px; }
+    .topbar { padding: 10px 16px; }
+    .topbar-name { font-size: 13px; }
+    .btn-admin-top { padding: 8px 16px; font-size: 12px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- Top bar -->
+<div class="topbar">
+  <div class="topbar-brand">
+    <img class="topbar-logo" src="logo.png" alt="IIT" onerror="this.style.display='none'">
+    <div class="topbar-name">Indian <span>Info Tech</span></div>
+  </div>
+  <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+    <button class="btn-admin-top" onclick="openStaffModal()" style="background: rgba(59,130,246,0.12); border-color: rgba(59,130,246,0.45); color: #93c5fd; box-shadow: 0 0 16px rgba(59,130,246,0.1);">
+      👥 Staff Login
+    </button>
+    <button class="btn-admin-top" onclick="openPinModal()">
+      🛡️ Admin Login
+    </button>
+  </div>
+</div>
+
+<!-- Background effects -->
+<div class="bg-rings">
+  <div class="ring"></div><div class="ring"></div><div class="ring"></div><div class="ring"></div>
+</div>
+<div class="orbs">
+  <div class="orb orb-1"></div><div class="orb orb-2"></div><div class="orb orb-3"></div>
+</div>
+
+<!-- Main card -->
+<div class="card">
+  <!-- Logo + name -->
+  <div class="logo-ring">
+    <img src="logo.png" alt="IIT Logo" onerror="this.parentElement.innerHTML='🎓'">
+  </div>
+  <div class="institute-name">Indian Info Tech</div>
+  <div class="institute-tagline">Enrich Your Innovation</div>
+
+  <!-- QR Code -->
+  <div class="qr-frame">
+    <div class="qr-bg">
+      <div class="qr-corner tl"></div>
+      <div class="qr-corner tr"></div>
+      <div class="qr-corner bl"></div>
+      <div class="qr-corner br"></div>
+      <div id="qrcode"></div>
+    </div>
+  </div>
+
+  <!-- Instruction -->
+  <div class="scan-label">
+    <span class="scan-icon">📱</span>
+    Scan to Apply
+  </div>
+  <div class="scan-sub">
+    Point your phone camera at the QR code<br>to open the student application portal
+  </div>
+
+  <!-- URL chip -->
+  <div class="url-chip" id="urlChip">
+    🔗 <span id="urlText">Loading...</span>
+  </div>
+
+  <!-- Direct link for desktop -->
+  <div class="divider"><span>or open on this device</span></div>
+  <a class="btn-apply" href="user.html" id="applyBtn">
+    📝 Open Application Form →
+  </a>
+</div>
+
+<!-- Footer -->
+<div class="footer-area">
+  <div style="display: flex; gap: 14px; justify-content: center; flex-wrap: wrap; margin-bottom: 12px; font-size: 12px;">
+    <a href="form.html" style="color: var(--theme-accent, #f5c842); text-decoration: none;">📝 Student Form</a>
+    <a href="staff.html" style="color: #93c5fd; text-decoration: none;">👥 Staff Portal</a>
+    <a href="/api/excel/download" style="color: #fde68a; text-decoration: none;">📊 Master Excel DB (3 Sheets)</a>
+  </div>
+  <div class="copyright">© Indian Info Tech · All rights reserved</div>
+</div>
+
+<!-- Admin PIN Modal -->
+<div class="modal-overlay" id="pinModal">
+  <div class="modal">
+    <div class="modal-icon">🛡️</div>
+    <h2>Admin Login</h2>
+    <p>Enter your 4-digit admin PIN to access the management panel</p>
+
+    <div class="session-notice" id="sessionNotice">
+      ⚠️ Another admin session is active. Logging in will disconnect the current session.
+    </div>
+
+    <div class="pin-dots" id="pinDots">
+      <div class="pin-dot" id="d0"></div><div class="pin-dot" id="d1"></div>
+      <div class="pin-dot" id="d2"></div><div class="pin-dot" id="d3"></div>
+    </div>
+    <input type="password" id="pinInput" class="pin-input" maxlength="4" placeholder="••••"
+           autocomplete="off" inputmode="numeric">
+    <div class="error-msg" id="errorMsg"></div>
+    <div class="modal-actions">
+      <button class="btn-cancel" onclick="closePinModal()">Cancel</button>
+      <button class="btn-enter" id="loginBtn" onclick="submitPin()">
+        <span class="btn-spinner" id="btnSpinner"></span>
+        <span id="btnText">Login →</span>
+      </button>
+    </div>
+
+  </div>
+</div>
+
+<!-- Staff Login Modal -->
+<div class="modal-overlay" id="staffLoginModal">
+  <div class="modal" style="border-color: rgba(59,130,246,0.2);">
+    <div class="modal-icon" style="background: rgba(59,130,246,0.12); border-color: rgba(59,130,246,0.25);">👥</div>
+    <h2>Staff Login</h2>
+    <p>Enter your Staff ID and password to access the portal</p>
+
+    <div class="field" style="margin-bottom: 12px; text-align: left;">
+      <label style="font-size: 11px; font-weight: 600; text-transform: uppercase; color: rgba(255,255,255,0.6); display: block; margin-bottom: 4px;">Staff ID</label>
+      <input type="text" id="staffIdInput" placeholder="STF20260001" style="width: 100%; padding: 12px; background: rgba(255,255,255,0.05); border: 1.5px solid rgba(59,130,246,0.2); border-radius: 12px; color: #fff; outline: none; font-size: 14px;">
+    </div>
+    
+    <div class="field" style="margin-bottom: 16px; text-align: left;">
+      <label style="font-size: 11px; font-weight: 600; text-transform: uppercase; color: rgba(255,255,255,0.6); display: block; margin-bottom: 4px;">Password</label>
+      <input type="password" id="staffPasswordInput" placeholder="••••••••" style="width: 100%; padding: 12px; background: rgba(255,255,255,0.05); border: 1.5px solid rgba(59,130,246,0.2); border-radius: 12px; color: #fff; outline: none; font-size: 14px;">
+    </div>
+
+    <div class="error-msg" id="staffErrorMsg"></div>
+    
+    <div class="modal-actions">
+      <button class="btn-cancel" onclick="closeStaffModal()">Cancel</button>
+      <button class="btn-enter" id="staffLoginBtn" onclick="submitStaffLogin()" style="background: #3b82f6; color: #fff;">
+        <span class="btn-spinner" id="staffBtnSpinner"></span>
+        <span id="staffBtnText">Login →</span>
+      </button>
+    </div>
+  </div>
+</div>
+
+<script>
+  // ── Generate QR ──────────────────────────────────────────────────────
+  const userUrl = window.location.origin + '/user.html';
+  document.getElementById('urlText').textContent = userUrl;
+
+  new QRCode(document.getElementById('qrcode'), {
+    text: userUrl,
+    width: 200,
+    height: 200,
+    colorDark: '#0f2744',
+    colorLight: '#ffffff',
+    correctLevel: QRCode.CorrectLevel.H
+  });
+
+  // ── Admin PIN Modal ──────────────────────────────────────────────────
+  function updateDots(val) {
+    for (let i = 0; i < 4; i++) {
+      document.getElementById('d' + i).classList.toggle('filled', i < val.length);
+    }
+  }
+
+  async function openPinModal() {
+    // Check if there's an existing session — warn user
+    try {
+      const r = await fetch('/api/admin/check', { headers: { Authorization: 'Bearer __none__' } });
+      const d = await r.json();
+      document.getElementById('sessionNotice').style.display = d.valid ? 'block' : 'none';
+    } catch {
+      document.getElementById('sessionNotice').style.display = 'none';
+    }
+    document.getElementById('pinModal').classList.add('active');
+    document.getElementById('pinInput').value = '';
+    document.getElementById('errorMsg').textContent = '';
+    updateDots('');
+    setTimeout(() => document.getElementById('pinInput').focus(), 120);
+  }
+
+  function closePinModal() {
+    document.getElementById('pinModal').classList.remove('active');
+    document.getElementById('pinInput').value = '';
+    document.getElementById('errorMsg').textContent = '';
+    updateDots('');
+    setLoading(false);
+  }
+
+  document.getElementById('pinInput').addEventListener('input', function () {
+    updateDots(this.value);
+    document.getElementById('errorMsg').textContent = '';
+    this.classList.remove('shake');
+    if (this.value.length === 4) setTimeout(submitPin, 220);
+  });
+
+  document.getElementById('pinInput').addEventListener('keydown', function (e) {
+    if (e.key === 'Enter') submitPin();
+    if (e.key === 'Escape') closePinModal();
+  });
+
+  document.getElementById('pinModal').addEventListener('click', function (e) {
+    if (e.target === this) closePinModal();
+  });
+
+  function setLoading(on) {
+    document.getElementById('btnSpinner').style.display = on ? 'block' : 'none';
+    document.getElementById('btnText').textContent = on ? 'Verifying…' : 'Login →';
+    document.getElementById('loginBtn').disabled = on;
+  }
+
+  async function submitPin() {
+    const pin = document.getElementById('pinInput').value.trim();
+    if (pin.length !== 4) return;
+    setLoading(true);
+    try {
+      const res = await fetch('/api/admin/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ pin })
+      });
+      const data = await res.json();
+      if (data.success && data.token) {
+        localStorage.setItem('iitAdminToken', data.token);
+        closePinModal();
+        window.location.href = 'admin.html';
+      } else {
+        showPinError(data.error || 'Incorrect PIN. Try again.');
+      }
+    } catch {
+      showPinError('Server error. Please try again.');
+    }
+    setLoading(false);
+  }
+
+  function showPinError(msg) {
+    const input = document.getElementById('pinInput');
+    input.classList.remove('shake');
+    void input.offsetWidth; // reflow
+    input.classList.add('shake');
+    input.value = '';
+    updateDots('');
+    document.getElementById('errorMsg').textContent = msg;
+    setTimeout(() => { input.classList.remove('shake'); input.focus(); }, 400);
+  }
+  // ── Staff Login Modal Controls ──────────────────────────────────────────
+  function openStaffModal() {
+    document.getElementById('staffLoginModal').classList.add('active');
+    document.getElementById('staffIdInput').value = '';
+    document.getElementById('staffPasswordInput').value = '';
+    document.getElementById('staffErrorMsg').textContent = '';
+    setTimeout(() => document.getElementById('staffIdInput').focus(), 120);
+  }
+
+  function closeStaffModal() {
+    document.getElementById('staffLoginModal').classList.remove('active');
+    document.getElementById('staffIdInput').value = '';
+    document.getElementById('staffPasswordInput').value = '';
+    document.getElementById('staffErrorMsg').textContent = '';
+  }
+
+  document.getElementById('staffLoginModal').addEventListener('click', function (e) {
+    if (e.target === this) closeStaffModal();
+  });
+
+  async function submitStaffLogin() {
+    const staffId = document.getElementById('staffIdInput').value.trim();
+    const password = document.getElementById('staffPasswordInput').value.trim();
+    
+    if (!staffId || !password) {
+      document.getElementById('staffErrorMsg').textContent = 'Please enter Staff ID and password.';
+      return;
+    }
+    
+    const btn = document.getElementById('staffLoginBtn');
+    const spinner = document.getElementById('staffBtnSpinner');
+    const btnText = document.getElementById('staffBtnText');
+    
+    btn.disabled = true;
+    spinner.style.display = 'block';
+    btnText.textContent = 'Verifying…';
+    
+    try {
+      const res = await fetch('/api/staff/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ staffId, password })
+      });
+      const data = await res.json();
+      if (data.success && data.token) {
+        sessionStorage.setItem('iitStaffToken', data.token);
+        sessionStorage.setItem('iitStaffName', data.name);
+        sessionStorage.setItem('iitStaffId', data.staffId);
+        closeStaffModal();
+        window.location.href = 'staff.html';
+      } else {
+        document.getElementById('staffErrorMsg').textContent = data.error || 'Incorrect ID or password.';
+      }
+    } catch {
+      document.getElementById('staffErrorMsg').textContent = 'Server error. Please try again.';
+    }
+    
+    btn.disabled = false;
+    spinner.style.display = 'none';
+    btnText.textContent = 'Login →';
+  }
+</script>
+<script src="theme.js"></script>
+</body>
+</html>

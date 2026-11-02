@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Saved Submissions</title>
+<link rel="stylesheet" href="theme.css">
+<style>
+  :root{
+    --paper:#fcf8f0;
+    --ink:#213446;
+    --navy:#13263d;
+    --brass:#9a7634;
+    --rule:#d7cdb8;
+    --accent:#8b2234;
+  }
+  body{
+    margin:0;
+    min-height:100vh;
+    background:linear-gradient(135deg,#efe3cb 0%,#e9dcc6 45%,#e6d8bc 100%);
+    font-family:'Georgia','Times New Roman',serif;
+    color:var(--ink);
+    padding:24px 16px;
+  }
+  .wrap{
+    max-width:920px;
+    margin:0 auto;
+    background:var(--paper);
+    padding:24px 28px;
+    box-shadow:0 16px 40px rgba(19,38,61,.16);
+    border-radius:20px;
+    border:1px solid rgba(19,38,61,.08);
+  }
+  .top-nav{display:flex;flex-wrap:wrap;gap:10px;justify-content:flex-end;margin-bottom:12px;}
+  .top-nav a{text-decoration:none;color:var(--navy);padding:8px 12px;border:1px solid var(--rule);border-radius:999px;background:#fffdf9;font-size:13px;}
+  .top-nav a.active{background:var(--navy);color:#fff;border-color:var(--navy);} 
+  .page-meta{font-size:13px;color:var(--brass);margin:0 0 12px;text-align:center;}
+  h1{margin:0 0 8px; color:var(--navy); text-align:center; font-size:24px; letter-spacing:.04em;}
+  .toolbar{display:flex; justify-content:space-between; align-items:center; gap:10px; margin-bottom:18px; flex-wrap:wrap;}
+  .toolbar a, .toolbar button{
+    text-decoration:none;
+    display:inline-block;
+    padding:10px 16px;
+    border:1px solid var(--navy);
+    background:var(--navy);
+    color:#fff;
+    cursor:pointer;
+    border-radius:999px;
+    font-family:inherit;
+    box-shadow:0 6px 14px rgba(19,38,61,.12);
+  }
+  .card{
+    border:1px solid var(--rule);
+    background:#fffdf9;
+    padding:14px 16px;
+    margin-bottom:14px;
+    border-radius:14px;
+    box-shadow:0 6px 16px rgba(19,38,61,.06);
+  }
+  .card h3{margin:0 0 8px; color:var(--accent); font-size:16px;}
+  .id-link{color:var(--accent); text-decoration:none; font-weight:700;}
+  .id-link:hover{text-decoration:underline;}
+  .meta{font-size:13px; color:var(--brass); margin-bottom:8px;}
+  .card p{margin:4px 0; font-size:14px;}
+  .photo-thumb{max-width:140px; max-height:140px; object-fit:cover; border-radius:12px; border:1px solid var(--rule); background:#fff; display:block;}
+  .empty{padding:18px; text-align:center; border:1px dashed var(--rule); background:#fcf8ef; border-radius:12px; color:var(--navy);}
+  .card-content {
+    display: flex;
+    gap: 20px;
+    align-items: flex-start;
+    margin-top: 10px;
+  }
+  .card-photo-col {
+    flex-shrink: 0;
+  }
+  .card-info-col {
+    flex: 1;
+  }
+  .photo-placeholder-thumb {
+    width: 140px;
+    height: 140px;
+    border-radius: 12px;
+    border: 1px dashed var(--rule);
+    background: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    color: var(--brass);
+  }
+  @media (max-width: 600px) {
+    .card-content {
+      flex-direction: column;
+      gap: 12px;
+    }
+  }
+  #searchInput:focus {
+    border-color: var(--accent);
+    box-shadow: inset 0 1px 3px rgba(19,38,61,.05), 0 0 0 3px rgba(139,34,52,.12);
+  }
+  @media print {
+    body{background:#fff; padding:8mm;}
+    .wrap{box-shadow:none; border:1px solid var(--navy); border-radius:0; padding:10mm; max-width:none; margin:0;}
+    .top-nav, .toolbar, #searchInput{display:none !important;}
+    .card{box-shadow:none; border-color:var(--navy); break-inside:avoid;}
+  }
+</style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="top-nav">
+      <a href="details.html">Details</a>
+      <a href="form.html">Application Form</a>
+      <a class="active" href="ss.html">Saved Submissions</a>
+    </div>
+    <div class="toolbar">
+      <h1>Saved Submissions</h1>
+      <div style="display: flex; gap: 10px; align-items: center; flex-wrap: wrap;">
+        <a href="/api/excel/download" style="background:#2e7d32; border-color:#2e7d32;">📊 Master Excel (3 Sheets)</a>
+        <a href="form.html">Back to Form</a>
+      </div>
+    </div>
+    <!-- Search Section -->
+    <div style="margin-bottom: 20px;">
+      <input type="text" id="searchInput" placeholder="Search by ID, Name, or Phone number..." style="width: 100%; padding: 12px 16px; border: 1px solid var(--rule); border-radius: 12px; font-size: 14px; font-family: inherit; background: #fffdf9; color: var(--ink); box-shadow: inset 0 1px 3px rgba(19,38,61,.05); outline: none; transition: border-color 0.2s, box-shadow 0.2s;">
+    </div>
+
+    <div id="submissionList"></div>
+  </div>
+
+<script>
+  const STORAGE_KEY = 'indianInfoTechSubmissions';
+  const list = document.getElementById('submissionList');
+
+  function readLocalSubmissions() {
+    try {
+      return JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
+    } catch {
+      return [];
+    }
+  }
+
+  async function readSubmissions() {
+    try {
+      const response = await fetch('/api/submissions');
+      if (response.ok) {
+        const data = await response.json();
+        if (Array.isArray(data)) {
+          return data;
+        }
+      }
+    } catch (err) {
+      console.warn('Unable to load submissions from server', err);
+    }
+
+    return readLocalSubmissions();
+  }
+
+  let allSubmissions = [];
+
+  function render(submissionsList) {
+    if (!submissionsList || !submissionsList.length) {
+      list.innerHTML = '<div class="empty">No matching submissions found.</div>';
+      return;
+    }
+
+    list.innerHTML = submissionsList.slice().reverse().map((item) => `
+      <div class="card">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+          <h3 style="margin: 0;"><a class="id-link" href="details.html?submissionId=${encodeURIComponent(item.submissionId || '')}">${item.submissionId || 'N/A'}</a></h3>
+          <button type="button" class="delete-btn" onclick="deleteSubmission('${item.submissionId}')" style="background: transparent; color: var(--accent); border: 1px solid var(--accent); padding: 4px 10px; font-size: 11px; cursor: pointer; border-radius: 999px; font-family: inherit;">Delete</button>
+        </div>
+        <div class="meta">Submitted: ${item.submittedAt || '-'}</div>
+        <div class="card-content">
+          <div class="card-photo-col">
+            ${item.photo 
+              ? `<img class="photo-thumb" src="${item.photo}" alt="Uploaded photo">` 
+              : `<div class="photo-placeholder-thumb">No Photo</div>`
+            }
+          </div>
+          <div class="card-info-col">
+            <p><strong>Name:</strong> ${item.name || '-'}</p>
+            <p><strong>Year / Dept:</strong> ${item.yearDept || '-'}</p>
+            <p><strong>College / School:</strong> ${item.collegeSchool || '-'}</p>
+            <p><strong>Email:</strong> ${item.email || '-'}</p>
+            <p><strong>Mobile:</strong> ${item.mobile1 || '-'}${item.mobile2 ? ', ' + item.mobile2 : ''}</p>
+          </div>
+        </div>
+      </div>
+    `).join('');
+  }
+
+  async function deleteSubmission(submissionId) {
+    if (!submissionId) return;
+    if (confirm(`Are you sure you want to delete submission ${submissionId}?`)) {
+      const token = localStorage.getItem('iitAdminToken') || '';
+      try {
+        const response = await fetch('/api/delete', {
+          method: 'POST',
+          headers: { 
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer ' + token
+          },
+          body: JSON.stringify({ submissionId })
+        });
+        if (response.ok) {
+          const submissions = readLocalSubmissions();
+          const filtered = submissions.filter(s => s.submissionId !== submissionId);
+          localStorage.setItem(STORAGE_KEY, JSON.stringify(filtered));
+          allSubmissions = allSubmissions.filter(s => s.submissionId !== submissionId);
+          filterAndRender();
+        } else {
+          alert('Failed to delete submission from server.');
+        }
+      } catch (err) {
+        console.warn('Error deleting submission, falling back to local:', err);
+        const submissions = readLocalSubmissions();
+        const filtered = submissions.filter(s => s.submissionId !== submissionId);
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(filtered));
+        allSubmissions = allSubmissions.filter(s => s.submissionId !== submissionId);
+        filterAndRender();
+      }
+    }
+  }
+
+  function filterAndRender() {
+    const query = searchInput.value.toLowerCase().trim();
+    if (!query) {
+      render(allSubmissions);
+      return;
+    }
+
+    const filtered = allSubmissions.filter(item => {
+      const id = (item.submissionId || '').toLowerCase();
+      const name = (item.name || '').toLowerCase();
+      const mobile1 = (item.mobile1 || '').toLowerCase();
+      const mobile2 = (item.mobile2 || '').toLowerCase();
+      const email = (item.email || '').toLowerCase();
+      return id.includes(query) || name.includes(query) || mobile1.includes(query) || mobile2.includes(query) || email.includes(query);
+    });
+
+    render(filtered);
+  }
+
+  const searchInput = document.getElementById('searchInput');
+  searchInput?.addEventListener('input', filterAndRender);
+
+  async function init() {
+    allSubmissions = await readSubmissions();
+    render(allSubmissions);
+  }
+
+  window.deleteSubmission = deleteSubmission;
+
+  init();
+</script>
+<script src="theme.js"></script>
+</body>
+</html>

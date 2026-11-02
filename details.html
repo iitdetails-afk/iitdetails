@@ -1,0 +1,669 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Saved User Details</title>
+<link rel="stylesheet" href="theme.css">
+<style>
+  :root{
+    --paper: var(--theme-surface, #ffffff);
+    --ink: var(--theme-text, #0f172a);
+    --navy: var(--theme-bg, #091322);
+    --brass: var(--theme-accent, #3b82f6);
+    --rule: var(--theme-border, #e2e8f0);
+    --accent: var(--theme-accent-hover, #2563eb);
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    min-height:100vh;
+    background: var(--theme-bg-gradient, linear-gradient(135deg, #091322 0%, #152844 100%));
+    font-family:'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    color:var(--ink);
+    padding:24px 16px;
+  }
+  .wrap{
+    max-width:840px;
+    margin:0 auto;
+    background:var(--paper);
+    padding:32px;
+    box-shadow: var(--theme-card-shadow, 0 20px 50px rgba(0,0,0,0.2));
+    border-radius:24px;
+    border:1px solid var(--rule);
+    backdrop-filter: blur(16px);
+  }
+  .top-nav{
+    display:flex;
+    flex-wrap:wrap;
+    gap:10px;
+    justify-content:flex-end;
+    margin-bottom:14px;
+  }
+  .top-nav a{
+    text-decoration:none;
+    color:var(--navy);
+    padding:8px 12px;
+    border:1px solid var(--rule);
+    border-radius:999px;
+    background:#fffdf9;
+    font-size:13px;
+  }
+  .top-nav a.active{background:var(--navy); color:#fff; border-color:var(--navy);} 
+  .page-meta{font-size:13px; color:var(--brass); margin:0 0 12px; text-align:center;}
+  .page-header{
+    display:flex;
+    align-items:center;
+    gap:16px;
+    padding:10px 12px 18px;
+    margin-bottom:8px;
+    border-bottom:1px solid var(--rule);
+  }
+  .brand-mark{
+    width:76px;
+    height:76px;
+    border-radius:50%;
+    display:grid;
+    place-items:center;
+    background:#fff;
+    padding:8px;
+    box-shadow:0 8px 18px rgba(19,38,61,.12);
+    flex-shrink:0;
+  }
+  .brand-mark img{width:100%; height:100%; object-fit:contain;}
+  .page-header h1{margin:0 0 4px; color:var(--navy); font-size:24px; letter-spacing:.04em;}
+  .page-header p{margin:0; font-size:13px; color:var(--brass); line-height:1.5;}
+  .field{margin-bottom:14px;}
+  label{display:block; margin-bottom:6px; font-size:13px; color:var(--navy); font-weight:600;}
+  input, textarea, select{
+    width:100%;
+    padding:10px 12px;
+    border:1px solid var(--rule);
+    border-radius:10px;
+    font-family:inherit;
+    font-size:14px;
+    background:#fffdf9;
+    color:var(--ink);
+    box-shadow:inset 0 1px 2px rgba(0,0,0,.04);
+  }
+  input:focus, textarea:focus{outline:none; border-color:var(--accent); box-shadow:0 0 0 3px rgba(139,34,52,.12);} 
+  textarea{min-height:62px; resize:vertical;}
+  .checkbox-row{display:grid; grid-template-columns:repeat(2, minmax(0, 1fr)); gap:16px; margin-top:6px;}
+  .checkbox-row .field{background:#fffdf9; border:1px solid var(--rule); border-radius:12px; padding:12px;}
+  .checkbox-row input{width:auto; margin-right:8px; accent-color:var(--accent);}
+  .photo-preview{margin-top:8px; display:flex; align-items:center; justify-content:flex-start;}
+  .photo-preview img{max-width:140px; max-height:140px; object-fit:cover; border-radius:12px; border:1px solid var(--rule); background:#fff; display:none;}
+  .actions{display:flex; gap:10px; flex-wrap:wrap; margin-top:18px;}
+  button, .link-btn{
+    border:1px solid var(--navy);
+    background:var(--navy);
+    color:#fff;
+    padding:10px 16px;
+    border-radius:999px;
+    cursor:pointer;
+    font-family:inherit;
+    text-decoration:none;
+    display:inline-block;
+    box-shadow:0 6px 14px rgba(19,38,61,.12);
+  }
+  button.secondary, .link-btn.secondary{background:transparent;color:var(--navy);}
+  .note{font-size:13px; color:var(--brass); margin:0 0 14px; text-align:center;}
+  @media (max-width:600px){
+    .wrap{padding:20px 16px;}
+    .page-header{flex-direction:column; align-items:flex-start;}
+    .brand-mark{width:64px; height:64px;}
+    .checkbox-row{grid-template-columns:1fr;}
+  }
+  @media print {
+    body{background:#fff; padding:8mm;}
+    .wrap{box-shadow:none; border:1px solid var(--navy); border-radius:0; padding:10mm 12mm; max-width:none; margin:0;}
+    .top-nav, .actions{display:none !important;}
+    .field{page-break-inside:avoid;}
+  }
+  .photo-mode-selector {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 12px;
+  }
+  .mode-btn {
+    flex: 1;
+    padding: 10px;
+    border: 1px solid var(--rule);
+    border-radius: 10px;
+    background: #fffdf9;
+    cursor: pointer;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--navy);
+    transition: all 0.2s ease;
+  }
+  .mode-btn.active {
+    background: var(--navy);
+    color: #fff;
+    border-color: var(--navy);
+  }
+  .camera-container {
+    border: 1px solid var(--rule);
+    border-radius: 12px;
+    padding: 16px;
+    background: #fffdf9;
+    text-align: center;
+    margin-bottom: 12px;
+  }
+  .camera-stream-wrapper {
+    position: relative;
+    width: 100%;
+    max-width: 320px;
+    margin: 0 auto;
+    aspect-ratio: 4/3;
+    background: #13263d;
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: inset 0 2px 6px rgba(0,0,0,0.3);
+  }
+  .camera-stream-wrapper video {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  .camera-controls {
+    margin-top: 12px;
+    display: flex;
+    gap: 8px;
+    justify-content: center;
+  }
+  .camera-controls button {
+    padding: 8px 14px;
+    font-size: 12px;
+  }
+  .photo-preview-wrapper {
+    position: relative;
+    display: inline-block;
+  }
+  .remove-photo-btn {
+    position: absolute;
+    top: -8px;
+    right: -8px;
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    border: none;
+    background: var(--accent);
+    color: white;
+    cursor: pointer;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    font-size: 14px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.25);
+    padding: 0;
+    line-height: 1;
+  }
+</style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="top-nav">
+      <a class="active" href="details.html">Details</a>
+      <a href="form.html">Application Form</a>
+      <a href="ss.html">Saved Submissions</a>
+      <a href="address.html">Addresses</a>
+      <a href="/api/excel/download">📊 Master Excel</a>
+    </div>
+    <div class="page-header">
+      <div class="brand-mark">
+        <img src="logo.png" alt="Indian Info Tech logo" onerror="this.onerror=null; this.src='logo.png';">
+      </div>
+      <div>
+        <h1>Saved User Details</h1>
+        <p>Enter your information in clear sections so it stays easy to review and reuse in the application form.</p>
+      </div>
+    </div>
+
+    
+
+    <form id="detailsForm">
+      <div class="field">
+        <label for="name">Name</label>
+        <input id="name" name="name" type="text">
+      </div>
+
+      <div class="field">
+        <label for="yearDept">Year / Dept</label>
+        <input id="yearDept" name="yearDept" type="text">
+      </div>
+
+      <div class="field">
+        <label for="collegeSchool">College / School</label>
+        <input id="collegeSchool" name="collegeSchool" type="text">
+      </div>
+
+      <div class="field">
+        <label for="email">Email</label>
+        <input id="email" name="email" type="email">
+      </div>
+
+      <div class="field">
+        <label>Photo</label>
+        <div class="photo-mode-selector">
+          <button type="button" id="btnModeUpload" class="mode-btn active">📁 Upload File</button>
+          <button type="button" id="btnModeCamera" class="mode-btn">📷 Use Camera</button>
+        </div>
+
+        <div id="uploadContainer">
+          <input id="photo" name="photo" type="file" accept="image/*">
+        </div>
+
+        <div id="cameraContainer" class="camera-container" style="display: none;">
+          <div class="camera-stream-wrapper">
+            <video id="cameraVideo" autoplay playsinline></video>
+            <canvas id="cameraCanvas" style="display: none;"></canvas>
+          </div>
+          <div class="camera-controls">
+            <button type="button" id="btnCapturePhoto" class="secondary">Capture Photo</button>
+            <button type="button" id="btnSwitchCamera" class="secondary" style="display: none;">Switch Camera</button>
+          </div>
+        </div>
+
+        <div class="photo-preview" style="margin-top: 12px; display: flex; flex-direction: column; align-items: flex-start;">
+          <label style="font-size: 12px; color: var(--brass);">Preview:</label>
+          <div class="photo-preview-wrapper">
+            <img id="photoPreview" alt="Selected photo preview">
+            <button type="button" id="btnRemovePhoto" class="remove-photo-btn" title="Remove Photo">×</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="field">
+        <label for="address">Address</label>
+        <textarea id="address" name="address"></textarea>
+      </div>
+
+      <div class="field">
+        <label for="mobile1">Mobile 1</label>
+        <input id="mobile1" name="mobile1" type="tel">
+      </div>
+
+      <div class="field">
+        <label for="mobile2">Mobile 2</label>
+        <input id="mobile2" name="mobile2" type="tel">
+      </div>
+
+      <div class="field">
+        <label for="pincode">Pincode</label>
+        <input id="pincode" name="pincode" type="text">
+      </div>
+
+      <div class="field">
+        <label for="title">Title Course / Project</label>
+        <input id="title" name="title" type="text">
+      </div>
+
+      <div class="field">
+        <label for="howKnow">How you know about this institute?</label>
+        <input id="howKnow" name="howKnow" type="text">
+      </div>
+
+      <div class="field">
+        <label for="signature">Signature</label>
+        <input id="signature" name="signature" type="text">
+      </div>
+
+      <div class="field">
+        <label for="feesFixed">Fees Fixed</label>
+        <input id="feesFixed" name="feesFixed" type="text">
+      </div>
+
+      <div class="field">
+        <label for="dateJoining">Date of Joining</label>
+        <input id="dateJoining" name="dateJoining" type="date">
+      </div>
+
+      <div class="field">
+        <label for="certNo">Certificate No.</label>
+        <input id="certNo" name="certNo" type="text">
+      </div>
+
+      <div class="field">
+        <label for="dateIssue">Date of Issue</label>
+        <input id="dateIssue" name="dateIssue" type="date">
+      </div>
+
+      <div class="checkbox-row">
+        <div class="field">
+          <label for="term1"><input id="term1" name="term1" type="checkbox"> Term 1</label>
+        </div>
+        <div class="field">
+          <label for="term2"><input id="term2" name="term2" type="checkbox"> Term 2</label>
+        </div>
+        <div class="field">
+          <label for="term3"><input id="term3" name="term3" type="checkbox"> Term 3</label>
+        </div>
+        <div class="field">
+          <label for="term4"><input id="term4" name="term4" type="checkbox"> Term 4</label>
+        </div>
+      </div>
+
+      <div class="actions">
+        <button type="submit">Save & Fill Form</button>
+        <button type="button" id="clearBtn" class="secondary">Clear Form</button>
+        <a class="link-btn secondary" href="form.html">Open Application Form</a>
+      </div>
+    </form>
+  </div>
+
+<script>
+  const DETAILS_KEY = 'indianInfoTechUserDetails';
+  const SUBMISSIONS_KEY = 'indianInfoTechSubmissions';
+  const form = document.getElementById('detailsForm');
+  const photoInput = document.getElementById('photo');
+  const photoPreview = document.getElementById('photoPreview');
+  const editingSubmissionId = new URLSearchParams(window.location.search).get('submissionId')?.trim() || '';
+
+  // Mode elements
+  const btnModeUpload = document.getElementById('btnModeUpload');
+  const btnModeCamera = document.getElementById('btnModeCamera');
+  const uploadContainer = document.getElementById('uploadContainer');
+  const cameraContainer = document.getElementById('cameraContainer');
+  const btnCapturePhoto = document.getElementById('btnCapturePhoto');
+  const btnSwitchCamera = document.getElementById('btnSwitchCamera');
+  const btnRemovePhoto = document.getElementById('btnRemovePhoto');
+
+  let currentPhotoDataUrl = '';
+  let cameraStream = null;
+  let useFacingMode = 'user'; // 'user' or 'environment'
+
+  function setPhotoPreview(dataUrl) {
+    currentPhotoDataUrl = dataUrl || '';
+    if (!photoPreview) return;
+    if (dataUrl) {
+      photoPreview.src = dataUrl;
+      photoPreview.style.display = 'block';
+      if (btnRemovePhoto) btnRemovePhoto.style.display = 'flex';
+    } else {
+      photoPreview.removeAttribute('src');
+      photoPreview.style.display = 'none';
+      if (btnRemovePhoto) btnRemovePhoto.style.display = 'none';
+    }
+  }
+
+  // Camera handling
+  async function startCamera() {
+    if (cameraStream) {
+      stopCamera();
+    }
+    const constraints = {
+      video: { facingMode: useFacingMode },
+      audio: false
+    };
+    try {
+      cameraStream = await navigator.mediaDevices.getUserMedia(constraints);
+      const videoEl = document.getElementById('cameraVideo');
+      if (videoEl) {
+        videoEl.srcObject = cameraStream;
+        videoEl.play();
+      }
+      
+      // Check if multiple camera devices are available
+      const devices = await navigator.mediaDevices.enumerateDevices();
+      const videoDevices = devices.filter(d => d.kind === 'videoinput');
+      if (videoDevices.length > 1 && btnSwitchCamera) {
+        btnSwitchCamera.style.display = 'inline-block';
+      } else if (btnSwitchCamera) {
+        btnSwitchCamera.style.display = 'none';
+      }
+    } catch (err) {
+      console.warn('Camera access error:', err);
+      alert('Unable to access camera. Please check permissions or upload a file instead.');
+      switchToUploadMode();
+    }
+  }
+
+  function stopCamera() {
+    if (cameraStream) {
+      cameraStream.getTracks().forEach(track => track.stop());
+      cameraStream = null;
+    }
+    const videoEl = document.getElementById('cameraVideo');
+    if (videoEl) {
+      videoEl.srcObject = null;
+    }
+  }
+
+  function capturePhoto() {
+    const videoEl = document.getElementById('cameraVideo');
+    const canvasEl = document.getElementById('cameraCanvas');
+    if (!videoEl || !canvasEl) return;
+    const context = canvasEl.getContext('2d');
+    canvasEl.width = videoEl.videoWidth || 640;
+    canvasEl.height = videoEl.videoHeight || 480;
+    context.drawImage(videoEl, 0, 0, canvasEl.width, canvasEl.height);
+    const dataUrl = canvasEl.toDataURL('image/jpeg');
+    setPhotoPreview(dataUrl);
+  }
+
+  function switchToUploadMode() {
+    if (btnModeUpload) btnModeUpload.classList.add('active');
+    if (btnModeCamera) btnModeCamera.classList.remove('active');
+    if (uploadContainer) uploadContainer.style.display = 'block';
+    if (cameraContainer) cameraContainer.style.display = 'none';
+    stopCamera();
+  }
+
+  function switchToCameraMode() {
+    if (btnModeCamera) btnModeCamera.classList.add('active');
+    if (btnModeUpload) btnModeUpload.classList.remove('active');
+    if (uploadContainer) uploadContainer.style.display = 'none';
+    if (cameraContainer) cameraContainer.style.display = 'block';
+    startCamera();
+  }
+
+  btnModeUpload?.addEventListener('click', switchToUploadMode);
+  btnModeCamera?.addEventListener('click', switchToCameraMode);
+
+  btnCapturePhoto?.addEventListener('click', () => {
+    capturePhoto();
+  });
+
+  btnSwitchCamera?.addEventListener('click', () => {
+    useFacingMode = (useFacingMode === 'user') ? 'environment' : 'user';
+    startCamera();
+  });
+
+  btnRemovePhoto?.addEventListener('click', () => {
+    setPhotoPreview('');
+    if (photoInput) {
+      photoInput.value = '';
+    }
+  });
+
+  document.getElementById('clearBtn')?.addEventListener('click', async () => {
+    if (confirm('Are you sure you want to clear the form and reset draft details?')) {
+      form.reset();
+      setPhotoPreview('');
+      if (photoInput) photoInput.value = '';
+      localStorage.removeItem(DETAILS_KEY);
+      try {
+        await fetch('/api/details', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({})
+        });
+      } catch (err) {
+        console.warn('Unable to clear active details on server', err);
+      }
+    }
+  });
+
+  function readStoredSubmissions() {
+    try {
+      return JSON.parse(localStorage.getItem(SUBMISSIONS_KEY) || '[]');
+    } catch {
+      return [];
+    }
+  }
+
+  function saveStoredSubmissions(submissions) {
+    localStorage.setItem(SUBMISSIONS_KEY, JSON.stringify(submissions));
+  }
+
+  function applyFormData(data) {
+    if (!data || typeof data !== 'object') return;
+
+    Object.entries(data).forEach(([key, value]) => {
+      const field = form.elements[key];
+      if (!field) return;
+      if (field.type === 'checkbox') {
+        field.checked = Boolean(value);
+      } else if (!['photo', 'submittedAt', 'submissionId'].includes(key)) {
+        field.value = value;
+      }
+    });
+
+    if (data.photo) {
+      setPhotoPreview(data.photo);
+    } else {
+      setPhotoPreview('');
+    }
+  }
+
+  async function readPhotoAsDataUrl(file) {
+    if (!file) return '';
+    return await new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = () => resolve(reader.result);
+      reader.onerror = () => reject(reader.error || new Error('Unable to read photo'));
+      reader.readAsDataURL(file);
+    });
+  }
+
+  photoInput?.addEventListener('change', async (event) => {
+    const file = event.target.files?.[0];
+    if (!file) {
+      setPhotoPreview('');
+      return;
+    }
+
+    try {
+      const photoDataUrl = await readPhotoAsDataUrl(file);
+      setPhotoPreview(photoDataUrl);
+    } catch (err) {
+      console.warn('Unable to preview selected photo', err);
+    }
+  });
+
+  async function loadSubmissionForEditing(submissionId) {
+    if (!submissionId) return null;
+
+    try {
+      const response = await fetch('/api/submissions');
+      if (response.ok) {
+        const submissions = await response.json();
+        if (Array.isArray(submissions)) {
+          return submissions.find((item) => String(item.submissionId) === submissionId) || null;
+        }
+      }
+    } catch (err) {
+      console.warn('Unable to load submission from server', err);
+    }
+
+    const submissions = readStoredSubmissions();
+    return Array.isArray(submissions) ? submissions.find((item) => String(item.submissionId) === submissionId) || null : null;
+  }
+
+  async function loadSavedDetails() {
+    if (editingSubmissionId) {
+      const submission = await loadSubmissionForEditing(editingSubmissionId);
+      if (submission) {
+        applyFormData(submission);
+        return;
+      }
+    }
+
+    try {
+      const response = await fetch('/api/details');
+      if (response.ok) {
+        const details = await response.json();
+        if (details && typeof details === 'object') {
+          applyFormData(details);
+          return;
+        }
+      }
+    } catch (err) {
+      console.warn('Unable to load saved details from server', err);
+    }
+
+    try {
+      const details = JSON.parse(localStorage.getItem(DETAILS_KEY) || '{}');
+      applyFormData(details);
+    } catch (err) {
+      console.warn('Unable to load saved details from local storage', err);
+    }
+  }
+
+  function updateSubmissionInStorage(data) {
+    if (!editingSubmissionId) return;
+
+    const submissions = readStoredSubmissions();
+    const index = submissions.findIndex((item) => String(item.submissionId) === editingSubmissionId);
+    if (index >= 0) {
+      submissions[index] = { ...submissions[index], ...data, submissionId: editingSubmissionId };
+    } else {
+      submissions.push({ ...data, submissionId: editingSubmissionId });
+    }
+    saveStoredSubmissions(submissions);
+  }
+
+  form.addEventListener('submit', async (event) => {
+    event.preventDefault();
+    stopCamera();
+    const formData = new FormData(form);
+    formData.delete('photo');
+    const data = Object.fromEntries(formData.entries());
+    ['term1', 'term2', 'term3', 'term4'].forEach((key) => {
+      data[key] = Boolean(form.elements[key].checked);
+    });
+
+    const selectedPhoto = photoInput?.files?.[0];
+    const photoDataUrl = selectedPhoto ? await readPhotoAsDataUrl(selectedPhoto) : currentPhotoDataUrl;
+    data.photo = photoDataUrl;
+    
+    if (editingSubmissionId) {
+      data.submissionId = editingSubmissionId;
+    }
+    
+    localStorage.setItem(DETAILS_KEY, JSON.stringify(data));
+    updateSubmissionInStorage(data);
+
+    try {
+      await fetch('/api/details', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data)
+      });
+    } catch (err) {
+      console.warn('Unable to save details to server', err);
+    }
+    
+    if (editingSubmissionId) {
+      try {
+        await fetch('/api/submit', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(data)
+        });
+      } catch (err) {
+        console.warn('Unable to update submission on server during save', err);
+      }
+      window.location.href = `form.html?submissionId=${encodeURIComponent(editingSubmissionId)}`;
+    } else {
+      window.location.href = 'form.html';
+    }
+  });
+
+  loadSavedDetails();
+</script>
+<script src="theme.js"></script>
+</body>
+</html>

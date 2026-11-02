@@ -1,0 +1,30 @@
+[
+  {
+    "id": "ADDR-0001",
+    "dateTime": "2026-09-10T16:00:00.000Z",
+    "to": {
+      "name": "Mohammed irfan T",
+      "line1": "No 27 veera anjaneyar street",
+      "line2": "Mangadu",
+      "line3": "",
+      "city": "Chennai",
+      "state": "Tamilnadu",
+      "pincode": "600122",
+      "phone": "9363635355",
+      "extraPhone": "8122666555",
+      "country": "India"
+    },
+    "from": {
+      "name": "Indian Info Tech",
+      "line1": "101-C, KM Complex,",
+      "line2": "Amma Unavagam Back Side,",
+      "line3": "",
+      "city": "Namakkal",
+      "state": "Tamilnadu",
+      "pincode": "637001",
+      "phone": "9003446612",
+      "extraPhone": "",
+      "country": "India"
+    }
+  }
+]

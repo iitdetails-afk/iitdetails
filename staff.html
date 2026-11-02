@@ -1,0 +1,1124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Indian Info Tech — Staff Portal</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="theme.css">
+<style>
+  :root {
+    --bg: var(--theme-bg, #f0f4f8);
+    --surface: var(--theme-surface-solid, #ffffff);
+    --surface2: var(--theme-bg, #f0f4f8);
+    --border: var(--theme-border, rgba(15,39,68,0.1));
+    --border2: var(--theme-border, rgba(15,39,68,0.15));
+    --text: var(--theme-text, #1a2b40);
+    --text2: var(--theme-text-secondary, #475569);
+    --text3: var(--theme-text-muted, #94a3b8);
+    --purple: #2563eb;
+    --purple-dark: #1d4ed8;
+    --purple-glow: rgba(37,99,235,0.12);
+    --green: #10b981;
+    --green-glow: rgba(16,185,129,0.12);
+    --red: #ef4444;
+    --red-glow: rgba(239,68,68,0.12);
+    --orange: #f97316;
+    --orange-glow: rgba(249,115,22,0.12);
+    --blue: #3b82f6;
+    --blue-glow: rgba(59,130,246,0.12);
+    --radius: 14px;
+    --radius-sm: 8px;
+    --transition: 0.25s cubic-bezier(0.25,0.8,0.25,1);
+    --shadow: 0 10px 30px rgba(0,0,0,0.05);
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Inter', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .layout {
+    display: grid;
+    grid-template-columns: 240px 1fr;
+    min-height: 100vh;
+  }
+
+  /* ── Sidebar ── */
+  .sidebar {
+    background: var(--surface);
+    border-right: 1px solid var(--border);
+    display: flex;
+    flex-direction: column;
+    padding: 0;
+    position: sticky;
+    top: 0;
+    height: 100vh;
+    overflow-y: auto;
+  }
+
+  .sidebar-brand {
+    padding: 24px 20px 20px;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .brand-logo {
+    width: 40px;
+    height: 40px;
+    border-radius: 12px;
+    background: #ffffff;
+    border: 1px solid rgba(37,99,235,0.2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 20px;
+    overflow: hidden;
+  }
+  .brand-logo img { width: 100%; height: 100%; object-fit: contain; }
+  .brand-name {
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--text);
+    line-height: 1.2;
+  }
+  .brand-sub { font-size: 10px; color: var(--purple); letter-spacing: 0.12em; text-transform: uppercase; }
+
+  .sidebar-nav { flex: 1; padding: 16px 12px; display: flex; flex-direction: column; gap: 4px; }
+
+  .nav-label {
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--text3);
+    padding: 12px 10px 6px;
+  }
+
+  .nav-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 12px;
+    border-radius: var(--radius-sm);
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--text2);
+    cursor: pointer;
+    transition: var(--transition);
+    border: none;
+    background: none;
+    width: 100%;
+    text-align: left;
+    text-decoration: none;
+  }
+  .nav-item:hover { background: var(--surface2); color: var(--text); }
+  .nav-item.active { background: var(--purple-glow); color: var(--purple); border: 1px solid rgba(37,99,235,0.15); }
+  .nav-icon { font-size: 16px; width: 20px; text-align: center; }
+  .nav-badge {
+    margin-left: auto;
+    background: var(--purple);
+    color: #fff;
+    font-size: 10px;
+    font-weight: 700;
+    padding: 2px 7px;
+    border-radius: 999px;
+  }
+
+  .sidebar-footer {
+    padding: 16px 12px;
+    border-top: 1px solid var(--border);
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  /* ── Main content ── */
+  .content {
+    flex: 1;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .topbar {
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    padding: 16px 28px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    position: sticky;
+    top: 0;
+    z-index: 40;
+  }
+  .topbar-left { display: flex; align-items: center; gap: 16px; }
+  .page-title { font-size: 20px; font-weight: 700; color: var(--text); }
+  .page-subtitle { font-size: 12px; color: var(--text3); margin-top: 1px; }
+
+  .topbar-right { display: flex; align-items: center; gap: 10px; }
+
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 9px 18px;
+    border-radius: 999px;
+    font-family: 'Inter', sans-serif;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    border: none;
+    transition: var(--transition);
+    text-decoration: none;
+    white-space: nowrap;
+  }
+  .btn-purple { background: var(--purple); color: #fff; }
+  .btn-purple:hover { background: var(--purple-dark); transform: translateY(-1px); }
+  .btn-ghost { background: transparent; color: var(--text2); border: 1px solid var(--border2); }
+  .btn-ghost:hover { background: var(--surface2); color: var(--text); }
+  .btn-danger { background: transparent; color: var(--red); border: 1px solid rgba(239,68,68,0.3); }
+  .btn-danger:hover { background: var(--red-glow); }
+  .btn-sm { padding: 6px 14px; font-size: 12px; }
+  .btn-icon { padding: 8px; width: 34px; height: 34px; justify-content: center; border-radius: var(--radius-sm); }
+
+  /* ── Views ── */
+  .view { display: none; flex: 1; padding: 28px; }
+  .view.active { display: block; }
+
+  /* ── Stats cards ── */
+  .stats-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 16px;
+    margin-bottom: 28px;
+  }
+
+  .stat-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 20px;
+    position: relative;
+    overflow: hidden;
+    transition: var(--transition);
+  }
+  .stat-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 3px;
+    border-radius: var(--radius) var(--radius) 0 0;
+  }
+  .stat-card.purple::before { background: var(--purple); }
+  .stat-card.green::before { background: var(--green); }
+  .stat-card.orange::before { background: var(--orange); }
+  .stat-card.blue::before { background: var(--blue); }
+
+  .stat-icon { font-size: 24px; margin-bottom: 12px; display: block; }
+  .stat-value { font-size: 28px; font-weight: 800; color: var(--text); margin-bottom: 4px; }
+  .stat-label { font-size: 12px; color: var(--text2); font-weight: 500; }
+
+  /* Cards & Forms */
+  .panel-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 24px;
+    margin-bottom: 24px;
+    box-shadow: var(--shadow);
+  }
+  .panel-title { font-size: 16px; font-weight: 700; color: var(--text); margin-bottom: 16px; display: flex; align-items: center; gap: 8px; }
+  
+  /* Profile Layout */
+  .profile-section {
+    display: flex;
+    gap: 24px;
+    align-items: center;
+    flex-wrap: wrap;
+  }
+  .profile-avatar-big {
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 3px solid var(--border2);
+    background: var(--surface2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 40px;
+    overflow: hidden;
+  }
+  .profile-avatar-big img { width: 100%; height: 100%; object-fit: cover; }
+  .profile-details { flex: 1; }
+  .profile-name { font-size: 22px; font-weight: 800; color: var(--text); margin-bottom: 4px; }
+  .profile-role { font-size: 14px; font-weight: 600; color: var(--purple); margin-bottom: 12px; }
+  .profile-meta-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 10px; }
+  .profile-meta-item { font-size: 13px; color: var(--text2); }
+  .profile-meta-item strong { color: var(--text); }
+
+  /* Form Fields */
+  .field { margin-bottom: 16px; }
+  .field label {
+    display: block;
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--text2);
+    margin-bottom: 7px;
+  }
+  .field input, .field textarea, .field select {
+    width: 100%;
+    padding: 10px 14px;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    font-family: 'Inter', sans-serif;
+    font-size: 13px;
+    color: var(--text);
+    outline: none;
+    transition: var(--transition);
+  }
+  .field input:focus, .field textarea:focus, .field select:focus {
+    border-color: rgba(37,99,235,0.4);
+    box-shadow: 0 0 0 3px var(--purple-glow);
+  }
+  .field textarea { min-height: 80px; resize: vertical; }
+  .detail-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+
+  /* History list */
+  .history-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 14px 18px;
+    border-bottom: 1px solid var(--border);
+  }
+  .history-item:last-child { border-bottom: none; }
+  .history-title { font-size: 14px; font-weight: 600; color: var(--text); }
+  .history-meta { font-size: 12px; color: var(--text3); margin-top: 3px; }
+  
+  .badge {
+    padding: 3px 9px;
+    border-radius: 999px;
+    font-size: 10px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+  }
+  .badge.pending { background: var(--orange-glow); color: var(--orange); }
+  .badge.approved { background: var(--green-glow); color: var(--green); }
+  .badge.rejected { background: var(--red-glow); color: var(--red); }
+  .badge.high { background: var(--red-glow); color: var(--red); }
+  .badge.medium { background: var(--orange-glow); color: var(--orange); }
+  .badge.low { background: var(--blue-glow); color: var(--blue); }
+
+  /* Task Management Styling */
+  .tasks-container { display: flex; flex-direction: column; gap: 16px; }
+  .task-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 20px;
+    transition: var(--transition);
+    position: relative;
+  }
+  .task-card:hover { border-color: var(--border2); transform: translateY(-1px); box-shadow: var(--shadow); }
+  .task-header { display: flex; justify-content: space-between; align-items: start; margin-bottom: 12px; }
+  .task-title-text { font-size: 15px; font-weight: 700; color: var(--text); }
+  .task-meta { font-size: 12px; color: var(--text3); margin-bottom: 14px; }
+  .task-meta strong { color: var(--text2); }
+  .task-description { font-size: 13px; color: var(--text2); line-height: 1.6; margin-bottom: 16px; }
+  
+  .task-progress-box {
+    background: var(--surface2);
+    border-radius: var(--radius-sm);
+    padding: 14px;
+    margin-bottom: 16px;
+  }
+  .task-progress-header { display: flex; justify-content: space-between; font-size: 12px; font-weight: 600; margin-bottom: 6px; }
+  .task-progress-bar-wrap { height: 6px; background: var(--border); border-radius: 999px; overflow: hidden; }
+  .task-progress-bar { height: 100%; background: var(--purple); transition: width 0.3s ease; }
+  
+  .task-actions-row { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
+
+  /* Notifications view list */
+  .ntf-item {
+    padding: 14px 18px;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    gap: 12px;
+    align-items: start;
+    position: relative;
+    transition: var(--transition);
+  }
+  .ntf-item.unread { background: rgba(37,99,235,0.02); }
+  .ntf-item.unread::before {
+    content: '';
+    position: absolute;
+    left: 4px; top: 18px;
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    background: var(--purple);
+  }
+  .ntf-text { font-size: 13px; color: var(--text2); }
+  .ntf-text.unread-bold { font-weight: 600; color: var(--text); }
+  .ntf-time { font-size: 11px; color: var(--text3); margin-top: 4px; }
+
+  /* Loading Spinner */
+  .spinner {
+    width: 32px; height: 32px;
+    border: 3px solid var(--border);
+    border-top-color: var(--purple);
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+    margin: 40px auto;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  /* Toast Notification */
+  .toast {
+    position: fixed;
+    bottom: 24px; right: 24px;
+    z-index: 999;
+    background: var(--surface);
+    color: var(--text);
+    padding: 14px 18px;
+    border-radius: 12px;
+    font-size: 13px;
+    font-weight: 500;
+    box-shadow: var(--shadow);
+    border: 1px solid var(--border2);
+    transform: translateY(100px);
+    opacity: 0;
+    transition: all 0.4s cubic-bezier(0.34,1.56,0.64,1);
+    pointer-events: none;
+  }
+  .toast.show { transform: translateY(0); opacity: 1; }
+  .toast.success { border-color: rgba(16,185,129,0.3); }
+  .toast.error { border-color: rgba(239,68,68,0.3); }
+
+  /* Modal Dialog for Task Progress Update */
+  .modal-overlay {
+    position: fixed; inset: 0;
+    background: rgba(0,0,0,0.65);
+    backdrop-filter: blur(4px);
+    z-index: 200;
+    display: none;
+    align-items: center; justify-content: center;
+    padding: 20px;
+  }
+  .modal-overlay.active { display: flex; }
+  .modal {
+    background: var(--surface);
+    border: 1px solid var(--border2);
+    border-radius: 20px;
+    padding: 24px;
+    width: 100%; max-width: 500px;
+    box-shadow: 0 16px 48px rgba(0,0,0,0.15);
+  }
+  .modal-header { display: flex; justify-content: space-between; align-items: start; margin-bottom: 18px; }
+  .modal-title { font-size: 16px; font-weight: 700; color: var(--text); }
+  .modal-close { background: none; border: none; font-size: 20px; cursor: pointer; color: var(--text3); }
+
+  /* Responsive styling */
+  @media (max-width: 850px) {
+    .layout { grid-template-columns: 1fr; }
+    .sidebar { display: none; position: fixed; inset: 0; z-index: 100; width: 260px; height: 100vh; }
+    .sidebar.open { display: flex; }
+    .stats-grid { grid-template-columns: 1fr 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<div class="layout" id="portalLayout" style="display:none;">
+  <!-- ── Sidebar ── -->
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-brand">
+      <div class="brand-logo">🎓</div>
+      <div>
+        <div class="brand-name">Indian Info Tech</div>
+        <div class="brand-sub">Staff Portal</div>
+      </div>
+    </div>
+
+    <nav class="sidebar-nav">
+      <div class="nav-label">General</div>
+      <button class="nav-item active" id="navDashboard" onclick="showView('dashboard')">
+        <span class="nav-icon">📊</span> Dashboard
+      </button>
+      <button class="nav-item" id="navLeaves" onclick="showView('leaves')">
+        <span class="nav-icon">📅</span> Leave & OD
+      </button>
+      <button class="nav-item" id="navTasks" onclick="showView('tasks')">
+        <span class="nav-icon">📝</span> Assigned Work
+        <span class="nav-badge" id="taskBadge" style="display:none;">0</span>
+      </button>
+      <button class="nav-item" id="navNotifications" onclick="showView('notifications')">
+        <span class="nav-icon">🔔</span> Notifications
+        <span class="nav-badge" id="notifBadge" style="display:none; background:var(--red);">0</span>
+      </button>
+    </nav>
+
+    <div class="sidebar-footer">
+      <a class="nav-item" href="address.html">
+        <span class="nav-icon">📦</span> Address Manager
+      </a>
+      <a class="nav-item" href="/api/excel/download">
+        <span class="nav-icon">📊</span> Excel DB (3 Sheets)
+      </a>
+      <a class="nav-item" href="index.html">
+        <span class="nav-icon">🏠</span> Home
+      </a>
+      <button class="nav-item btn-danger" onclick="logout()" style="color: var(--red);">
+        <span class="nav-icon">🔒</span> Logout
+      </button>
+    </div>
+  </aside>
+
+  <!-- ── Content area ── -->
+  <div class="content">
+    <!-- Topbar -->
+    <div class="topbar">
+      <div class="topbar-left">
+        <button class="btn btn-ghost btn-icon" onclick="toggleSidebar()" style="display:none; font-size:20px;" id="mobileMenuBtn">☰</button>
+        <div>
+          <div class="page-title" id="pageTitle">Dashboard</div>
+          <div class="page-subtitle" id="pageSubtitle">Welcome back to your workspace</div>
+        </div>
+      </div>
+      <div class="topbar-right" style="display: flex; align-items: center; gap: 12px;">
+        <a href="/api/excel/download" class="btn btn-purple btn-sm" style="text-decoration:none; font-size:12px;">📊 Excel DB (3 Sheets)</a>
+        <div style="font-size:12px; font-weight:600; color:var(--text2);" id="currentDatetime">—</div>
+      </div>
+    </div>
+
+    <!-- ── DASHBOARD VIEW ── -->
+    <div class="view active" id="viewDashboard">
+      <div class="panel-card">
+        <div class="profile-section">
+          <div class="profile-avatar-big" id="profAvatar">👤</div>
+          <div class="profile-details">
+            <div class="profile-name" id="profName">—</div>
+            <div class="profile-role" id="profRole">—</div>
+            <div class="profile-meta-grid">
+              <div class="profile-meta-item"><strong>Staff ID:</strong> <span id="profId">—</span></div>
+              <div class="profile-meta-item"><strong>Email:</strong> <span id="profEmail">—</span></div>
+              <div class="profile-meta-item"><strong>Mobile:</strong> <span id="profMobile">—</span></div>
+              <div class="profile-meta-item"><strong>Department:</strong> <span id="profDept">—</span></div>
+              <div class="profile-meta-item"><strong>Joined On:</strong> <span id="profJoined">—</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="stats-grid">
+        <div class="stat-card green">
+          <span class="stat-icon">📝</span>
+          <div class="stat-value" id="dashPendingTasks">0</div>
+          <div class="stat-label">Pending Tasks</div>
+        </div>
+        <div class="stat-card orange">
+          <span class="stat-icon">📅</span>
+          <div class="stat-value" id="dashPendingLeaves">0</div>
+          <div class="stat-label">Pending Requests</div>
+        </div>
+        <div class="stat-card blue">
+          <span class="stat-icon">🔔</span>
+          <div class="stat-value" id="dashUnreadNotifs">0</div>
+          <div class="stat-label">Unread Notifications</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── LEAVES VIEW ── -->
+    <div class="view" id="viewLeaves">
+      <div style="display:grid; grid-template-columns: 1fr 1.2fr; gap:24px; align-items:start;">
+        
+        <!-- Apply Form -->
+        <div class="panel-card">
+          <div class="panel-title">📝 Leave & OD Request Form</div>
+          <form id="leaveForm" onsubmit="submitLeave(event)">
+            <div class="field">
+              <label>Request Type</label>
+              <select id="leaveType" onchange="toggleLeaveDocRequirement()">
+                <option value="Leave">Regular Leave</option>
+                <option value="On-Duty">On-Duty (OD)</option>
+              </select>
+            </div>
+
+            <div class="detail-row">
+              <div class="field">
+                <label>Start Date</label>
+                <input type="date" id="leaveStart" required>
+              </div>
+              <div class="field">
+                <label>End Date</label>
+                <input type="date" id="leaveEnd" required>
+              </div>
+            </div>
+
+            <div class="field">
+              <label>Reason / Justification</label>
+              <textarea id="leaveReason" required placeholder="State your reason for application..."></textarea>
+            </div>
+
+            <div class="field">
+              <label id="leaveDocLabel">Supporting Document (Optional)</label>
+              <input type="file" id="leaveDocFile" accept=".png,.jpg,.jpeg,.pdf" onchange="handleLeaveDocUpload(event)">
+              <div class="field-hint">PNG, JPG or PDF. Max size 2MB.</div>
+            </div>
+
+            <button type="submit" class="btn btn-purple" style="width:100%; justify-content:center;">Submit Application</button>
+          </form>
+        </div>
+
+        <!-- History -->
+        <div class="panel-card">
+          <div class="panel-title">⏳ Request History</div>
+          <div id="leavesHistoryList">
+            <div class="spinner"></div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- ── TASKS VIEW ── -->
+    <div class="view" id="viewTasks">
+      <div class="tasks-container" id="tasksListContainer">
+        <div class="spinner"></div>
+      </div>
+    </div>
+
+    <!-- ── NOTIFICATIONS VIEW ── -->
+    <div class="view" id="viewNotifications">
+      <div class="panel-card">
+        <div class="panel-title">🔔 Your Notification Inbox</div>
+        <div id="notificationsContainer" style="display:flex; flex-direction:column;">
+          <div class="spinner"></div>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /content -->
+</div>
+
+<!-- ── Task Update Modal ── -->
+<div class="modal-overlay" id="taskUpdateModal">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title" id="taskModalTitle">Update Task Progress</div>
+      <button class="modal-close" onclick="closeTaskModal()">×</button>
+    </div>
+
+    <form id="taskProgressForm" onsubmit="submitTaskProgress(event)">
+      <input type="hidden" id="taskModalId">
+      
+      <div class="field">
+        <label>Progress Percentage</label>
+        <div style="display:flex; align-items:center; gap:12px;">
+          <input type="range" id="taskModalRange" min="0" max="100" step="5" oninput="document.getElementById('rangeVal').textContent = this.value + '%'">
+          <span style="font-weight:700; width:45px;" id="rangeVal">50%</span>
+        </div>
+      </div>
+
+      <div class="field">
+        <label>Update Notes / Comments</label>
+        <textarea id="taskModalComments" placeholder="Enter comments on current progress..."></textarea>
+      </div>
+
+      <div class="field">
+        <label>Attach Work File (Optional)</label>
+        <input type="file" id="taskModalFile" onchange="handleTaskFileSelect(event)">
+        <div class="field-hint">Upload work evidence, logs, or results. Max 2MB.</div>
+      </div>
+
+      <div class="modal-actions" style="margin-top:20px;">
+        <button type="button" class="btn btn-ghost" onclick="closeTaskModal()">Cancel</button>
+        <button type="submit" class="btn btn-purple">Submit Update</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- Toast -->
+<div class="toast" id="toast"></div>
+
+<script>
+  let staffProfile = null;
+  let allTasks = [];
+  let allLeaves = [];
+  let allNotifs = [];
+  
+  // Form base64 helpers
+  let leaveDocBase64 = '';
+  let leaveDocName = '';
+  let taskDocBase64 = '';
+  let taskDocName = '';
+
+  // Verify auth
+  async function checkAuth() {
+    const token = sessionStorage.getItem('iitStaffToken');
+    if (!token) {
+      window.location.replace('index.html');
+      return;
+    }
+    
+    // Attempt profile fetch
+    try {
+      const r = await fetch('/api/staff/profile', { headers: { Authorization: 'Bearer ' + token } });
+      if (!r.ok) {
+        throw new Error();
+      }
+      staffProfile = await r.json();
+      document.getElementById('portalLayout').style.display = 'grid';
+      initPortal();
+    } catch(e) {
+      sessionStorage.removeItem('iitStaffToken');
+      window.location.replace('index.html');
+    }
+  }
+
+  function logout() {
+    if (!confirm('Are you sure you want to log out of the staff portal?')) return;
+    sessionStorage.removeItem('iitStaffToken');
+    sessionStorage.removeItem('iitStaffName');
+    sessionStorage.removeItem('iitStaffId');
+    window.location.href = 'index.html';
+  }
+
+  // ── Toast ──
+  function showToast(msg, type = '') {
+    const t = document.getElementById('toast');
+    t.textContent = msg;
+    t.className = 'toast show ' + type;
+    clearTimeout(t._timer);
+    t._timer = setTimeout(() => t.className = 'toast', 3200);
+  }
+
+  // ── Show view ──
+  const viewMeta = {
+    dashboard:     { title: 'Dashboard', subtitle: 'Overview of your profile and alerts' },
+    leaves:        { title: 'Leave & OD Requests', subtitle: 'Apply for leaves and track request updates' },
+    tasks:         { title: 'Assigned Tasks', subtitle: 'Manage your daily workloads and submit progress' },
+    notifications: { title: 'Notifications', subtitle: 'Read official notices and alerts' }
+  };
+
+  function showView(name) {
+    document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+    document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+    
+    document.getElementById('view' + name.charAt(0).toUpperCase() + name.slice(1)).classList.add('active');
+    document.getElementById('nav' + name.charAt(0).toUpperCase() + name.slice(1))?.classList.add('active');
+    
+    document.getElementById('pageTitle').textContent = viewMeta[name]?.title || name;
+    document.getElementById('pageSubtitle').textContent = viewMeta[name]?.subtitle || '';
+    
+    closeSidebar();
+  }
+
+  function toggleSidebar() {
+    document.getElementById('sidebar').classList.toggle('open');
+  }
+  function closeSidebar() {
+    document.getElementById('sidebar').classList.remove('open');
+  }
+
+  // ── Datetime header ──
+  function updateDatetime() {
+    const options = { weekday: 'short', year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit', second: '2-digit' };
+    document.getElementById('currentDatetime').textContent = new Date().toLocaleString('en-IN', options);
+  }
+  setInterval(updateDatetime, 1000);
+
+  // ── Initialize Portal ──
+  async function initPortal() {
+    updateDatetime();
+    
+    // Render profile details
+    document.getElementById('profName').textContent = staffProfile.name;
+    document.getElementById('profRole').textContent = staffProfile.role;
+    document.getElementById('profId').textContent = staffProfile.staffId;
+    document.getElementById('profEmail').textContent = staffProfile.email || '—';
+    document.getElementById('profMobile').textContent = staffProfile.mobile || '—';
+    document.getElementById('profDept').textContent = staffProfile.department || '—';
+    
+    if (staffProfile.dateJoining) {
+      document.getElementById('profJoined').textContent = new Date(staffProfile.dateJoining).toLocaleDateString('en-IN', { day: 'numeric', month: 'long', year: 'numeric' });
+    }
+    
+    if (staffProfile.photo) {
+      document.getElementById('profAvatar').innerHTML = `<img src="${staffProfile.photo}" alt="Avatar">`;
+    }
+
+    // Load data
+    await refreshData();
+  }
+
+  async function refreshData() {
+    const token = sessionStorage.getItem('iitStaffToken');
+    
+    // Load Tasks
+    try {
+      const r = await fetch('/api/staff/tasks', { headers: { Authorization: 'Bearer ' + token } });
+      if (r.ok) allTasks = await r.json();
+    } catch(e){}
+    
+    // Load Leaves
+    try {
+      const r = await fetch('/api/staff/leaves', { headers: { Authorization: 'Bearer ' + token } });
+      if (r.ok) allLeaves = await r.json();
+    } catch(e){}
+
+    // Load Notifications
+    try {
+      const r = await fetch('/api/staff/notifications', { headers: { Authorization: 'Bearer ' + token } });
+      if (r.ok) allNotifs = await r.json();
+    } catch(e){}
+
+    renderDashboardStats();
+    renderTasks();
+    renderLeavesHistory();
+    renderNotifications();
+  }
+
+  function renderDashboardStats() {
+    const pendingTasks = allTasks.filter(t => t.status !== 'Completed').length;
+    const pendingLeaves = allLeaves.filter(l => l.status === 'Pending').length;
+    const unreadNotifs = allNotifs.filter(n => !n.read).length;
+    
+    document.getElementById('dashPendingTasks').textContent = pendingTasks;
+    document.getElementById('dashPendingLeaves').textContent = pendingLeaves;
+    document.getElementById('dashUnreadNotifs').textContent = unreadNotifs;
+    
+    const taskBadge = document.getElementById('taskBadge');
+    if (pendingTasks > 0) {
+      taskBadge.textContent = pendingTasks;
+      taskBadge.style.display = 'inline-flex';
+    } else {
+      taskBadge.style.display = 'none';
+    }
+
+    const notifBadge = document.getElementById('notifBadge');
+    if (unreadNotifs > 0) {
+      notifBadge.textContent = unreadNotifs;
+      notifBadge.style.display = 'inline-flex';
+    } else {
+      notifBadge.style.display = 'none';
+    }
+  }
+
+  // ── Leaves & OD Logic ──
+  function toggleLeaveDocRequirement() {
+    const type = document.getElementById('leaveType').value;
+    const label = document.getElementById('leaveDocLabel');
+    if (type === 'On-Duty') {
+      label.textContent = 'Supporting Document / OD Proof *';
+      document.getElementById('leaveDocFile').required = true;
+    } else {
+      label.textContent = 'Supporting Document (Optional)';
+      document.getElementById('leaveDocFile').required = false;
+    }
+  }
+
+  function handleLeaveDocUpload(event) {
+    const file = event.target.files[0];
+    if (!file) return;
+    if (file.size > 2 * 1024 * 1024) {
+      alert('Document size must be less than 2MB');
+      event.target.value = '';
+      return;
+    }
+    leaveDocName = file.name;
+    const reader = new FileReader();
+    reader.onload = function(e) {
+      leaveDocBase64 = e.target.result;
+    };
+    reader.readAsDataURL(file);
+  }
+
+  async function submitLeave(event) {
+    event.preventDefault();
+    const token = sessionStorage.getItem('iitStaffToken');
+    
+    const payload = {
+      type: document.getElementById('leaveType').value,
+      startDate: document.getElementById('leaveStart').value,
+      endDate: document.getElementById('leaveEnd').value,
+      reason: document.getElementById('leaveReason').value.trim(),
+      docName: leaveDocName,
+      docBase64: leaveDocBase64
+    };
+
+    try {
+      const res = await fetch('/api/staff/leave', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + token },
+        body: JSON.stringify(payload)
+      });
+      const data = await res.json();
+      if (res.ok && data.success) {
+        showToast('Request submitted successfully!', 'success');
+        document.getElementById('leaveForm').reset();
+        leaveDocName = '';
+        leaveDocBase64 = '';
+        refreshData();
+      } else {
+        showToast(data.error || 'Failed to submit request.', 'error');
+      }
+    } catch {
+      showToast('Server connection error.', 'error');
+    }
+  }
+
+  function renderLeavesHistory() {
+    const container = document.getElementById('leavesHistoryList');
+    if (!allLeaves.length) {
+      container.innerHTML = `
+        <div class="sub-empty" style="padding: 20px 0; text-align:center; color:var(--text3);">
+          <p>No leaves or OD applied yet.</p>
+        </div>
+      `;
+      return;
+    }
+
+    container.innerHTML = allLeaves.map(l => {
+      const statusClass = l.status.toLowerCase();
+      const dateRange = l.startDate === l.endDate ? l.startDate : `${l.startDate} to ${l.endDate}`;
+      
+      return `
+        <div class="history-item">
+          <div>
+            <div class="history-title">${l.type} - ${dateRange}</div>
+            <div class="history-meta">
+              <strong>Reason:</strong> ${l.reason} <br>
+              ${l.remarks ? `<strong>Remarks:</strong> ${l.remarks}` : ''}
+            </div>
+          </div>
+          <span class="badge ${statusClass}">${l.status}</span>
+        </div>
+      `;
+    }).join('');
+  }
+
+  // ── Tasks / Work Logic ──
+  function renderTasks() {
+    const container = document.getElementById('tasksListContainer');
+    if (!allTasks.length) {
+      container.innerHTML = `
+        <div class="panel-card" style="text-align:center; color:var(--text3); padding:40px 20px;">
+          <div style="font-size:32px; margin-bottom:10px;">📋</div>
+          <p>No work tasks assigned to you.</p>
+        </div>
+      `;
+      return;
+    }
+
+    container.innerHTML = allTasks.map(t => {
+      const priorityClass = t.priority.toLowerCase();
+      const progressStyle = `width: ${t.progress || 0}%`;
+      
+      let actionButtons = '';
+      if (t.status === 'Pending') {
+        actionButtons = `<button class="btn btn-purple btn-sm" onclick="updateTaskStatus('${t.id}', 'In Progress')">🚀 Start Work</button>`;
+      } else if (t.status === 'In Progress') {
+        actionButtons = `
+          <button class="btn btn-ghost btn-sm" onclick="openTaskModal('${t.id}', ${t.progress}, '${t.comments || ''}')">⚙️ Update Progress</button>
+          <button class="btn btn-purple btn-sm" onclick="updateTaskStatus('${t.id}', 'Completed')">✅ Mark Completed</button>
+        `;
+      }
+      
+      const attachmentHtml = t.attachmentName && t.attachmentBase64
+        ? `<div style="margin-top:8px; font-size:12px;">📎 <strong>Attachment:</strong> <a href="${t.attachmentBase64}" download="${t.attachmentName}" style="color:var(--purple); font-weight:600; text-decoration:none;">${t.attachmentName}</a></div>`
+        : '';
+
+      return `
+        <div class="task-card">
+          <div class="task-header">
+            <div>
+              <div class="task-title-text">${t.title}</div>
+              <div class="task-meta">Assigned: ${t.assignedDate} &nbsp;·&nbsp; Due: <strong>${t.dueDate}</strong></div>
+            </div>
+            <span class="badge ${priorityClass}">${t.priority} Priority</span>
+          </div>
+
+          <div class="task-description">${t.description}</div>
+          
+          ${attachmentHtml}
+
+          <div class="task-progress-box">
+            <div class="task-progress-header">
+              <span>Status: <strong>${t.status}</strong></span>
+              <span>Progress: ${t.progress}%</span>
+            </div>
+            <div class="task-progress-bar-wrap">
+              <div class="task-progress-bar" style="${progressStyle}"></div>
+            </div>
+          </div>
+
+          ${t.comments ? `
+          <div style="font-size:12px; color:var(--text2); background:var(--surface2); padding:10px; border-radius:var(--radius-sm); margin-bottom:16px;">
+            <strong>Latest Comment:</strong> ${t.comments}
+          </div>
+          ` : ''}
+
+          <div class="task-actions-row">
+            ${actionButtons}
+          </div>
+        </div>
+      `;
+    }).join('');
+  }
+
+  async function updateTaskStatus(id, newStatus) {
+    const token = sessionStorage.getItem('iitStaffToken');
+    try {
+      const res = await fetch('/api/staff/tasks/status', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + token },
+        body: JSON.stringify({ id, status: newStatus })
+      });
+      if (res.ok) {
+        showToast(`Task marked as ${newStatus}!`, 'success');
+        refreshData();
+      } else {
+        showToast('Error updating status.', 'error');
+      }
+    } catch {
+      showToast('Server connection error.', 'error');
+    }
+  }
+
+  function openTaskModal(id, currentProgress, comments) {
+    document.getElementById('taskModalId').value = id;
+    document.getElementById('taskModalRange').value = currentProgress;
+    document.getElementById('rangeVal').textContent = currentProgress + '%';
+    document.getElementById('taskModalComments').value = comments || '';
+    document.getElementById('taskModalFile').value = '';
+    taskDocName = '';
+    taskDocBase64 = '';
+    
+    document.getElementById('taskUpdateModal').classList.add('active');
+  }
+
+  function closeTaskModal() {
+    document.getElementById('taskUpdateModal').classList.remove('active');
+  }
+
+  function handleTaskFileSelect(event) {
+    const file = event.target.files[0];
+    if (!file) return;
+    if (file.size > 2 * 1024 * 1024) {
+      alert('File size must be less than 2MB');
+      event.target.value = '';
+      return;
+    }
+    taskDocName = file.name;
+    const reader = new FileReader();
+    reader.onload = function(e) {
+      taskDocBase64 = e.target.result;
+    };
+    reader.readAsDataURL(file);
+  }
+
+  async function submitTaskProgress(event) {
+    event.preventDefault();
+    const token = sessionStorage.getItem('iitStaffToken');
+    const id = document.getElementById('taskModalId').value;
+    const progress = document.getElementById('taskModalRange').value;
+    const comments = document.getElementById('taskModalComments').value.trim();
+
+    try {
+      const res = await fetch('/api/staff/tasks/progress', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + token },
+        body: JSON.stringify({
+          id,
+          progress,
+          comments,
+          fileName: taskDocName,
+          fileBase64: taskDocBase64
+        })
+      });
+      if (res.ok) {
+        showToast('Progress update saved!', 'success');
+        closeTaskModal();
+        refreshData();
+      } else {
+        showToast('Failed to save progress.', 'error');
+      }
+    } catch {
+      showToast('Server connection error.', 'error');
+    }
+  }
+
+  // ── Notifications Logic ──
+  function renderNotifications() {
+    const container = document.getElementById('notificationsContainer');
+    if (!allNotifs.length) {
+      container.innerHTML = `
+        <div style="text-align:center; color:var(--text3); padding:40px 20px;">
+          <p>No notifications yet.</p>
+        </div>
+      `;
+      return;
+    }
+
+    container.innerHTML = allNotifs.map(n => {
+      const unreadClass = n.read ? '' : 'unread';
+      const textWeight = n.read ? '' : 'unread-bold';
+      const dateStr = new Date(n.createdAt).toLocaleString('en-IN');
+      
+      // Auto mark read when rendering notifications view
+      if (!n.read) {
+        markNotificationRead(n.id);
+      }
+
+      return `
+        <div class="ntf-item ${unreadClass}">
+          <div class="ntf-text ${textWeight}">
+            ${n.message}
+            <div class="ntf-time">${dateStr}</div>
+          </div>
+        </div>
+      `;
+    }).join('');
+  }
+
+  async function markNotificationRead(id) {
+    const token = sessionStorage.getItem('iitStaffToken');
+    try {
+      await fetch('/api/staff/notifications/read', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + token },
+        body: JSON.stringify({ id })
+      });
+      // silently mark local
+      const n = allNotifs.find(x => x.id === id);
+      if (n) n.read = true;
+    } catch(e){}
+  }
+
+  // Run on start
+  checkAuth();
+  
+  // Mobile responsive helper
+  if (window.innerWidth <= 850) {
+    document.getElementById('mobileMenuBtn').style.display = 'block';
+  }
+</script>
+</body>
+</html>

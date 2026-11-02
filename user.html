@@ -1,0 +1,944 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Indian Info Tech — Student Portal</title>
+<meta name="description" content="Apply and register at Indian Info Tech. Fill your application form and submit your details online.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="theme.css">
+<style>
+  :root {
+    --navy: #1e3a8a;
+    --navy-mid: #2563eb;
+    --accent: #2563eb;
+    --accent-dark: #1d4ed8;
+    --ink: #0f172a;
+    --paper: #ffffff;
+    --rule: #e2e8f0;
+    --brass: #3b82f6;
+    --soft: #f8fafc;
+    --red: #ef4444;
+    --white: #ffffff;
+    --success: #10b981;
+    --radius: 16px;
+    --shadow: 0 10px 30px rgba(15, 23, 42, 0.05);
+    --shadow-lg: 0 20px 45px rgba(15, 23, 42, 0.08);
+    --transition: 0.3s cubic-bezier(0.25,0.8,0.25,1);
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Inter', sans-serif;
+    background: var(--theme-bg-gradient, linear-gradient(135deg, #f8fafc 0%, #f1f5f9 50%, #e2e8f0 100%));
+    min-height: 100vh;
+    color: var(--ink);
+  }
+
+  /* ── Top nav ── */
+  .topbar {
+    background: var(--navy);
+    padding: 12px 24px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    position: sticky;
+    top: 0;
+    z-index: 50;
+    box-shadow: 0 2px 16px rgba(0,0,0,0.2);
+  }
+  .topbar-brand {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .topbar-logo {
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    background: #ffffff;
+    padding: 4px;
+    object-fit: contain;
+  }
+  .topbar-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 18px;
+    color: #fff;
+    font-weight: 600;
+  }
+  .topbar-subtitle {
+    font-size: 11px;
+    color: var(--accent);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+  .topbar-right {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .btn-back {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 16px;
+    background: rgba(255,255,255,0.08);
+    border: 1px solid rgba(255,255,255,0.15);
+    border-radius: 999px;
+    color: rgba(255,255,255,0.7);
+    font-size: 12px;
+    font-family: 'Inter', sans-serif;
+    text-decoration: none;
+    transition: var(--transition);
+  }
+  .btn-back:hover { background: rgba(255,255,255,0.15); color: #fff; }
+
+  /* ── Steps nav ── */
+  .steps-bar {
+    background: var(--white);
+    border-bottom: 1px solid var(--rule);
+    padding: 0 24px;
+    display: flex;
+    justify-content: center;
+    gap: 0;
+  }
+  .step-tab {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 16px 28px;
+    border-bottom: 3px solid transparent;
+    cursor: pointer;
+    font-size: 13px;
+    font-weight: 500;
+    color: #8a9bb0;
+    transition: var(--transition);
+    border-bottom-color: transparent;
+    white-space: nowrap;
+  }
+  .step-tab:hover { color: var(--navy); }
+  .step-tab.active { color: var(--navy); border-bottom-color: var(--accent); font-weight: 600; }
+  .step-num {
+    width: 26px;
+    height: 26px;
+    border-radius: 50%;
+    background: #e2e8f0;
+    color: #64748b;
+    font-size: 12px;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: var(--transition);
+  }
+  .step-tab.active .step-num { background: var(--accent); color: var(--navy); }
+  .step-tab.done .step-num { background: var(--success); color: white; }
+  .step-tab.done { color: var(--success); }
+
+  /* ── Main content ── */
+  .main {
+    max-width: 820px;
+    margin: 0 auto;
+    padding: 32px 20px 80px;
+  }
+
+  .page-section { display: none; }
+  .page-section.active { display: block; }
+
+  /* ── Card ── */
+  .card {
+    background: var(--paper);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    border: 1px solid rgba(15,39,68,0.06);
+    overflow: hidden;
+    margin-bottom: 20px;
+  }
+  .card-header {
+    padding: 20px 24px 16px;
+    border-bottom: 1px solid var(--rule);
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .card-icon {
+    width: 42px;
+    height: 42px;
+    border-radius: 12px;
+    background: linear-gradient(135deg, var(--navy), var(--navy-mid));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 20px;
+    flex-shrink: 0;
+  }
+  .card-header h2 {
+    font-family: 'Playfair Display', serif;
+    font-size: 20px;
+    color: var(--navy);
+  }
+  .card-header p {
+    font-size: 12px;
+    color: var(--brass);
+    margin-top: 2px;
+  }
+  .card-body { padding: 24px; }
+
+  /* ── Form fields ── */
+  .field { margin-bottom: 18px; }
+  .field label {
+    display: block;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--navy);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    margin-bottom: 7px;
+  }
+  .field input, .field textarea, .field select {
+    width: 100%;
+    padding: 11px 14px;
+    border: 1.5px solid var(--rule);
+    border-radius: 10px;
+    font-family: 'Inter', sans-serif;
+    font-size: 14px;
+    color: var(--ink);
+    background: #fffdf9;
+    transition: var(--transition);
+    outline: none;
+  }
+  .field input:focus, .field textarea:focus {
+    border-color: var(--accent-dark);
+    box-shadow: 0 0 0 3px rgba(245,200,66,0.18);
+    background: #fff;
+  }
+  .field textarea { min-height: 72px; resize: vertical; }
+
+  .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; }
+
+  /* ── Photo upload ── */
+  .photo-modes { display: flex; gap: 8px; margin-bottom: 12px; }
+  .mode-btn {
+    flex: 1; padding: 9px;
+    border: 1.5px solid var(--rule);
+    border-radius: 10px;
+    background: #fffdf9;
+    cursor: pointer;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--navy);
+    font-family: 'Inter', sans-serif;
+    transition: var(--transition);
+  }
+  .mode-btn.active { background: var(--navy); color: #fff; border-color: var(--navy); }
+
+  .camera-container {
+    border: 1.5px solid var(--rule);
+    border-radius: 12px;
+    padding: 14px;
+    background: #fffdf9;
+    text-align: center;
+    display: none;
+  }
+  .camera-stream-wrapper {
+    position: relative;
+    max-width: 300px;
+    margin: 0 auto;
+    aspect-ratio: 4/3;
+    background: #0f2744;
+    border-radius: 10px;
+    overflow: hidden;
+  }
+  .camera-stream-wrapper video { width: 100%; height: 100%; object-fit: cover; }
+  .camera-controls { margin-top: 10px; display: flex; gap: 8px; justify-content: center; }
+  .btn-sm {
+    padding: 7px 14px;
+    border: 1px solid var(--navy);
+    background: transparent;
+    color: var(--navy);
+    border-radius: 999px;
+    font-size: 12px;
+    cursor: pointer;
+    font-family: 'Inter', sans-serif;
+    transition: var(--transition);
+  }
+  .btn-sm:hover { background: var(--navy); color: #fff; }
+
+  .photo-preview-wrap {
+    display: none;
+    margin-top: 12px;
+    position: relative;
+    width: fit-content;
+  }
+  .photo-preview-wrap.visible { display: inline-block; }
+  .photo-preview-wrap img {
+    width: 120px;
+    height: 120px;
+    object-fit: cover;
+    border-radius: 12px;
+    border: 2px solid var(--rule);
+    display: block;
+  }
+  .remove-photo-btn {
+    position: absolute;
+    top: -8px; right: -8px;
+    width: 24px; height: 24px;
+    border-radius: 50%;
+    border: none;
+    background: var(--red);
+    color: white;
+    cursor: pointer;
+    font-size: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+    line-height: 1;
+    padding: 0;
+  }
+
+  /* ── Checkbox terms ── */
+  .terms-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .term-card {
+    background: #fffdf9;
+    border: 1.5px solid var(--rule);
+    border-radius: 12px;
+    padding: 14px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    cursor: pointer;
+    transition: var(--transition);
+  }
+  .term-card:hover { border-color: var(--accent-dark); }
+  .term-card input[type="checkbox"] { width: 18px; height: 18px; accent-color: var(--red); cursor: pointer; flex-shrink: 0; }
+  .term-card label { font-size: 13px; font-weight: 500; color: var(--navy); cursor: pointer; text-transform: none; letter-spacing: 0; }
+
+  /* ── Section divider ── */
+  .section-title {
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    color: var(--brass);
+    padding: 16px 24px 12px;
+    border-bottom: 1px solid var(--rule);
+    background: rgba(245,200,66,0.04);
+    margin-bottom: 0;
+  }
+
+  /* ── Actions ── */
+  .action-bar {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+    margin-top: 24px;
+    padding-top: 20px;
+    border-top: 1px solid var(--rule);
+  }
+
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 24px;
+    border-radius: 999px;
+    font-family: 'Inter', sans-serif;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    border: none;
+    transition: var(--transition);
+    text-decoration: none;
+  }
+  .btn-primary { background: var(--navy); color: #fff; box-shadow: 0 6px 16px rgba(15,39,68,0.2); }
+  .btn-primary:hover { background: var(--navy-mid); transform: translateY(-1px); box-shadow: 0 8px 20px rgba(15,39,68,0.28); }
+  .btn-accent { background: var(--accent); color: var(--navy); box-shadow: 0 6px 16px rgba(245,200,66,0.25); }
+  .btn-accent:hover { background: var(--accent-dark); transform: translateY(-1px); }
+  .btn-ghost { background: transparent; color: var(--navy); border: 1.5px solid var(--rule); }
+  .btn-ghost:hover { border-color: var(--navy); background: rgba(15,39,68,0.04); }
+  .btn-danger { background: transparent; color: var(--red); border: 1.5px solid rgba(139,34,52,0.3); }
+  .btn-danger:hover { background: rgba(139,34,52,0.06); }
+
+  /* ── Application form (Step 2 print-style) ── */
+  .form-sheet {
+    background: var(--paper);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow-lg);
+    border: 1px solid rgba(15,39,68,0.08);
+    padding: 32px 36px;
+    margin-bottom: 20px;
+  }
+  .form-header {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 24px;
+    padding-bottom: 20px;
+    border-bottom: 2px solid var(--navy);
+  }
+  .form-logo {
+    width: 80px; height: 80px;
+    border-radius: 50%;
+    background: #fff;
+    padding: 8px;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.1);
+    object-fit: contain;
+  }
+  .form-brand {
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--brass);
+    text-align: center;
+  }
+  .form-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 26px;
+    color: var(--navy);
+    text-decoration: underline;
+    text-underline-offset: 6px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    margin-top: 4px;
+  }
+  .photo-box {
+    float: right;
+    width: 110px;
+    height: 130px;
+    border: 1.5px dashed var(--rule);
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    font-size: 11px;
+    color: var(--brass);
+    margin-left: 20px;
+    margin-bottom: 12px;
+    overflow: hidden;
+    background: #fffdf9;
+  }
+  .photo-box img { width: 100%; height: 100%; object-fit: cover; display: none; }
+
+  .line-field { margin-bottom: 14px; }
+  .line-field label {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--navy);
+    display: block;
+    margin-bottom: 4px;
+  }
+  .line-input {
+    width: 100%;
+    border: none;
+    border-bottom: 1.5px solid rgba(30,50,72,0.2);
+    background: transparent;
+    font-family: 'Inter', sans-serif;
+    font-size: 15px;
+    padding: 5px 0;
+    color: var(--ink);
+    outline: none;
+  }
+  .line-input:focus { border-bottom-color: var(--red); }
+
+  .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+  .three-col { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 20px; }
+
+  .office-section { margin-top: 20px; border-top: 2px solid var(--navy); padding-top: 16px; }
+  .office-title { text-align: center; font-size: 15px; font-weight: 700; text-decoration: underline; margin-bottom: 16px; color: var(--navy); letter-spacing: 0.08em; }
+
+  .term-row-form {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 0;
+    border-bottom: 1px solid var(--rule);
+    font-size: 13px;
+  }
+  .term-row-form:last-child { border-bottom: none; }
+  .term-row-form input { width: 18px; height: 18px; accent-color: var(--red); }
+
+  /* ── Toast notification ── */
+  .toast {
+    position: fixed;
+    bottom: 28px;
+    right: 28px;
+    z-index: 999;
+    background: var(--navy);
+    color: #fff;
+    padding: 14px 20px;
+    border-radius: 14px;
+    font-size: 14px;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.25);
+    transform: translateY(100px);
+    opacity: 0;
+    transition: all 0.4s cubic-bezier(0.34,1.56,0.64,1);
+    pointer-events: none;
+  }
+  .toast.show { transform: translateY(0); opacity: 1; }
+  .toast.success { background: #166534; }
+  .toast.error { background: #991b1b; }
+
+  /* ── Progress indicator ── */
+  .progress-wrap { margin-bottom: 28px; }
+  .progress-bar {
+    height: 4px;
+    background: var(--rule);
+    border-radius: 99px;
+    overflow: hidden;
+  }
+  .progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--navy), var(--accent-dark));
+    border-radius: 99px;
+    transition: width 0.5s ease;
+  }
+  .progress-text {
+    font-size: 12px;
+    color: var(--brass);
+    margin-top: 6px;
+    text-align: right;
+  }
+
+  /* ── Submission ID badge ── */
+  .id-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 18px;
+    background: linear-gradient(135deg, var(--navy), var(--navy-mid));
+    border-radius: 12px;
+    color: var(--accent);
+    font-size: 20px;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    margin-bottom: 16px;
+    font-family: monospace;
+    box-shadow: var(--shadow);
+  }
+
+  /* ── Responsive ── */
+  @media (max-width: 600px) {
+    .grid-2, .grid-3, .two-col, .three-col { grid-template-columns: 1fr; }
+    .terms-grid { grid-template-columns: 1fr; }
+    .form-sheet { padding: 20px 18px; }
+    .photo-box { float: none; margin: 0 0 16px; }
+    .topbar { flex-wrap: wrap; }
+    .step-tab { padding: 12px 16px; font-size: 12px; }
+    .main { padding: 20px 16px 80px; }
+  }
+
+  /* ── Print styles ── */
+  @media print {
+    body { background: #fff; }
+    .topbar, .steps-bar, .action-bar, #step1 { display: none !important; }
+    .main { padding: 0; max-width: none; }
+    .form-sheet { box-shadow: none; border: none; border-radius: 0; padding: 0; }
+    .page-section { display: block !important; }
+  }
+</style>
+</head>
+<body>
+
+<!-- Top bar -->
+<div class="topbar">
+  <div class="topbar-brand">
+    <img class="topbar-logo" src="logo.png" alt="IIT" onerror="this.style.display='none'">
+    <div>
+      <div class="topbar-title">Indian Info Tech</div>
+      <div class="topbar-subtitle">Student Portal</div>
+    </div>
+  </div>
+</div>
+
+<!-- Main content -->
+<div class="main">
+
+  <!-- ══ STEP 1: Details ══ -->
+  <div class="page-section active" id="step1">
+
+    <div class="card">
+      <div class="card-header">
+        <div class="card-icon">👤</div>
+        <div>
+          <h2>Personal Information</h2>
+          <p>Fill in your details to apply</p>
+        </div>
+      </div>
+      <div class="card-body">
+        <form id="detailsForm">
+          <div class="grid-2">
+            <div class="field">
+              <label for="name">Full Name</label>
+              <input id="name" name="name" type="text" placeholder="Enter your full name">
+            </div>
+            <div class="field">
+              <label for="email">Email Address</label>
+              <input id="email" name="email" type="email" placeholder="you@example.com">
+            </div>
+          </div>
+          <div class="grid-2">
+            <div class="field">
+              <label for="yearDept">Year / Department</label>
+              <input id="yearDept" name="yearDept" type="text" placeholder="e.g. 2nd Year / CS">
+            </div>
+            <div class="field">
+              <label for="collegeSchool">College / School</label>
+              <input id="collegeSchool" name="collegeSchool" type="text" placeholder="Institution name">
+            </div>
+          </div>
+          <div class="field">
+            <label for="address">Address</label>
+            <textarea id="address" name="address" placeholder="Your full address"></textarea>
+          </div>
+          <div class="grid-3">
+            <div class="field">
+              <label for="mobile1">Mobile 1</label>
+              <input id="mobile1" name="mobile1" type="tel" placeholder="+91 XXXXX XXXXX">
+            </div>
+            <div class="field">
+              <label for="mobile2">Mobile 2 (optional)</label>
+              <input id="mobile2" name="mobile2" type="tel" placeholder="+91 XXXXX XXXXX">
+            </div>
+            <div class="field">
+              <label for="pincode">Pincode</label>
+              <input id="pincode" name="pincode" type="text" placeholder="6-digit pincode" maxlength="6">
+            </div>
+          </div>
+          <div class="field">
+            <label for="title">Title / Course / Project</label>
+            <input id="title" name="title" type="text" placeholder="e.g. Web Development, Data Science">
+          </div>
+          <div class="field">
+            <label for="howKnow">How did you know about this institute?</label>
+            <input id="howKnow" name="howKnow" type="text" placeholder="Social media, friends, newspaper...">
+          </div>
+          <div class="field">
+            <label for="signature">Signature (type your name)</label>
+            <input id="signature" name="signature" type="text" placeholder="Your signature">
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <!-- Photo card -->
+    <div class="card">
+      <div class="card-header">
+        <div class="card-icon">📷</div>
+        <div>
+          <h2>Photo</h2>
+          <p>Upload or capture your passport-size photo</p>
+        </div>
+      </div>
+      <div class="card-body">
+        <div class="photo-modes">
+          <button type="button" id="btnModeUpload" class="mode-btn active" onclick="switchToUpload()">📁 Upload File</button>
+          <button type="button" id="btnModeCamera" class="mode-btn" onclick="switchToCamera()">📷 Use Camera</button>
+        </div>
+        <div id="uploadContainer">
+          <input id="photoInput" type="file" accept="image/*">
+        </div>
+        <div class="camera-container" id="cameraContainer">
+          <div class="camera-stream-wrapper">
+            <video id="cameraVideo" autoplay playsinline></video>
+            <canvas id="cameraCanvas" style="display:none;"></canvas>
+          </div>
+          <div class="camera-controls">
+            <button type="button" class="btn-sm" id="btnCapture" onclick="capturePhoto()">📸 Capture</button>
+            <button type="button" class="btn-sm" id="btnSwitchCam" onclick="switchCam()" style="display:none;">🔄 Switch</button>
+          </div>
+        </div>
+        <div class="photo-preview-wrap" id="previewWrap">
+          <img id="photoPreview" alt="Preview">
+          <button class="remove-photo-btn" onclick="removePhoto()" title="Remove">×</button>
+        </div>
+      </div>
+    </div>
+
+
+    <!-- Submission ID badge (shown after submit) -->
+    <div id="submissionResult" style="display:none; text-align:center; margin-bottom:20px;">
+      <div class="id-badge" id="submissionIdBadge">🎉 Submitted!</div>
+      <p style="color:var(--brass);font-size:13px;margin-top:8px;">Keep your Submission ID for your records.</p>
+    </div>
+
+    <!-- Action bar -->
+    <div class="action-bar">
+      <button class="btn btn-ghost" onclick="clearDetails()">🗑 Clear</button>
+      <button class="btn btn-primary" onclick="submitApplication()">✅ Submit Application</button>
+    </div>
+  </div>
+
+</div>
+
+<!-- Toast -->
+<div class="toast" id="toast"></div>
+
+<script>
+  const DETAILS_KEY = 'iitUserDetails';
+  const STORAGE_KEY = 'iitSubmissions';
+  const COUNTER_KEY = 'iitSubmissionCounter';
+
+  let currentPhotoDataUrl = '';
+  let cameraStream = null;
+  let useFacingMode = 'user';
+  let editingSubmissionId = new URLSearchParams(window.location.search).get('submissionId') || '';
+
+  // ── Toast ──
+  function showToast(msg, type = '') {
+    const t = document.getElementById('toast');
+    t.textContent = msg;
+    t.className = 'toast show ' + type;
+    clearTimeout(t._timer);
+    t._timer = setTimeout(() => { t.className = 'toast'; }, 3200);
+  }
+
+  // ── Steps ──
+  function goToStep(n) {
+    document.querySelectorAll('.page-section').forEach(s => s.classList.remove('active'));
+    document.querySelectorAll('.step-tab').forEach(t => t.classList.remove('active'));
+    document.getElementById('step' + n).classList.add('active');
+    document.getElementById('tab' + n).classList.add('active');
+    const fill = n === 1 ? '50%' : '100%';
+    document.getElementById('progressFill').style.width = fill;
+    document.getElementById('progressText').textContent = `Step ${n} of 2`;
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  function saveAndNext() {
+    collectDetailsFromForm();
+    syncFormFields();
+    goToStep(2);
+    showToast('Details saved! Review your application form.', 'success');
+  }
+
+  // ── Details form ──
+  const detailsForm = document.getElementById('detailsForm');
+
+  function collectDetailsFromForm() {
+    const fd = new FormData(detailsForm);
+    const data = Object.fromEntries(fd.entries());
+    data.photo = currentPhotoDataUrl;
+    localStorage.setItem(DETAILS_KEY, JSON.stringify(data));
+    return data;
+  }
+
+  function applyDataToDetails(data) {
+    if (!data || typeof data !== 'object') return;
+    Object.entries(data).forEach(([k, v]) => {
+      const el = detailsForm.elements[k];
+      if (el && k !== 'photo') el.value = v;
+    });
+    if (data.photo) setPhotoPreview(data.photo);
+  }
+
+  async function loadSavedDetails() {
+    if (editingSubmissionId) {
+      try {
+        const r = await fetch('/api/submissions');
+        if (r.ok) {
+          const subs = await r.json();
+          const found = subs.find(s => s.submissionId === editingSubmissionId);
+          if (found) { applyDataToDetails(found); return; }
+        }
+      } catch(e) {}
+    }
+    try {
+      const r = await fetch('/api/details');
+      if (r.ok) { const d = await r.json(); if (d && Object.keys(d).length) { applyDataToDetails(d); return; } }
+    } catch(e) {}
+    try {
+      const d = JSON.parse(localStorage.getItem(DETAILS_KEY) || '{}');
+      applyDataToDetails(d);
+    } catch(e) {}
+  }
+
+  function clearDetails() {
+    if (!confirm('Clear the form and all saved details?')) return;
+    detailsForm.reset();
+    removePhoto();
+    localStorage.removeItem(DETAILS_KEY);
+    fetch('/api/details', { method:'POST', headers:{'Content-Type':'application/json'}, body:'{}' }).catch(()=>{});
+    showToast('Form cleared.');
+  }
+
+  // ── Photo ──
+  function setPhotoPreview(url) {
+    currentPhotoDataUrl = url || '';
+    const wrap = document.getElementById('previewWrap');
+    const img = document.getElementById('photoPreview');
+    if (url) { img.src = url; wrap.classList.add('visible'); } else { img.src = ''; wrap.classList.remove('visible'); }
+  }
+
+  function removePhoto() {
+    setPhotoPreview('');
+    document.getElementById('photoInput').value = '';
+  }
+
+  document.getElementById('photoInput').addEventListener('change', async (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = () => setPhotoPreview(reader.result);
+    reader.readAsDataURL(file);
+  });
+
+  function switchToUpload() {
+    document.getElementById('btnModeUpload').classList.add('active');
+    document.getElementById('btnModeCamera').classList.remove('active');
+    document.getElementById('uploadContainer').style.display = 'block';
+    document.getElementById('cameraContainer').style.display = 'none';
+    stopCamera();
+  }
+
+  function switchToCamera() {
+    document.getElementById('btnModeCamera').classList.add('active');
+    document.getElementById('btnModeUpload').classList.remove('active');
+    document.getElementById('uploadContainer').style.display = 'none';
+    document.getElementById('cameraContainer').style.display = 'block';
+    startCamera();
+  }
+
+  async function startCamera() {
+    if (cameraStream) stopCamera();
+    try {
+      cameraStream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: useFacingMode }, audio: false });
+      const vid = document.getElementById('cameraVideo');
+      vid.srcObject = cameraStream;
+      vid.play();
+      const devs = await navigator.mediaDevices.enumerateDevices();
+      document.getElementById('btnSwitchCam').style.display = devs.filter(d => d.kind === 'videoinput').length > 1 ? 'inline-flex' : 'none';
+    } catch(e) {
+      alert('Camera access denied. Please upload a file instead.');
+      switchToUpload();
+    }
+  }
+
+  function stopCamera() {
+    if (!cameraStream) return;
+    cameraStream.getTracks().forEach(t => t.stop());
+    cameraStream = null;
+    const vid = document.getElementById('cameraVideo');
+    if (vid) vid.srcObject = null;
+  }
+
+  function capturePhoto() {
+    const vid = document.getElementById('cameraVideo');
+    const cvs = document.getElementById('cameraCanvas');
+    cvs.width = vid.videoWidth || 640;
+    cvs.height = vid.videoHeight || 480;
+    cvs.getContext('2d').drawImage(vid, 0, 0);
+    setPhotoPreview(cvs.toDataURL('image/jpeg'));
+    showToast('Photo captured!', 'success');
+  }
+
+  function switchCam() {
+    useFacingMode = useFacingMode === 'user' ? 'environment' : 'user';
+    startCamera();
+  }
+
+
+
+  // ── Submit Application ──
+  function getSubmissions() {
+    try { return JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]'); } catch { return []; }
+  }
+  function saveSubmissions(s) { localStorage.setItem(STORAGE_KEY, JSON.stringify(s)); }
+
+  function generateId() {
+    let c = parseInt(localStorage.getItem(COUNTER_KEY) || '0', 10) + 1;
+    localStorage.setItem(COUNTER_KEY, String(c));
+    return `ID-${String(c).padStart(4, '0')}`;
+  }
+
+  function collectAppFormData() {
+    const fd = new FormData(detailsForm);
+    const data = Object.fromEntries(fd.entries());
+    data.photo = currentPhotoDataUrl;
+    
+    // Default values for office fields
+    ['term1','term2','term3','term4'].forEach(k => {
+      data[k] = false;
+    });
+    ['feesFixed','dateJoining','certNo','dateIssue'].forEach(k => {
+      data[k] = '';
+    });
+    
+    return data;
+  }
+
+  async function submitApplication() {
+    const data = collectAppFormData();
+    if (!data.name || !data.name.trim()) { showToast('Please enter your name before submitting.', 'error'); return; }
+
+    const editId = editingSubmissionId;
+    if (editId) data.submissionId = editId;
+    else data.submissionId = '';
+
+    try {
+      const r = await fetch('/api/submit', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data)
+      });
+      const rd = await r.json();
+      if (r.ok && rd.success && rd.saved) {
+        const subs = getSubmissions();
+        if (editId) {
+          const idx = subs.findIndex(s => s.submissionId === editId);
+          if (idx !== -1) subs[idx] = rd.saved; else subs.push(rd.saved);
+        } else { subs.push(rd.saved); }
+        saveSubmissions(subs);
+        showSubmissionSuccess(rd.saved.submissionId);
+      } else {
+        showToast(rd.error || 'Submission failed.', 'error');
+        return; // Don't clear form or offline save if validation failed
+      }
+    } catch(e) {
+      // Offline fallback for network failures
+      const id = editId || generateId();
+      data.submissionId = id;
+      data.submittedAt = new Date().toLocaleString();
+      const subs = getSubmissions();
+      if (editId) {
+        const idx = subs.findIndex(s => s.submissionId === editId);
+        if (idx !== -1) subs[idx] = data; else subs.push(data);
+      } else { subs.push(data); }
+      saveSubmissions(subs);
+      showSubmissionSuccess(id);
+    }
+
+    // Clear active details
+    localStorage.removeItem(DETAILS_KEY);
+    fetch('/api/details', { method:'POST', headers:{'Content-Type':'application/json'}, body:'{}' }).catch(()=>{});
+  }
+
+  function showSubmissionSuccess(id) {
+    const badge = document.getElementById('submissionIdBadge');
+    badge.textContent = `🎉 Submitted! ID: ${id}`;
+    document.getElementById('submissionResult').style.display = 'block';
+    showToast(`Application submitted! ID: ${id}`, 'success');
+    
+    // Hide action bar for users after submission
+    const actionBar = document.querySelector('.action-bar');
+    if (actionBar) actionBar.style.display = 'none';
+  }
+
+  // ── Init ──
+  loadSavedDetails();
+</script>
+<script src="theme.js"></script>
+</body>
+</html>

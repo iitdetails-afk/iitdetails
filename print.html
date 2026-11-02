@@ -1,0 +1,584 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Application Printout</title>
+<style>
+  :root {
+    --ink: #000000;
+    --navy: #000000;
+  }
+  * { box-sizing: border-box; }
+  
+  @page {
+    size: A4;
+    margin: 10mm 12mm;
+  }
+
+  body {
+    margin: 0;
+    padding: 0;
+    font-family: 'Georgia', 'Times New Roman', serif;
+    color: var(--ink);
+    background: #fff;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+
+  .print-sheet {
+    width: 100%;
+    max-width: 100%;
+    margin: 0 auto;
+    position: relative;
+    padding: 0;
+  }
+
+  .crest {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    margin-bottom: 12px;
+  }
+  .crest img {
+    width: 130px;
+    height: 80px;
+    object-fit: contain;
+  }
+
+  h1.title {
+    text-align: center;
+    font-size: 20px;
+    letter-spacing: 0.1em;
+    margin: 5px 0 20px;
+    text-decoration: underline;
+    text-underline-offset: 6px;
+    text-transform: uppercase;
+    font-weight: bold;
+  }
+
+  /* Personal Details Area (adjacent to photo) */
+  .personal-details-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 20px;
+    margin-bottom: 10px;
+  }
+  .left-fields {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+  .right-photo {
+    flex-shrink: 0;
+  }
+  
+  .field-row {
+    display: flex;
+    align-items: flex-end;
+  }
+  .field-label {
+    font-size: 14px;
+    font-weight: bold;
+    width: 130px;
+    flex-shrink: 0;
+  }
+  .field-colon {
+    font-size: 14px;
+    font-weight: bold;
+    width: 15px;
+    flex-shrink: 0;
+  }
+  .field-val {
+    font-size: 14px;
+    border-bottom: none;
+    padding: 2px 4px;
+    flex: 1;
+    min-height: 22px;
+    word-break: break-word;
+  }
+  
+  /* Photo Box */
+  .photo-box {
+    width: 110px;
+    height: 130px;
+    border: 1.5px solid #000;
+    border-radius: 8px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    font-size: 11px;
+    text-align: center;
+    color: #000;
+    font-weight: bold;
+    overflow: hidden;
+    padding: 4px;
+    line-height: 1.4;
+  }
+  .photo-box img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 4px;
+  }
+
+  /* Contact Area */
+  .contact-details-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 20px;
+    margin-bottom: 12px;
+  }
+  .left-contact {
+    flex: 1;
+  }
+  .right-contact {
+    width: 250px;
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 12px;
+  }
+
+  .mobile-row {
+    display: flex;
+    align-items: flex-start;
+  }
+  .mobile-inputs {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  .mobile-input-item {
+    display: flex;
+    align-items: flex-end;
+    gap: 5px;
+    width: 100%;
+  }
+  .mobile-input-item span {
+    font-size: 14px;
+    font-weight: bold;
+  }
+
+  .email-row {
+    display: flex;
+    align-items: flex-end;
+    width: 100%;
+  }
+  .email-row .field-label {
+    width: 75px;
+    font-size: 13px;
+  }
+
+  .pincode-container {
+    display: flex;
+    justify-content: flex-start;
+    padding-left: 75px;
+  }
+  .pincode-box-custom {
+    border: 1.5px solid #000;
+    border-radius: 6px;
+    width: 140px;
+    padding: 4px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  .pincode-label {
+    font-size: 10px;
+    font-weight: bold;
+    margin-bottom: 1px;
+  }
+  .pincode-val {
+    font-size: 14px;
+    font-weight: bold;
+    text-align: center;
+  }
+
+  /* Course Row */
+  .course-row {
+    display: flex;
+    align-items: center;
+    margin-bottom: 12px;
+  }
+  .course-row .field-label {
+    width: 145px;
+  }
+  .course-box-custom {
+    border: 1.5px solid #000;
+    border-radius: 4px;
+    flex: 1;
+    padding: 5px 10px;
+    font-size: 14px;
+    font-weight: bold;
+    min-height: 30px;
+  }
+
+  /* How Know & Signature */
+  .know-signature-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    gap: 20px;
+    margin-bottom: 12px;
+  }
+  .know-field {
+    flex: 1;
+  }
+  .field-label-block {
+    display: block;
+    font-size: 14px;
+    font-weight: bold;
+    margin-bottom: 6px;
+  }
+  .signature-field {
+    flex-shrink: 0;
+  }
+  .signature-box-custom {
+    border: 1.5px solid #000;
+    border-radius: 8px;
+    width: 200px;
+    padding: 6px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-height: 60px;
+    justify-content: space-between;
+  }
+  .signature-label {
+    font-size: 10px;
+    font-weight: bold;
+  }
+  .signature-val {
+    font-family: 'Brush Script MT', cursive, Georgia, serif;
+    font-size: 18px;
+    text-align: center;
+    width: 100%;
+    min-height: 22px;
+  }
+
+  /* Divider */
+  .thick-divider {
+    border: none;
+    border-top: 2px solid #000;
+    margin: 12px 0;
+  }
+
+  /* Office Use Only */
+  .office-title {
+    text-align: center;
+    font-size: 15px;
+    text-decoration: underline;
+    text-underline-offset: 5px;
+    letter-spacing: 0.1em;
+    margin: 10px 0;
+    font-weight: bold;
+    text-transform: uppercase;
+  }
+
+  .office-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: stretch;
+    gap: 12px;
+  }
+  .office-left, .office-right {
+    width: 38%;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  .office-middle {
+    width: 20%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .office-box-custom {
+    border: 1.5px solid #000;
+    border-radius: 4px;
+    padding: 4px 8px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    min-height: 42px;
+  }
+  .office-box-label {
+    font-size: 9px;
+    font-weight: bold;
+    margin-bottom: 1px;
+  }
+  .office-box-val {
+    font-size: 13px;
+    font-weight: bold;
+    min-height: 18px;
+  }
+
+  .term-print-container {
+    border: 1.5px solid #000;
+    border-radius: 4px;
+    width: 100%;
+    overflow: hidden;
+  }
+  .term-print-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 4px 8px;
+    font-size: 11px;
+    font-weight: bold;
+    border-bottom: 1px solid #000;
+    background: #fff;
+  }
+  .term-print-item:last-child {
+    border-bottom: none;
+  }
+  .term-print-item.checked {
+    background: #ddd !important;
+    position: relative;
+  }
+  .term-print-item.checked::after {
+    content: '✓';
+    position: absolute;
+    right: 8px;
+    font-weight: bold;
+    font-size: 12px;
+  }
+
+  /* Hide print buttons / interface items from actual print */
+  .no-print {
+    margin: 15px auto;
+    display: flex;
+    justify-content: center;
+    gap: 12px;
+  }
+  .no-print button {
+    font-family: inherit;
+    font-size: 14px;
+    padding: 8px 20px;
+    border: 1px solid #000;
+    background: #000;
+    color: #fff;
+    cursor: pointer;
+    border-radius: 4px;
+  }
+  .no-print button.back {
+    background: transparent;
+    color: #000;
+  }
+  
+  @media print {
+    .no-print {
+      display: none !important;
+    }
+    .print-sheet {
+      height: 268mm;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+  }
+</style>
+</head>
+<body>
+
+<div class="print-sheet">
+  <div class="crest">
+    <img src="logo.png" alt="IIT logo" onerror="this.onerror=null; this.style.display='none';">
+  </div>
+  
+  <h1 class="title">Application</h1>
+  
+  <div class="personal-details-container">
+    <div class="left-fields">
+      <div class="field-row">
+        <span class="field-label">Name</span>
+        <span class="field-colon">:</span>
+        <span class="field-val" id="name"></span>
+      </div>
+      <div class="field-row">
+        <span class="field-label">Year/Dept</span>
+        <span class="field-colon">:</span>
+        <span class="field-val" id="yearDept"></span>
+      </div>
+      <div class="field-row">
+        <span class="field-label">College/School</span>
+        <span class="field-colon">:</span>
+        <span class="field-val" id="collegeSchool"></span>
+      </div>
+      <div class="field-row tall">
+        <span class="field-label">Address</span>
+        <span class="field-colon">:</span>
+        <span class="field-val" id="address" style="min-height:45px;"></span>
+      </div>
+    </div>
+    <div class="right-photo">
+      <div class="photo-box" id="photoBox">
+        <span id="photoPlaceholder">Fix photo<br>If You Have</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="contact-details-container">
+    <div class="left-contact">
+      <div class="mobile-row">
+        <span class="field-label">Mo:No</span>
+        <span class="field-colon">:</span>
+        <div class="mobile-inputs">
+          <div class="mobile-input-item">
+            <span>1.</span>
+            <span class="field-val" id="mobile1"></span>
+          </div>
+          <div class="mobile-input-item">
+            <span>2.</span>
+            <span class="field-val" id="mobile2"></span>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="right-contact">
+      <div class="email-row">
+        <span class="field-label">email-id:</span>
+        <span class="field-val" id="email"></span>
+      </div>
+      <div class="pincode-container">
+        <div class="pincode-box-custom">
+          <span class="pincode-label">Pincode:</span>
+          <span class="pincode-val" id="pincode"></span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="course-row">
+    <span class="field-label">Title Course/project</span>
+    <span class="field-colon">:</span>
+    <div class="course-box-custom" id="title"></div>
+  </div>
+
+  <div class="know-signature-container">
+    <div class="know-field">
+      <span class="field-label-block">How you Know about this institute?</span>
+      <span class="field-val" id="howKnow" style="display:block; width:100%;"></span>
+    </div>
+    <div class="signature-field">
+      <div class="signature-box-custom">
+        <span class="signature-label">Student Signature</span>
+        <span class="signature-val" id="signature"></span>
+      </div>
+    </div>
+  </div>
+
+  <div class="divider-line-container">
+    <hr class="thick-divider">
+  </div>
+
+  <h2 class="office-title">OFFICE USE ONLY</h2>
+
+  <div class="office-container">
+    <div class="office-left">
+      <div class="office-box-custom">
+        <span class="office-box-label">Fees Fixed:</span>
+        <span class="office-box-val" id="feesFixed"></span>
+      </div>
+      <div class="office-box-custom">
+        <span class="office-box-label">Date of Joining:</span>
+        <span class="office-box-val" id="dateJoining"></span>
+      </div>
+    </div>
+    
+    <div class="office-middle">
+      <div class="term-print-container">
+        <div class="term-print-item" id="termRow1">Term 1</div>
+        <div class="term-print-item" id="termRow2">Term 2</div>
+        <div class="term-print-item" id="termRow3">Term 3</div>
+        <div class="term-print-item" id="termRow4">Term 4</div>
+      </div>
+    </div>
+    
+    <div class="office-right">
+      <div class="office-box-custom">
+        <span class="office-box-label">Certificate no:</span>
+        <span class="office-box-val" id="certNo"></span>
+      </div>
+      <div class="office-box-custom">
+        <span class="office-box-label">Date of issue:</span>
+        <span class="office-box-val" id="dateIssue"></span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  function getSubmissionIdFromUrl() {
+    return new URLSearchParams(window.location.search).get('submissionId')?.trim() || '';
+  }
+
+  async function loadData() {
+    const id = getSubmissionIdFromUrl();
+    if (!id) return;
+
+    let submission = null;
+
+    // 1. Try local storage
+    try {
+      const localData = localStorage.getItem('iitSubmissions') || localStorage.getItem('indianInfoTechSubmissions') || '[]';
+      const parsed = JSON.parse(localData);
+      submission = parsed.find(s => s.submissionId === id);
+    } catch(e) {}
+
+    // 2. Try server API
+    if (!submission) {
+      try {
+        const res = await fetch('/api/submissions');
+        if (res.ok) {
+          const parsed = await res.json();
+          submission = parsed.find(s => s.submissionId === id);
+        }
+      } catch(e) {}
+    }
+
+    if (submission) {
+      // Fill the fields
+      const fields = ['name', 'yearDept', 'collegeSchool', 'address', 'mobile1', 'mobile2', 'email', 'pincode', 'title', 'howKnow', 'signature', 'feesFixed', 'dateJoining', 'certNo', 'dateIssue'];
+      fields.forEach(f => {
+        const el = document.getElementById(f);
+        if (el) el.textContent = submission[f] || '—';
+      });
+
+      // Handle photo
+      const photoBox = document.getElementById('photoBox');
+      if (submission.photo && submission.photo.length > 50) {
+        photoBox.innerHTML = `<img src="${submission.photo}" alt="Photo">`;
+      }
+
+      // Handle terms
+      ['term1', 'term2', 'term3', 'term4'].forEach((t, idx) => {
+        const row = document.getElementById('termRow' + (idx + 1));
+        if (row && submission[t]) {
+          row.classList.add('checked');
+        }
+      });
+
+      // Auto trigger print in 500ms and close tab if not in iframe
+      setTimeout(() => {
+        window.print();
+        if (!window.frameElement) {
+          window.close();
+        }
+      }, 500);
+    } else {
+      alert('Submission not found.');
+    }
+  }
+
+  window.onload = loadData;
+</script>
+</body>
+</html>

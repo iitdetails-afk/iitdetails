@@ -1,0 +1,20 @@
+[
+  {
+    "id": "TSK-4DED8DB4",
+    "title": "web dev",
+    "description": "project",
+    "priority": "Medium",
+    "assignedDate": "21/7/2026",
+    "dueDate": "2026-07-30",
+    "department": "Engineering",
+    "assignedStaffId": "STF20260001",
+    "assignedStaffName": "John Doe",
+    "attachmentName": "",
+    "attachmentBase64": "",
+    "status": "Completed",
+    "completionTime": "21/7/2026, 1:41:34 pm",
+    "comments": "",
+    "progress": 100,
+    "progressUpdates": []
+  }
+]
