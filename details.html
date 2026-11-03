@@ -218,6 +218,10 @@
       <div>
         <h1>Saved User Details</h1>
         <p>Enter your information in clear sections so it stays easy to review and reuse in the application form.</p>
+        <div id="liveSyncStatusBadge" style="display: inline-flex; align-items: center; gap: 6px; font-size: 11px; padding: 3px 10px; border-radius: 999px; background: #f0fdf4; color: #15803d; border: 1px solid #bbf7d0; font-weight: 600; margin-top: 6px;">
+          <span style="display: inline-block; width: 7px; height: 7px; border-radius: 50%; background: #22c55e;"></span>
+          <span>Checking database sync status...</span>
+        </div>
       </div>
     </div>
 
@@ -686,6 +690,29 @@
     }
   });
 
+  async function checkSyncStatus() {
+    const badge = document.getElementById('liveSyncStatusBadge');
+    if (!badge) return;
+    try {
+      const res = await fetch('/api/sync/status');
+      if (res.ok) {
+        const d = await res.json();
+        if (d.configured) {
+          badge.innerHTML = `<span style="display:inline-block;width:7px;height:7px;border-radius:50%;background:#22c55e;"></span> <span>🟢 Live Cloud Database Connected (${d.spreadsheetName || 'Google Sheets'})</span>`;
+          badge.style.background = '#f0fdf4';
+          badge.style.color = '#15803d';
+          badge.style.borderColor = '#bbf7d0';
+        } else {
+          badge.innerHTML = `<span style="display:inline-block;width:7px;height:7px;border-radius:50%;background:#f59e0b;"></span> <span>🟠 Local Mode · <a href="admin.html" style="color:inherit;text-decoration:underline;">Connect Google Sheet in Admin</a></span>`;
+          badge.style.background = '#fffbeb';
+          badge.style.color = '#b45309';
+          badge.style.borderColor = '#fde68a';
+        }
+      }
+    } catch(e) {}
+  }
+
+  checkSyncStatus();
   loadSavedDetails();
 </script>
 <script src="theme.js"></script>

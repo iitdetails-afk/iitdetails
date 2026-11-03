@@ -969,28 +969,28 @@
           <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 14px;">
             <div class="field" style="margin-bottom: 0;">
               <label style="display: flex; justify-content: space-between; margin-bottom: 6px;">
-                <span>Google Apps Script Web App URL *</span>
-                <span style="color: var(--text3); font-weight: normal; text-transform: none;">Ends with <code>/exec</code></span>
+                <span>Google Apps Script Web App URL (Permanent Master)</span>
+                <span style="color: var(--green); font-weight: 600; text-transform: none;">⚡ Auto-Connected on All Systems</span>
               </label>
-              <input type="url" id="gSheetWebAppUrl" placeholder="https://script.google.com/macros/s/.../exec" style="width: 100%; padding: 10px 14px; background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-sm); font-size: 12px; color: var(--text); font-family: monospace; outline: none;">
+              <input type="url" id="gSheetWebAppUrl" value="https://script.google.com/macros/s/AKfycbx_luyKLX-eXPnOibeVsWLxaZps0nC_K_FGEEFKKFEE8FhIt-YKaxmD29fgbYccXdcM/exec" placeholder="https://script.google.com/macros/s/.../exec" style="width: 100%; padding: 10px 14px; background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-sm); font-size: 12px; color: var(--text); font-family: monospace; outline: none;">
             </div>
             <div class="field" style="margin-bottom: 0;">
-              <label style="margin-bottom: 6px;">Google Spreadsheet URL in Google Drive (Optional)</label>
-              <input type="url" id="gSheetSpreadsheetUrl" placeholder="https://docs.google.com/spreadsheets/d/.../edit" style="width: 100%; padding: 10px 14px; background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-sm); font-size: 12px; color: var(--text); outline: none;">
+              <label style="margin-bottom: 6px;">Google Spreadsheet URL in Google Drive (Permanent Master)</label>
+              <input type="url" id="gSheetSpreadsheetUrl" value="https://docs.google.com/spreadsheets/d/1pqBKWRtoJJJX9JE5pgoEevwkthjicMLLnowEbFCPihY/edit" placeholder="https://docs.google.com/spreadsheets/d/.../edit" style="width: 100%; padding: 10px 14px; background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-sm); font-size: 12px; color: var(--text); outline: none;">
             </div>
           </div>
 
           <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 14px; border-top: 1px solid var(--border); padding-top: 14px;">
             <div style="display: flex; align-items: center; gap: 10px;">
               <label style="display: flex; align-items: center; gap: 8px; cursor: pointer; font-size: 13px; font-weight: 600; color: var(--text);">
-                <input type="checkbox" id="gSheetAutoSync" style="width: 16px; height: 16px; accent-color: var(--purple); cursor: pointer;">
-                <span>⚡ Live Auto-Sync to Google Drive on every add / edit / delete</span>
+                <input type="checkbox" id="gSheetAutoSync" checked style="width: 16px; height: 16px; accent-color: var(--purple); cursor: pointer;">
+                <span>⚡ Live Auto-Sync to Google Drive on every add / edit / delete (Permanent)</span>
               </label>
             </div>
             <div style="display: flex; gap: 8px; flex-wrap: wrap;">
-              <button class="btn btn-ghost btn-sm" onclick="saveGoogleSheetsConfig()">💾 Save Settings</button>
+              <button class="btn btn-purple btn-sm" onclick="saveGoogleSheetsConfig()">💾 Save & Connect Live Database (All Devices)</button>
               <button class="btn btn-ghost btn-sm" onclick="testGoogleSheetsConnection()">🧪 Test Connection</button>
-              <button class="btn btn-purple btn-sm" onclick="syncToGoogleSheetsNow()">🔄 Push All (3 Sheets) to Google Drive</button>
+              <button class="btn btn-ghost btn-sm" onclick="syncToGoogleSheetsNow()">🔄 Push to Google Sheets</button>
               <button class="btn btn-ghost btn-sm" onclick="pullFromGoogleSheetsNow()" title="Pull data from Google Sheets into your system">📥 Pull from Google Sheets</button>
             </div>
           </div>
@@ -1805,6 +1805,12 @@
     const spreadsheetUrl = document.getElementById('gSheetSpreadsheetUrl').value.trim();
     const autoSync = document.getElementById('gSheetAutoSync').checked;
 
+    if (!webAppUrl) {
+      alert('Please enter your Google Apps Script Web App URL (ends with /exec).');
+      return;
+    }
+
+    showToast('Connecting & syncing live database with Google Sheets...', '');
     try {
       const res = await fetch('/api/google-sheets/config', {
         method: 'POST',
@@ -1813,13 +1819,16 @@
       });
       const data = await res.json();
       if (data.success) {
-        showToast('Google Sheets settings saved successfully!', 'success');
+        showToast('Connected! Live Sheet database is active across all devices.', 'success');
+        localStorage.setItem('iit_gsheet_web_app_url', webAppUrl);
+        refreshData();
+        loadExcelStatus();
         loadGoogleSheetsConfig();
       } else {
         showToast(data.error || 'Failed to save settings.', 'error');
       }
     } catch (err) {
-      showToast('Network error while saving settings.', 'error');
+      showToast('Network error while connecting to live database.', 'error');
     }
   }
 

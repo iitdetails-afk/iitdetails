@@ -682,6 +682,13 @@
 
  
   <h1 class="title">Application</h1>
+
+  <div style="text-align: center; margin-bottom: 16px;">
+    <div id="liveSyncStatusBadge" style="display: inline-flex; align-items: center; gap: 6px; font-size: 11px; padding: 4px 12px; border-radius: 999px; background: #f0fdf4; color: #15803d; border: 1px solid #bbf7d0; font-weight: 600;">
+      <span style="display: inline-block; width: 7px; height: 7px; border-radius: 50%; background: #22c55e;"></span>
+      <span>Checking database sync status...</span>
+    </div>
+  </div>
  
   <form id="appForm">
     <!-- Personal Details Container -->
@@ -1041,6 +1048,13 @@
       data.submissionId = '';
     }
 
+    const submitBtn = document.querySelector('button[type="submit"][form="appForm"]');
+    const originalBtnText = submitBtn ? submitBtn.innerText : 'Submit Application';
+    if (submitBtn) {
+      submitBtn.disabled = true;
+      submitBtn.innerText = '⌛ Submitting & Saving to Live Database...';
+    }
+
     try {
       const response = await fetch('/api/submit', {
         method: 'POST',
@@ -1064,13 +1078,14 @@
         saveSubmissions(submissions);
       } else {
         alert('❌ Error saving submission: ' + (responseData.error || 'Server rejected application.'));
+        if (submitBtn) {
+          submitBtn.disabled = false;
+          submitBtn.innerText = originalBtnText;
+        }
         return;
       }
     } catch (err) {
-      console.warn('Unable to save submission to server, falling back to local storage', err);
-      if (window.location.protocol === 'file:') {
-        alert('⚠️ Warning: Opened as local file (file:/// protocol).\n\nDetails are saved only in your temporary browser storage, NOT in database.xlsx or Google Sheets.\n\nTo save permanently, run start-server.bat and open http://localhost:5000 in your browser.');
-      }
+      console.warn('Unable to save submission to server, falling back to direct cloud sync and local storage', err);
       if (!editingId) {
         data.submissionId = generateSubmissionId();
         data.submittedAt = new Date().toLocaleString();
@@ -1088,6 +1103,46 @@
           submissions.push(data);
         }
         saveSubmissions(submissions);
+      }
+
+      // Direct permanent cloud save to fixed Google Sheets Web App
+      try {
+        const cloudUrl = 'https://script.google.com/macros/s/AKfycbx_luyKLX-eXPnOibeVsWLxaZps0nC_K_FGEEFKKFEE8FhIt-YKaxmD29fgbYccXdcM/exec';
+        await fetch(cloudUrl, {
+          method: 'POST',
+          headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+          body: JSON.stringify({
+            action: 'upsert_user',
+            user: {
+              'User / Submission ID': data.submissionId,
+              'User / Student Name': data.name || '',
+              'Father / Guardian Name': data.fatherName || '',
+              'Course / Applied Title': data.title || '',
+              'Email Address': data.email || '',
+              'Primary Mobile': data.mobile1 || '',
+              'Secondary Mobile': data.mobile2 || '',
+              'Date of Birth': data.dob || '',
+              'Gender': data.gender || '',
+              'City / District': data.city || '',
+              'State': data.state || '',
+              'Pincode': data.pincode || '',
+              'Full Residential Address': data.address || '',
+              'College / School': data.collegeSchool || '',
+              'Department / Year': data.yearDept || '',
+              'Educational Qualification': data.qualification || '',
+              'Aadhar / ID Number': data.aadhar || '',
+              'Fees Fixed': data.feesFixed || '',
+              'Date of Joining': data.dateJoining || '',
+              'Certificate No': data.certNo || '',
+              'Date of Issue': data.dateIssue || '',
+              'Submission Date & Time': data.submittedAt || new Date().toLocaleString()
+            }
+          }),
+          redirect: 'follow'
+        });
+        console.log('[Direct Cloud Sync] Successfully saved to Google Sheet directly from browser!');
+      } catch (cloudErr) {
+        console.warn('[Direct Cloud Sync] Direct cloud push error:', cloudErr);
       }
     }
 
@@ -1208,6 +1263,34 @@
     }
   }
 
+  async function checkSyncStatus() {
+    const badge = document.getElementById('liveSyncStatusBadge');
+    if (!badge) return;
+    try {
+      const res = await fetch('/api/sync/status');
+      if (res.ok) {
+        const d = await res.json();
+        if (d.configured) {
+          badge.innerHTML = `<span style="display:inline-block;width:7px;height:7px;border-radius:50%;background:#22c55e;"></span> <span>🟢 Live Cloud Database Connected · Multi-Device Sync Active (${d.spreadsheetName || 'Google Sheets'})</span>`;
+          badge.style.background = '#f0fdf4';
+          badge.style.color = '#15803d';
+          badge.style.borderColor = '#bbf7d0';
+        } else {
+          badge.innerHTML = `<span style="display:inline-block;width:7px;height:7px;border-radius:50%;background:#f59e0b;"></span> <span>🟠 Local Mode · <a href="admin.html" style="color:inherit;text-decoration:underline;">Connect Google Sheet in Admin</a> for permanent cloud sync across all devices</span>`;
+          badge.style.background = '#fffbeb';
+          badge.style.color = '#b45309';
+          badge.style.borderColor = '#fde68a';
+        }
+      }
+    } catch (e) {
+      badge.innerHTML = `<span style="display:inline-block;width:7px;height:7px;border-radius:50%;background:#6b7280;"></span> <span>Offline Mode · Submissions stored in temporary browser cache</span>`;
+      badge.style.background = '#f3f4f6';
+      badge.style.color = '#374151';
+      badge.style.borderColor = '#e5e7eb';
+    }
+  }
+
+  checkSyncStatus();
   loadSavedDetails();
 </script>
 <script src="theme.js"></script>

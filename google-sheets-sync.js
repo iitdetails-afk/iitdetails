@@ -5,11 +5,6 @@ const http = require('http');
 const excelDb = require('./excel-db');
 
 /**
- * Google Apps Script Web App Template
- */
-const GOOGLE_APPS_SCRIPT_CODE = fs.readFileSync(path.join(__dirname, 'google-apps-script.js'), 'utf8');
-
-/**
  * HTTP helper that follows redirects (Google Apps Script always responds to POST with 302)
  */
 function requestWithRedirect(url, options = {}, postData = null, maxRedirects = 5) {
@@ -33,7 +28,6 @@ function requestWithRedirect(url, options = {}, postData = null, maxRedirects = 
         // Handle 301, 302, 303, 307, 308 redirects
         if (res.statusCode >= 300 && res.statusCode < 400 && res.headers.location) {
           const redirectUrl = new URL(res.headers.location, url).href;
-          // When converting POST to GET on redirect, strip body headers!
           const nextHeaders = { ...options.headers };
           delete nextHeaders['content-length'];
           delete nextHeaders['Content-Length'];
@@ -71,35 +65,78 @@ function requestWithRedirect(url, options = {}, postData = null, maxRedirects = 
   });
 }
 
+// Fixed permanent Master Database URLs - auto-connected on ALL devices and deployments
+const MASTER_WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbx_luyKLX-eXPnOibeVsWLxaZps0nC_K_FGEEFKKFEE8FhIt-YKaxmD29fgbYccXdcM/exec';
+const MASTER_SPREADSHEET_URL = 'https://docs.google.com/spreadsheets/d/1pqBKWRtoJJJX9JE5pgoEevwkthjicMLLnowEbFCPihY/edit';
+
 class GoogleSheetsSync {
   constructor(configFilePath) {
     this.configFilePath = configFilePath;
     this.isSyncing = false;
+    this.lastPullTime = 0;
+    this.cacheTTLMs = 25000; // 25 seconds
   }
 
   getConfig() {
-    try {
-      if (fs.existsSync(this.configFilePath)) {
-        return JSON.parse(fs.readFileSync(this.configFilePath, 'utf8'));
-      }
-    } catch (e) {
-      console.error('[GoogleSheets] Error reading config file:', e);
-    }
-    return {
-      enabled: false,
-      webAppUrl: '',
-      spreadsheetUrl: '',
-      autoSync: false,
+    let cfg = {
+      enabled: true,
+      webAppUrl: MASTER_WEB_APP_URL,
+      spreadsheetUrl: MASTER_SPREADSHEET_URL,
+      spreadsheetName: 'IIT Database Master',
+      autoSync: true,
       lastSyncTime: null,
       lastSyncStatus: null,
       lastSyncCounts: null
     };
+
+    try {
+      if (fs.existsSync(this.configFilePath)) {
+        const fileContent = JSON.parse(fs.readFileSync(this.configFilePath, 'utf8'));
+        cfg = { ...cfg, ...fileContent };
+      }
+    } catch (e) {
+      console.error('[GoogleSheets] Error reading config file:', e);
+    }
+
+    // Check environment variables as production / cloud override (e.g. Vercel)
+    const envUrl = process.env.GOOGLE_SHEETS_WEB_APP_URL || process.env.GSHEET_WEB_APP_URL || '';
+    if (envUrl.trim()) {
+      cfg.webAppUrl = envUrl.trim();
+    }
+    const envSheet = process.env.GOOGLE_SHEET_URL || process.env.SPREADSHEET_URL || '';
+    if (envSheet.trim()) {
+      cfg.spreadsheetUrl = envSheet.trim();
+    }
+
+    // Always ensure fixed master URL is active if empty
+    if (!cfg.webAppUrl || !cfg.webAppUrl.trim()) {
+      cfg.webAppUrl = MASTER_WEB_APP_URL;
+    }
+    if (!cfg.spreadsheetUrl || !cfg.spreadsheetUrl.trim()) {
+      cfg.spreadsheetUrl = MASTER_SPREADSHEET_URL;
+    }
+    cfg.enabled = true;
+    cfg.autoSync = true;
+
+    return cfg;
+  }
+
+  isConfigured() {
+    const config = this.getConfig();
+    return Boolean(config.webAppUrl && config.webAppUrl.trim());
+  }
+
+  shouldRefresh() {
+    return Date.now() - this.lastPullTime > this.cacheTTLMs;
   }
 
   saveConfig(newConfig) {
     try {
       const current = this.getConfig();
       const updated = { ...current, ...newConfig };
+      if (updated.webAppUrl && updated.webAppUrl.trim()) {
+        updated.enabled = true;
+      }
       const dir = path.dirname(this.configFilePath);
       if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
       fs.writeFileSync(this.configFilePath, JSON.stringify(updated, null, 2), 'utf8');
@@ -114,7 +151,7 @@ class GoogleSheetsSync {
     try {
       return fs.readFileSync(path.join(__dirname, 'google-apps-script.js'), 'utf8');
     } catch (e) {
-      return GOOGLE_APPS_SCRIPT_CODE;
+      return '';
     }
   }
 
@@ -148,7 +185,7 @@ class GoogleSheetsSync {
         'Content-Type': 'text/plain;charset=utf-8',
         'Content-Length': Buffer.byteLength(postData)
       },
-      timeout: 45000
+      timeout: 35000
     }, postData);
 
     try {
@@ -182,7 +219,7 @@ class GoogleSheetsSync {
         return {
           success: true,
           message: 'Connected successfully to Google Sheet!',
-          spreadsheetName: parsed.spreadsheetName || 'Google Sheet',
+          spreadsheetName: parsed.spreadsheetName || 'IIT Database Master',
           spreadsheetUrl: parsed.spreadsheetUrl || sheetUrl,
           sheets: parsed.sheets || []
         };
@@ -197,7 +234,7 @@ class GoogleSheetsSync {
   /**
    * Pushes all 3 entities (Staff, Students, Addresses) to Google Sheets
    */
-  async pushToGoogleSheets(submissions = [], staff = [], addresses = []) {
+  async pushToGoogleSheets(submissions = [], staff = [], addresses = [], options = {}) {
     const config = this.getConfig();
     if (!config.webAppUrl || !config.webAppUrl.trim()) {
       return { success: false, error: 'Google Apps Script Web App URL is not configured' };
@@ -209,7 +246,6 @@ class GoogleSheetsSync {
 
     this.isSyncing = true;
     try {
-      // Format 3 datasets with exact headers
       const formattedStaff = excelDb.formatStaffForSheet(staff);
       const formattedStudents = excelDb.formatStudentsForSheet(submissions);
       const formattedAddresses = excelDb.formatAddressesForSheet(addresses);
@@ -220,6 +256,7 @@ class GoogleSheetsSync {
         students: formattedStudents,
         staff: formattedStaff,
         addresses: formattedAddresses,
+        force: !!options.force,
         spreadsheetUrl: config.spreadsheetUrl || '',
         clientTimestamp: new Date().toISOString()
       };
@@ -230,12 +267,13 @@ class GoogleSheetsSync {
         this.saveConfig({
           lastSyncTime: new Date().toISOString(),
           lastSyncStatus: 'Success',
+          spreadsheetName: result.spreadsheetName || config.spreadsheetName || 'IIT Database Master',
+          spreadsheetUrl: result.spreadsheetUrl || config.spreadsheetUrl,
           lastSyncCounts: {
             staff: formattedStaff.length,
             students: formattedStudents.length,
             addresses: formattedAddresses.length
-          },
-          spreadsheetUrl: result.spreadsheetUrl || config.spreadsheetUrl
+          }
         });
 
         console.log(`[GoogleSheets] Synced successfully: ${formattedStaff.length} Staff, ${formattedStudents.length} Students, ${formattedAddresses.length} Addresses`);
@@ -266,6 +304,116 @@ class GoogleSheetsSync {
   }
 
   /**
+   * Fast single-record upsert for a student submission
+   */
+  async upsertStudent(submission) {
+    const config = this.getConfig();
+    if (!config.webAppUrl || !config.webAppUrl.trim()) return { success: false };
+
+    try {
+      const formattedList = excelDb.formatStudentsForSheet([submission]);
+      const formattedUser = formattedList[0];
+      const payload = {
+        action: 'upsert_user',
+        user: formattedUser,
+        student: formattedUser,
+        spreadsheetUrl: config.spreadsheetUrl || ''
+      };
+
+      const result = await this.sendRequest(config.webAppUrl, payload);
+      if (result.success) {
+        this.lastPullTime = 0; // invalidate cache
+        console.log(`[GoogleSheets] Student ${submission.submissionId || submission.name} permanently saved to live sheet.`);
+        return { success: true, result };
+      }
+      return { success: false, error: result.error };
+    } catch (err) {
+      console.warn('[GoogleSheets] Upsert student failed:', err.message);
+      return { success: false, error: err.message };
+    }
+  }
+
+  /**
+   * Fast single-record upsert for staff
+   */
+  async upsertStaff(staffMember) {
+    const config = this.getConfig();
+    if (!config.webAppUrl || !config.webAppUrl.trim()) return { success: false };
+
+    try {
+      const formattedList = excelDb.formatStaffForSheet([staffMember]);
+      const formattedStaff = formattedList[0];
+      const payload = {
+        action: 'upsert_staff',
+        staff: formattedStaff,
+        staffMember: formattedStaff,
+        spreadsheetUrl: config.spreadsheetUrl || ''
+      };
+
+      const result = await this.sendRequest(config.webAppUrl, payload);
+      if (result.success) {
+        this.lastPullTime = 0;
+        return { success: true, result };
+      }
+      return { success: false, error: result.error };
+    } catch (err) {
+      console.warn('[GoogleSheets] Upsert staff failed:', err.message);
+      return { success: false, error: err.message };
+    }
+  }
+
+  /**
+   * Fast single-record upsert for address
+   */
+  async upsertAddress(address) {
+    const config = this.getConfig();
+    if (!config.webAppUrl || !config.webAppUrl.trim()) return { success: false };
+
+    try {
+      const formattedList = excelDb.formatAddressesForSheet([address]);
+      const formattedAddress = formattedList[0];
+      const payload = {
+        action: 'upsert_address',
+        address: formattedAddress,
+        spreadsheetUrl: config.spreadsheetUrl || ''
+      };
+
+      const result = await this.sendRequest(config.webAppUrl, payload);
+      if (result.success) {
+        this.lastPullTime = 0;
+        return { success: true, result };
+      }
+      return { success: false, error: result.error };
+    } catch (err) {
+      console.warn('[GoogleSheets] Upsert address failed:', err.message);
+      return { success: false, error: err.message };
+    }
+  }
+
+  /**
+   * Delete student from Google Sheet
+   */
+  async deleteStudent(submissionId) {
+    const config = this.getConfig();
+    if (!config.webAppUrl || !config.webAppUrl.trim()) return { success: false };
+
+    try {
+      const payload = {
+        action: 'delete_user',
+        submissionId: submissionId,
+        spreadsheetUrl: config.spreadsheetUrl || ''
+      };
+
+      const result = await this.sendRequest(config.webAppUrl, payload);
+      this.lastPullTime = 0;
+      return result;
+    } catch (err) {
+      console.warn('[GoogleSheets] Delete student failed:', err.message);
+      return { success: false, error: err.message };
+    }
+  }
+
+  /**
    * Pulls rows from Google Sheet to restore / import into database
    */
   async pullFromGoogleSheets() {
@@ -275,40 +423,20 @@ class GoogleSheetsSync {
     }
 
     try {
-      let data;
-      const targetUrl = new URL(config.webAppUrl);
-      targetUrl.searchParams.set('action', 'pull');
-      if (config.spreadsheetUrl) {
-        targetUrl.searchParams.set('spreadsheetUrl', config.spreadsheetUrl);
-      }
+      // Send pull request via POST for maximum reliability
+      const payload = {
+        action: 'pull',
+        spreadsheetUrl: config.spreadsheetUrl || ''
+      };
 
-      if (typeof fetch === 'function') {
-        const response = await fetch(targetUrl.href, { redirect: 'follow' });
-        const text = await response.text();
-        try {
-          data = JSON.parse(text);
-        } catch (e) {
-          throw new Error(`Failed to parse response: ${text.slice(0, 300)}`);
-        }
-      } else {
-        const response = await requestWithRedirect(targetUrl.href, {
-          method: 'GET',
-          headers: { 'Accept': 'application/json' },
-          timeout: 30000
-        });
-
-        try {
-          data = JSON.parse(response.body);
-        } catch (e) {
-          throw new Error(`Failed to parse response: ${response.body.slice(0, 300)}`);
-        }
-      }
+      const data = await this.sendRequest(config.webAppUrl, payload);
 
       if (!data.success) {
         throw new Error(data.error || 'Failed to pull data from Google Sheets');
       }
 
-      // Convert raw rows from 3 sheets into application objects
+      this.lastPullTime = Date.now();
+
       // 1. Staff conversion
       const rawStaff = data.staff || [];
       const staffList = rawStaff.map(row => ({
@@ -379,11 +507,18 @@ class GoogleSheetsSync {
           extraPhone: String(row['From: Extra Phone'] || ''),
           country: row['From: Country'] || 'India'
         }
-      })).filter(a => a.id || a.to.name);
+      })).filter(a => a.id || (a.to && a.to.name));
+
+      // Update cached info
+      this.saveConfig({
+        spreadsheetName: data.spreadsheetName || config.spreadsheetName || 'IIT Database Master',
+        spreadsheetUrl: data.spreadsheetUrl || config.spreadsheetUrl
+      });
 
       return {
         success: true,
         spreadsheetName: data.spreadsheetName,
+        spreadsheetUrl: data.spreadsheetUrl,
         staff: staffList,
         students: studentList,
         addresses: addressList
@@ -396,11 +531,11 @@ class GoogleSheetsSync {
   }
 
   /**
-   * Triggers an asynchronous auto-sync in the background if enabled
+   * Background auto-sync trigger
    */
   triggerAutoSync(submissionsGetter, staffGetter, addressesGetter) {
     const config = this.getConfig();
-    if (!config.enabled || !config.autoSync || !config.webAppUrl) {
+    if (!config.enabled || !config.webAppUrl) {
       return;
     }
 

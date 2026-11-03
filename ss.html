@@ -114,8 +114,12 @@
       <a class="active" href="ss.html">Saved Submissions</a>
     </div>
     <div class="toolbar">
-      <h1>Saved Submissions</h1>
+      <div>
+        <h1 style="margin-bottom: 4px;">Saved Submissions</h1>
+        <div id="liveSyncStatus" style="font-size: 11px; color: var(--accent); font-weight: 600;">⚡ Live Database Connected</div>
+      </div>
       <div style="display: flex; gap: 10px; align-items: center; flex-wrap: wrap;">
+        <button type="button" id="refreshBtn" onclick="refreshLiveData()" style="background:#4f46e5; color:#fff; border:none; padding:8px 14px; border-radius:999px; font-size:12px; font-weight:600; cursor:pointer;">🔄 Refresh Live Data</button>
         <a href="/api/excel/download" style="background:#2e7d32; border-color:#2e7d32;">📊 Master Excel (3 Sheets)</a>
         <a href="form.html">Back to Form</a>
       </div>
@@ -140,20 +144,89 @@
     }
   }
 
-  async function readSubmissions() {
+  async function readSubmissions(forceRefresh = false) {
     try {
-      const response = await fetch('/api/submissions');
+      const url = forceRefresh ? '/api/submissions?refresh=true' : '/api/submissions';
+      const response = await fetch(url);
       if (response.ok) {
         const data = await response.json();
         if (Array.isArray(data)) {
+          localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
           return data;
         }
       }
     } catch (err) {
-      console.warn('Unable to load submissions from server', err);
+      console.warn('Unable to load submissions from server, attempting direct cloud pull', err);
     }
 
+    // Direct cloud pull fallback
+    try {
+      const cloudUrl = 'https://script.google.com/macros/s/AKfycbx_luyKLX-eXPnOibeVsWLxaZps0nC_K_FGEEFKKFEE8FhIt-YKaxmD29fgbYccXdcM/exec?action=pull';
+      const cloudRes = await fetch(cloudUrl, { redirect: 'follow' });
+      if (cloudRes.ok) {
+        const cloudData = await cloudRes.json();
+        const students = cloudData.students || cloudData.users || [];
+        if (students.length > 0) {
+          const mapped = students.map(row => ({
+            submissionId: row['User / Submission ID'] || row['Submission ID'] || row['submissionId'] || '',
+            name: row['User / Student Name'] || row['Student Name'] || row['Name'] || '',
+            fatherName: row['Father / Guardian Name'] || '',
+            title: row['Course / Applied Title'] || '',
+            email: row['Email Address'] || '',
+            mobile1: String(row['Primary Mobile'] || ''),
+            mobile2: String(row['Secondary Mobile'] || ''),
+            dob: row['Date of Birth'] || '',
+            gender: row['Gender'] || '',
+            city: row['City / District'] || '',
+            state: row['State'] || '',
+            pincode: String(row['Pincode'] || ''),
+            address: row['Full Residential Address'] || '',
+            collegeSchool: row['College / School'] || '',
+            yearDept: row['Department / Year'] || '',
+            qualification: row['Educational Qualification'] || '',
+            aadhar: String(row['Aadhar / ID Number'] || ''),
+            feesFixed: row['Fees Fixed'] || '',
+            dateJoining: row['Date of Joining'] || '',
+            certNo: row['Certificate No'] || '',
+            dateIssue: row['Date of Issue'] || '',
+            submittedAt: row['Submission Date & Time'] || new Date().toLocaleString()
+          })).filter(s => s.submissionId || s.name);
+          if (mapped.length > 0) {
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(mapped));
+            return mapped;
+          }
+        }
+      }
+    } catch (e) {}
+
     return readLocalSubmissions();
+  }
+
+  async function refreshLiveData() {
+    const btn = document.getElementById('refreshBtn');
+    if (btn) btn.innerText = '⌛ Refreshing...';
+    allSubmissions = await readSubmissions(true);
+    render(filterSubmissions(searchInput.value));
+    if (btn) btn.innerText = '🔄 Refresh Live Data';
+  }
+
+  async function checkSyncStatus() {
+    try {
+      const res = await fetch('/api/sync/status');
+      if (res.ok) {
+        const d = await res.json();
+        const badge = document.getElementById('liveSyncStatus');
+        if (badge) {
+          if (d.configured) {
+            badge.innerHTML = `🟢 Live Database Connected · <span style="font-weight:normal; opacity:0.85;">Synced with Google Sheets (${d.spreadsheetName || 'Master Sheet'})</span>`;
+            badge.style.color = '#15803d';
+          } else {
+            badge.innerHTML = `🟠 Local Storage Mode · <a href="admin.html" style="color:inherit; text-decoration:underline;">Connect Google Sheet in Admin</a> for live sync across devices`;
+            badge.style.color = '#b45309';
+          }
+        }
+      }
+    } catch(e) {}
   }
 
   let allSubmissions = [];
@@ -246,6 +319,7 @@
   searchInput?.addEventListener('input', filterAndRender);
 
   async function init() {
+    checkSyncStatus();
     allSubmissions = await readSubmissions();
     render(allSubmissions);
   }

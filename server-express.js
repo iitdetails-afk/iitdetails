@@ -3,6 +3,7 @@ const fs = require('fs');
 const path = require('path');
 const https = require('https');
 const crypto = require('crypto');
+const os = require('os');
 const excelDb = require('./excel-db');
 const GoogleSheetsSync = require('./google-sheets-sync');
 
@@ -132,6 +133,57 @@ function syncDatabaseToExcel() {
   }
 }
 
+function mergeById(localList, remoteList, idKey) {
+  const map = new Map();
+  if (Array.isArray(remoteList)) {
+    remoteList.forEach(item => {
+      const key = item[idKey];
+      if (key) map.set(String(key).trim().toLowerCase(), item);
+    });
+  }
+  if (Array.isArray(localList)) {
+    localList.forEach(item => {
+      const key = item[idKey];
+      if (key) {
+        const k = String(key).trim().toLowerCase();
+        const existing = map.get(k);
+        map.set(k, existing ? { ...existing, ...item } : item);
+      } else {
+        map.set('TEMP_' + Math.random(), item);
+      }
+    });
+  }
+  return Array.from(map.values());
+}
+
+async function autoRestoreFromGoogleSheets() {
+  if (!googleSheetsSync.isConfigured()) return;
+  try {
+    const pulled = await googleSheetsSync.pullFromGoogleSheets();
+    if (pulled.success) {
+      if (pulled.students && pulled.students.length > 0) {
+        const localSubs = readJson(submissionsFile, []);
+        const merged = localSubs.length === 0 ? pulled.students : mergeById(localSubs, pulled.students, 'submissionId');
+        fs.writeFileSync(submissionsFile, JSON.stringify(merged, null, 2), 'utf8');
+      }
+      if (pulled.staff && pulled.staff.length > 0) {
+        const localStaff = readJson(staffFile, []);
+        const merged = localStaff.length === 0 ? pulled.staff : mergeById(localStaff, pulled.staff, 'staffId');
+        fs.writeFileSync(staffFile, JSON.stringify(merged, null, 2), 'utf8');
+      }
+      if (pulled.addresses && pulled.addresses.length > 0) {
+        const localAddr = readJson(addressesFile, []);
+        const merged = localAddr.length === 0 ? pulled.addresses : mergeById(localAddr, pulled.addresses, 'id');
+        fs.writeFileSync(addressesFile, JSON.stringify(merged, null, 2), 'utf8');
+      }
+      syncDatabaseToExcel();
+      console.log(`[GoogleSheets] Live auto-restore successful: ${pulled.students?.length || 0} students, ${pulled.staff?.length || 0} staff, ${pulled.addresses?.length || 0} addresses.`);
+    }
+  } catch (err) {
+    console.warn('[GoogleSheets] Auto-restore warning:', err.message);
+  }
+}
+
 function ensureDataFiles() {
   if (!fs.existsSync(dataDir)) fs.mkdirSync(dataDir, { recursive: true });
   if (!fs.existsSync(submissionsFile)) fs.writeFileSync(submissionsFile, '[]', 'utf8');
@@ -161,6 +213,11 @@ function ensureDataFiles() {
 
   // Ensure Excel database is synced with current data
   syncDatabaseToExcel();
+
+  // If Google Sheets is configured, trigger auto-restore in background on startup
+  if (googleSheetsSync.isConfigured()) {
+    autoRestoreFromGoogleSheets();
+  }
 }
 
 function readJson(filePath, fallback) {
@@ -202,6 +259,20 @@ app.get('/api/health', (req, res) => {
   res.json({ status: 'ok' });
 });
 
+app.get('/api/sync/status', (req, res) => {
+  const cfg = googleSheetsSync.getConfig();
+  res.json({
+    success: true,
+    configured: googleSheetsSync.isConfigured(),
+    spreadsheetName: cfg.spreadsheetName || 'IIT Database Master',
+    spreadsheetUrl: cfg.spreadsheetUrl || '',
+    autoSync: !!cfg.autoSync,
+    lastSyncTime: cfg.lastSyncTime || null,
+    lastSyncStatus: cfg.lastSyncStatus || null,
+    lastSyncCounts: cfg.lastSyncCounts || null
+  });
+});
+
 app.post('/api/details', (req, res) => {
   writeJson(detailsFile, req.body);
   res.json({ success: true, saved: req.body });
@@ -226,7 +297,7 @@ function getNextSubmissionId(submissions) {
 
 
 
-app.post('/api/submit', (req, res) => {
+app.post('/api/submit', async (req, res) => {
   const submissions = readJson(submissionsFile, []);
   const payload = req.body;
   
@@ -239,7 +310,21 @@ app.post('/api/submit', (req, res) => {
         submittedAt: payload.submittedAt || submissions[existingIndex].submittedAt || new Date().toLocaleString()
       };
       writeJson(submissionsFile, submissions);
-      res.json({ success: true, saved: submissions[existingIndex] });
+
+      let liveSynced = false;
+      if (googleSheetsSync.isConfigured()) {
+        try {
+          const syncRes = await Promise.race([
+            googleSheetsSync.upsertStudent(submissions[existingIndex]),
+            new Promise((_, reject) => setTimeout(() => reject(new Error('Sync timeout')), 7000))
+          ]);
+          if (syncRes && syncRes.success) liveSynced = true;
+        } catch (e) {
+          console.warn('[GoogleSheets] Edit sync warning:', e.message);
+        }
+      }
+
+      res.json({ success: true, saved: submissions[existingIndex], liveSynced });
       return;
     }
   }
@@ -261,6 +346,20 @@ app.post('/api/submit', (req, res) => {
   submissions.push(newPayload);
   writeJson(submissionsFile, submissions);
 
+  // Live permanent sync to Google Sheets
+  let liveSynced = false;
+  if (googleSheetsSync.isConfigured()) {
+    try {
+      const syncRes = await Promise.race([
+        googleSheetsSync.upsertStudent(newPayload),
+        new Promise((_, reject) => setTimeout(() => reject(new Error('Sync timeout')), 7000))
+      ]);
+      if (syncRes && syncRes.success) liveSynced = true;
+    } catch (e) {
+      console.warn('[GoogleSheets] Submission sync warning:', e.message);
+    }
+  }
+
   // Notify admin
   try {
     const notifications = readJson(notificationsFile, []);
@@ -277,14 +376,22 @@ app.post('/api/submit', (req, res) => {
     console.error('Failed to create admin notification for submission', err);
   }
 
-  res.json({ success: true, saved: newPayload });
+  res.json({ success: true, saved: newPayload, liveSynced });
 });
 
-app.post('/api/delete', requireAdmin, (req, res) => {
+app.post('/api/delete', requireAdmin, async (req, res) => {
   const { submissionId } = req.body;
   const submissions = readJson(submissionsFile, []);
   const filtered = submissions.filter(s => s.submissionId !== submissionId);
   writeJson(submissionsFile, filtered);
+
+  if (googleSheetsSync.isConfigured()) {
+    try {
+      await googleSheetsSync.deleteStudent(submissionId);
+    } catch (e) {
+      console.warn('[GoogleSheets] Delete sync warning:', e.message);
+    }
+  }
 
   res.json({ success: true });
 });
@@ -305,8 +412,21 @@ function getNextStaffId(staff) {
   return `${prefix}${String(maxId + 1).padStart(4, '0')}`;
 }
 
-app.get('/api/staff', (req, res) => {
-  const staffList = readJson(staffFile, []);
+app.get('/api/staff', async (req, res) => {
+  let staffList = readJson(staffFile, []);
+  const forceRefresh = req.query.refresh === 'true';
+  if (googleSheetsSync.isConfigured() && (staffList.length === 0 || forceRefresh || googleSheetsSync.shouldRefresh())) {
+    try {
+      const pulled = await googleSheetsSync.pullFromGoogleSheets();
+      if (pulled.success && Array.isArray(pulled.staff) && pulled.staff.length > 0) {
+        staffList = mergeById(staffList, pulled.staff, 'staffId');
+        fs.writeFileSync(staffFile, JSON.stringify(staffList, null, 2), 'utf8');
+        syncDatabaseToExcel();
+      }
+    } catch (e) {
+      console.warn('[GoogleSheets] Fetch staff from live sheet failed:', e.message);
+    }
+  }
   // Strip sensitive salt/hash from response
   const publicList = staffList.map(s => {
     const { passwordHash, salt, ...publicData } = s;
@@ -316,7 +436,7 @@ app.get('/api/staff', (req, res) => {
 });
 
 // Admin registers or edits staff
-app.post('/api/staff', requireAdmin, (req, res) => {
+app.post('/api/staff', requireAdmin, async (req, res) => {
   const staffList = readJson(staffFile, []);
   const payload = req.body;
   const { staffId, name, mobile, email, department, role, password, status, photo, docName, docBase64, isEdit } = payload;
@@ -368,6 +488,15 @@ app.post('/api/staff', requireAdmin, (req, res) => {
     };
     
     writeJson(staffFile, staffList);
+
+    if (googleSheetsSync.isConfigured()) {
+      try {
+        await googleSheetsSync.upsertStaff(staffList[existingIndex]);
+      } catch (e) {
+        console.warn('[GoogleSheets] Staff edit sync warning:', e.message);
+      }
+    }
+
     const { passwordHash, salt, ...publicData } = staffList[existingIndex];
     return res.json({ success: true, saved: publicData });
   }
@@ -407,6 +536,14 @@ app.post('/api/staff', requireAdmin, (req, res) => {
   
   staffList.push(newStaff);
   writeJson(staffFile, staffList);
+
+  if (googleSheetsSync.isConfigured()) {
+    try {
+      await googleSheetsSync.upsertStaff(newStaff);
+    } catch (e) {
+      console.warn('[GoogleSheets] New staff sync warning:', e.message);
+    }
+  }
   
   const { passwordHash: ph, salt: st, ...publicData } = newStaff;
   res.json({ success: true, saved: publicData });
@@ -892,8 +1029,22 @@ app.post('/api/admin/restore-data', requireAdmin, (req, res) => {
   res.json({ success: true, count: data.length });
 });
 
-app.get('/api/submissions', (req, res) => {
-  res.json(readJson(submissionsFile, []));
+app.get('/api/submissions', async (req, res) => {
+  let submissions = readJson(submissionsFile, []);
+  const forceRefresh = req.query.refresh === 'true';
+  if (googleSheetsSync.isConfigured() && (submissions.length === 0 || forceRefresh || googleSheetsSync.shouldRefresh())) {
+    try {
+      const pulled = await googleSheetsSync.pullFromGoogleSheets();
+      if (pulled.success && Array.isArray(pulled.students) && pulled.students.length > 0) {
+        submissions = mergeById(submissions, pulled.students, 'submissionId');
+        fs.writeFileSync(submissionsFile, JSON.stringify(submissions, null, 2), 'utf8');
+        syncDatabaseToExcel();
+      }
+    } catch (e) {
+      console.warn('[GoogleSheets] Fetch submissions from live sheet failed:', e.message);
+    }
+  }
+  res.json(submissions);
 });
 
 app.get('/api/pages', (req, res) => {
@@ -919,11 +1070,25 @@ app.get('/ss.html', (req, res) => {
 });
 
 // ── Address Management API Endpoints ─────────────────────────────────
-app.get('/api/addresses', (req, res) => {
-  res.json({ success: true, addresses: readJson(addressesFile, []) });
+app.get('/api/addresses', async (req, res) => {
+  let addresses = readJson(addressesFile, []);
+  const forceRefresh = req.query.refresh === 'true';
+  if (googleSheetsSync.isConfigured() && (addresses.length === 0 || forceRefresh || googleSheetsSync.shouldRefresh())) {
+    try {
+      const pulled = await googleSheetsSync.pullFromGoogleSheets();
+      if (pulled.success && Array.isArray(pulled.addresses) && pulled.addresses.length > 0) {
+        addresses = mergeById(addresses, pulled.addresses, 'id');
+        fs.writeFileSync(addressesFile, JSON.stringify(addresses, null, 2), 'utf8');
+        syncDatabaseToExcel();
+      }
+    } catch (e) {
+      console.warn('[GoogleSheets] Fetch addresses from live sheet failed:', e.message);
+    }
+  }
+  res.json({ success: true, addresses });
 });
 
-app.post('/api/addresses', (req, res) => {
+app.post('/api/addresses', async (req, res) => {
   const payload = req.body;
   const addresses = readJson(addressesFile, []);
 
@@ -989,10 +1154,19 @@ app.post('/api/addresses', (req, res) => {
   }
 
   writeJson(addressesFile, addresses);
+
+  if (googleSheetsSync.isConfigured()) {
+    try {
+      await googleSheetsSync.upsertAddress(recordToSave);
+    } catch (e) {
+      console.warn('[GoogleSheets] Address upsert warning:', e.message);
+    }
+  }
+
   res.json({ success: true, address: recordToSave });
 });
 
-app.put('/api/addresses/:id', (req, res) => {
+app.put('/api/addresses/:id', async (req, res) => {
   const { id } = req.params;
   const addresses = readJson(addressesFile, []);
   const index = addresses.findIndex(a => a.id === id);
@@ -1010,6 +1184,15 @@ app.put('/api/addresses/:id', (req, res) => {
 
   addresses[index] = updated;
   writeJson(addressesFile, addresses);
+
+  if (googleSheetsSync.isConfigured()) {
+    try {
+      await googleSheetsSync.upsertAddress(updated);
+    } catch (e) {
+      console.warn('[GoogleSheets] Address update warning:', e.message);
+    }
+  }
+
   res.json({ success: true, address: updated });
 });
 
@@ -1136,16 +1319,52 @@ app.get('/api/google-sheets/config', requireAdmin, (req, res) => {
   }
 });
 
-app.post('/api/google-sheets/config', requireAdmin, (req, res) => {
+app.post('/api/google-sheets/config', requireAdmin, async (req, res) => {
   try {
     const { webAppUrl, spreadsheetUrl, autoSync, enabled } = req.body;
     const updated = googleSheetsSync.saveConfig({
       webAppUrl: (webAppUrl !== undefined) ? webAppUrl.trim() : undefined,
       spreadsheetUrl: (spreadsheetUrl !== undefined) ? spreadsheetUrl.trim() : undefined,
-      autoSync: !!autoSync,
+      autoSync: autoSync !== undefined ? !!autoSync : true,
       enabled: enabled !== undefined ? !!enabled : true
     });
-    res.json({ success: true, config: updated });
+
+    let testResult = null;
+    let initialSync = null;
+
+    if (updated.webAppUrl) {
+      testResult = await googleSheetsSync.testConnection(updated.webAppUrl, updated.spreadsheetUrl);
+      if (testResult.success) {
+        // Automatically pull existing data into site
+        const pullRes = await googleSheetsSync.pullFromGoogleSheets();
+        if (pullRes.success) {
+          if (pullRes.students && pullRes.students.length > 0) {
+            const localSubs = readJson(submissionsFile, []);
+            const merged = localSubs.length === 0 ? pullRes.students : mergeById(localSubs, pullRes.students, 'submissionId');
+            fs.writeFileSync(submissionsFile, JSON.stringify(merged, null, 2), 'utf8');
+          }
+          if (pullRes.staff && pullRes.staff.length > 0) {
+            const localStaff = readJson(staffFile, []);
+            const merged = localStaff.length === 0 ? pullRes.staff : mergeById(localStaff, pullRes.staff, 'staffId');
+            fs.writeFileSync(staffFile, JSON.stringify(merged, null, 2), 'utf8');
+          }
+          if (pullRes.addresses && pullRes.addresses.length > 0) {
+            const localAddr = readJson(addressesFile, []);
+            const merged = localAddr.length === 0 ? pullRes.addresses : mergeById(localAddr, pullRes.addresses, 'id');
+            fs.writeFileSync(addressesFile, JSON.stringify(merged, null, 2), 'utf8');
+          }
+          syncDatabaseToExcel();
+        }
+
+        // Push combined dataset to Google Sheets so both have full master data
+        const finalSubs = readJson(submissionsFile, []);
+        const finalStaff = readJson(staffFile, []);
+        const finalAddr = readJson(addressesFile, []);
+        initialSync = await googleSheetsSync.pushToGoogleSheets(finalSubs, finalStaff, finalAddr);
+      }
+    }
+
+    res.json({ success: true, config: updated, testResult, initialSync });
   } catch (err) {
     res.status(500).json({ success: false, error: err.message });
   }
@@ -1236,10 +1455,32 @@ function writeBackendPort(portNumber) {
   }
 }
 
+function getLocalIpAddresses() {
+  const interfaces = os.networkInterfaces();
+  const addresses = [];
+  for (const name of Object.keys(interfaces)) {
+    for (const iface of interfaces[name]) {
+      if (iface.family === 'IPv4' && !iface.internal) {
+        addresses.push(iface.address);
+      }
+    }
+  }
+  return addresses;
+}
+
 function startServer(currentPort) {
-  const server = app.listen(currentPort, () => {
+  const server = app.listen(currentPort, '0.0.0.0', () => {
     writeBackendPort(currentPort);
-    console.log(`Backend running on http://localhost:${currentPort}`);
+    const ips = getLocalIpAddresses();
+    console.log('========================================================');
+    console.log('   INDIAN INFO TECH - SERVER RUNNING');
+    console.log(`   Local Machine Access   : http://localhost:${currentPort}`);
+    ips.forEach(ip => {
+      console.log(`   Other Devices / Wi-Fi  : http://${ip}:${currentPort}`);
+    });
+    console.log('   Excel Database         : database.xlsx (Active)');
+    console.log('   Google Sheets Status   : ' + (googleSheetsSync.isConfigured() ? 'LIVE SYNC ACTIVE' : 'Configure in Admin -> Google Sheets'));
+    console.log('========================================================');
   });
 
   server.on('error', (error) => {
