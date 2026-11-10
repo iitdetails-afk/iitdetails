@@ -1146,8 +1146,31 @@ app.post('/api/addresses', async (req, res) => {
     };
   }
 
-  const existingIdx = addresses.findIndex(a => a.id === recordToSave.id);
+  // Smart Duplicate Detection: Match by exact ID, or by Recipient Name + Phone / Line 1
+  const toSaveName = (recordToSave.to?.name || '').trim().toLowerCase();
+  const toSavePhone = (recordToSave.to?.phone || '').replace(/\D/g, '');
+  const toSaveLine1 = (recordToSave.to?.line1 || '').trim().toLowerCase();
+
+  const existingIdx = addresses.findIndex(a => {
+    if (!a) return false;
+    if (a.id && a.id === recordToSave.id) return true;
+    const aTo = a.to || {};
+    const aName = (aTo.name || a.name || '').trim().toLowerCase();
+    const aPhone = (aTo.phone || a.phone || '').replace(/\D/g, '');
+    const aLine1 = (aTo.line1 || a.addressLine1 || '').trim().toLowerCase();
+
+    // Match if same Name and same Phone
+    if (toSaveName && aName === toSaveName && toSavePhone && aPhone === toSavePhone) return true;
+    // Or if same Name and same Address Line 1
+    if (toSaveName && aName === toSaveName && toSaveLine1 && aLine1 === toSaveLine1) return true;
+    return false;
+  });
+
   if (existingIdx !== -1) {
+    // Retain original ID and update in-place to prevent repeated duplicate entries
+    const origId = addresses[existingIdx].id || recordToSave.id;
+    recordToSave.id = origId;
+    recordToSave.updatedAt = new Date().toISOString();
     addresses[existingIdx] = recordToSave;
   } else {
     addresses.unshift(recordToSave);
@@ -1162,6 +1185,37 @@ app.post('/api/addresses', async (req, res) => {
   }
 
   res.json({ success: true, address: recordToSave });
+});
+
+app.post('/api/addresses/clean-duplicates', (req, res) => {
+  let addresses = readJson(addressesFile, []);
+  const initialLen = addresses.length;
+  const seen = new Set();
+  const cleaned = [];
+
+  for (const a of addresses) {
+    if (!a) continue;
+    const to = a.to || {};
+    const name = (to.name || a.name || '').trim().toLowerCase();
+    const phone = (to.phone || a.phone || '').replace(/\D/g, '');
+    const line1 = (to.line1 || a.addressLine1 || '').trim().toLowerCase();
+    const sig = phone ? `${name}::${phone}` : `${name}::${line1}`;
+
+    if (!sig || sig === '::') {
+      cleaned.push(a);
+      continue;
+    }
+    if (!seen.has(sig)) {
+      seen.add(sig);
+      cleaned.push(a);
+    }
+  }
+
+  const removedCount = initialLen - cleaned.length;
+  if (removedCount > 0) {
+    writeJson(addressesFile, cleaned);
+  }
+  res.json({ success: true, removed: removedCount, total: cleaned.length, addresses: cleaned });
 });
 
 app.put('/api/addresses/:id', async (req, res) => {

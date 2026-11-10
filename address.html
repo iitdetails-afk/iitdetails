@@ -954,6 +954,7 @@
           <input type="text" id="tableSearch" placeholder="Search name, phone, city..." oninput="renderHistoryTable()">
         </div>
 
+        <button class="btn-export" onclick="cleanDuplicateAddresses()" title="Remove repeated duplicate entries">🧹 Clean Duplicates</button>
         <button class="btn-export" onclick="exportHistoryCSV()">📄 CSV</button>
         <button class="btn-export btn-export-excel" onclick="window.location.href='/api/excel/download'">📊 Master Excel (3 Sheets)</button>
       </div>
@@ -1063,6 +1064,7 @@
   let historyRecords = [];
   let editingRecordId = null;
   let currentPrintRecord = null;
+  let isSubmitting = false;
 
   document.addEventListener('DOMContentLoaded', () => {
     loadSavedHistory();
@@ -1092,6 +1094,54 @@
     document.body.classList.toggle('dark-mode');
     const isDark = document.body.classList.contains('dark-mode');
     document.getElementById('themeBtn').textContent = isDark ? '☀️' : '🌙';
+  }
+
+  function deduplicateRecords(records) {
+    if (!Array.isArray(records)) return [];
+    const seen = new Set();
+    const result = [];
+    for (const r of records) {
+      if (!r) continue;
+      const to = r.to || {};
+      const name = (to.name || r.name || '').trim().toLowerCase();
+      const phone = (to.phone || r.phone || '').replace(/\D/g, '');
+      const line1 = (to.line1 || r.addressLine1 || '').trim().toLowerCase();
+      const sig = phone ? `${name}::${phone}` : `${name}::${line1}`;
+      if (!sig || sig === '::') {
+        result.push(r);
+        continue;
+      }
+      if (!seen.has(sig)) {
+        seen.add(sig);
+        result.push(r);
+      }
+    }
+    return result;
+  }
+
+  async function cleanDuplicateAddresses() {
+    const initial = historyRecords.length;
+    historyRecords = deduplicateRecords(historyRecords);
+    const removed = initial - historyRecords.length;
+
+    saveHistoryToStorage();
+    renderHistoryTable();
+    updateMetrics();
+
+    try {
+      const res = await fetch('/api/addresses/clean-duplicates', { method: 'POST' });
+      if (res.ok) {
+        const data = await res.json();
+        if (data.addresses && Array.isArray(data.addresses)) {
+          historyRecords = deduplicateRecords(data.addresses);
+          saveHistoryToStorage();
+          renderHistoryTable();
+          updateMetrics();
+        }
+      }
+    } catch(e) {}
+
+    showToast(removed > 0 ? `🧹 Removed ${removed} duplicate address record(s)!` : 'No duplicate records found.');
   }
 
   function resetToForm() {
@@ -1145,6 +1195,8 @@
   }
 
   async function submitAddressPair() {
+    if (isSubmitting) return;
+
     const toNameInput = document.getElementById('toName');
     const toLine1Input = document.getElementById('toLine1');
     const toCityInput = document.getElementById('toCity');
@@ -1192,6 +1244,8 @@
       return;
     }
 
+    isSubmitting = true;
+
     // Set UI loading state immediately
     const submitBtns = document.querySelectorAll('.btn-submit-main');
     submitBtns.forEach(b => {
@@ -1199,102 +1253,131 @@
       b.innerHTML = '⏳ Saving Address...';
     });
 
-    const isEdit = !!editingRecordId;
-    const recordId = editingRecordId ? editingRecordId : ('ADDR-' + String(Date.now()).slice(-4) + '-' + String(Math.floor(100 + Math.random() * 900)));
-
-    const payload = {
-      id: recordId,
-      dateTime: new Date().toLocaleString('en-IN', { dateStyle: 'medium', timeStyle: 'short' }),
-      to: {
-        name: toName,
-        line1: toLine1,
-        line2: document.getElementById('toLine2').value.trim(),
-        line3: document.getElementById('toLine3').value.trim(),
-        pincode: toPincode,
-        phone: toPhone,
-        extraPhone: document.getElementById('toExtraPhone').value.trim(),
-        city: toCity,
-        state: toState,
-        country: document.getElementById('toCountry').value.trim() || 'India'
-      },
-      from: {
-        name: document.getElementById('fromName').value.trim() || 'Indian Info Tech',
-        line1: document.getElementById('fromLine1').value.trim() || '101-C, KM Complex,',
-        line2: document.getElementById('fromLine2').value.trim() || 'Amma Unavagam Back Side,',
-        line3: document.getElementById('fromLine3').value.trim(),
-        pincode: document.getElementById('fromPincode').value.trim() || '637001',
-        phone: document.getElementById('fromPhone').value.trim() || '9003446612',
-        extraPhone: document.getElementById('fromExtraPhone').value.trim(),
-        city: document.getElementById('fromCity').value.trim() || 'Namakkal',
-        state: document.getElementById('fromState').value.trim() || 'Tamilnadu',
-        country: document.getElementById('fromCountry').value.trim() || 'India'
-      }
-    };
-
-    // Save permanently to Server API and sync with Sheet 3 of Master Excel database
     try {
-      const url = isEdit ? `/api/addresses/${encodeURIComponent(recordId)}` : '/api/addresses';
-      const method = isEdit ? 'PUT' : 'POST';
-      const res = await fetch(url, {
-        method: method,
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload)
-      });
-      if (res.ok) {
-        const data = await res.json();
-        if (data.address && data.address.id) payload.id = data.address.id;
-      }
-    } catch (err) {
-      console.warn('Could not sync address to server, saving locally:', err);
-    }
+      // Smart Duplicate Detection: Check if identical recipient already exists in history
+      const normName = toName.toLowerCase();
+      const normPhone = toPhone.replace(/\D/g, '');
+      const normLine1 = toLine1.toLowerCase();
 
-    if (isEdit) {
-      const idx = historyRecords.findIndex(r => r.id === recordId);
-      if (idx !== -1) {
-        historyRecords[idx] = payload;
+      let targetRecordId = editingRecordId;
+      if (!targetRecordId) {
+        const match = historyRecords.find(r => {
+          if (!r || !r.to) return false;
+          const rName = (r.to.name || '').trim().toLowerCase();
+          const rPhone = (r.to.phone || '').replace(/\D/g, '');
+          const rLine1 = (r.to.line1 || '').trim().toLowerCase();
+          if (normName && rName === normName && normPhone && rPhone === normPhone) return true;
+          if (normName && rName === normName && normLine1 && rLine1 === normLine1) return true;
+          return false;
+        });
+        if (match) {
+          targetRecordId = match.id;
+        }
+      }
+
+      const isEdit = !!targetRecordId;
+      const recordId = targetRecordId ? targetRecordId : ('ADDR-' + String(Date.now()).slice(-4) + '-' + String(Math.floor(100 + Math.random() * 900)));
+
+      const payload = {
+        id: recordId,
+        dateTime: new Date().toLocaleString('en-IN', { dateStyle: 'medium', timeStyle: 'short' }),
+        to: {
+          name: toName,
+          line1: toLine1,
+          line2: document.getElementById('toLine2').value.trim(),
+          line3: document.getElementById('toLine3').value.trim(),
+          pincode: toPincode,
+          phone: toPhone,
+          extraPhone: document.getElementById('toExtraPhone').value.trim(),
+          city: toCity,
+          state: toState,
+          country: document.getElementById('toCountry').value.trim() || 'India'
+        },
+        from: {
+          name: document.getElementById('fromName').value.trim() || 'Indian Info Tech',
+          line1: document.getElementById('fromLine1').value.trim() || '101-C, KM Complex,',
+          line2: document.getElementById('fromLine2').value.trim() || 'Amma Unavagam Back Side,',
+          line3: document.getElementById('fromLine3').value.trim(),
+          pincode: document.getElementById('fromPincode').value.trim() || '637001',
+          phone: document.getElementById('fromPhone').value.trim() || '9003446612',
+          extraPhone: document.getElementById('fromExtraPhone').value.trim(),
+          city: document.getElementById('fromCity').value.trim() || 'Namakkal',
+          state: document.getElementById('fromState').value.trim() || 'Tamilnadu',
+          country: document.getElementById('fromCountry').value.trim() || 'India'
+        }
+      };
+
+      // Save permanently to Server API and sync with Sheet 3 of Master Excel database
+      try {
+        const url = isEdit ? `/api/addresses/${encodeURIComponent(recordId)}` : '/api/addresses';
+        const method = isEdit ? 'PUT' : 'POST';
+        const res = await fetch(url, {
+          method: method,
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+        if (res.ok) {
+          const data = await res.json();
+          if (data.address && data.address.id) payload.id = data.address.id;
+        }
+      } catch (err) {
+        console.warn('Could not sync address to server, saving locally:', err);
+      }
+
+      if (isEdit) {
+        const idx = historyRecords.findIndex(r => r.id === recordId);
+        if (idx !== -1) {
+          historyRecords[idx] = payload;
+        } else {
+          historyRecords.unshift(payload);
+        }
+        editingRecordId = null;
       } else {
         historyRecords.unshift(payload);
       }
-      editingRecordId = null;
-    } else {
-      historyRecords.unshift(payload);
+
+      // Deduplicate history array
+      historyRecords = deduplicateRecords(historyRecords);
+
+      saveHistoryToStorage();
+      renderHistoryTable(payload.id);
+      updateMetrics();
+
+      // Clear To Address form inputs so it's ready for next entry
+      ['toName', 'toLine1', 'toLine2', 'toLine3', 'toPincode', 'toPhone', 'toExtraPhone', 'toCity', 'toState'].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.value = '';
+      });
+      const countryEl = document.getElementById('toCountry');
+      if (countryEl) countryEl.value = 'India';
+
+      // Show prominent confirmation banner right at the form
+      if (banner) {
+        banner.style.display = 'block';
+        banner.style.background = '#f0fdf4';
+        banner.style.color = '#15803d';
+        banner.style.border = '1px solid #bbf7d0';
+        banner.dataset.isError = 'false';
+        const actionLabel = isEdit ? 'updated' : 'submitted & saved';
+        banner.innerHTML = `✅ Address <strong>${escapeHtml(payload.id)}</strong> for <strong>${escapeHtml(toName)}</strong> ${actionLabel} permanently!`;
+        setTimeout(() => { banner.style.display = 'none'; }, 7000);
+      }
+
+      showToast(`Address record (${payload.id}) saved permanently!`);
+
+      // Smooth scroll down to History section to show saved record
+      const histSection = document.querySelector('.history-section');
+      if (histSection) histSection.scrollIntoView({ behavior: 'smooth' });
+
+    } finally {
+      isSubmitting = false;
+      // Reset button states
+      submitBtns.forEach(b => {
+        b.disabled = false;
+        b.innerHTML = '✅ Saved!';
+        setTimeout(() => { b.innerHTML = '✈️ Submit'; }, 1500);
+      });
     }
-
-    saveHistoryToStorage();
-    renderHistoryTable(payload.id);
-    updateMetrics();
-
-    // Clear To Address form inputs so it's ready for the next entry
-    ['toName', 'toLine1', 'toLine2', 'toLine3', 'toPincode', 'toPhone', 'toExtraPhone', 'toCity', 'toState'].forEach(id => {
-      const el = document.getElementById(id);
-      if (el) el.value = '';
-    });
-    const countryEl = document.getElementById('toCountry');
-    if (countryEl) countryEl.value = 'India';
-
-    // Show prominent confirmation banner right at the form
-    if (banner) {
-      banner.style.display = 'block';
-      banner.style.background = '#f0fdf4';
-      banner.style.color = '#15803d';
-      banner.style.border = '1px solid #bbf7d0';
-      banner.dataset.isError = 'false';
-      banner.innerHTML = `✅ Address <strong>${escapeHtml(payload.id)}</strong> for <strong>${escapeHtml(toName)}</strong> submitted & saved permanently!`;
-      setTimeout(() => { banner.style.display = 'none'; }, 7000);
-    }
-
-    showToast(`Address record (${payload.id}) saved permanently!`);
-
-    // Reset button states
-    submitBtns.forEach(b => {
-      b.disabled = false;
-      b.innerHTML = '✅ Saved!';
-      setTimeout(() => { b.innerHTML = '✈️ Submit'; }, 1500);
-    });
-
-    // Smooth scroll down to History section to show saved record
-    const histSection = document.querySelector('.history-section');
-    if (histSection) histSection.scrollIntoView({ behavior: 'smooth' });
   }
 
   async function loadSavedHistory() {
@@ -1304,7 +1387,7 @@
       if (res.ok) {
         const data = await res.json();
         if (data.addresses && Array.isArray(data.addresses) && data.addresses.length > 0) {
-          historyRecords = data.addresses;
+          historyRecords = deduplicateRecords(data.addresses);
           saveHistoryToStorage();
           renderHistoryTable();
           updateMetrics();
@@ -1318,7 +1401,7 @@
     // 2. Fallback to localStorage
     const local = localStorage.getItem('iit_address_history');
     if (local) {
-      try { historyRecords = JSON.parse(local); } catch(e) { historyRecords = []; }
+      try { historyRecords = deduplicateRecords(JSON.parse(local)); } catch(e) { historyRecords = []; }
     }
     
     // Default initial mock data if completely empty
