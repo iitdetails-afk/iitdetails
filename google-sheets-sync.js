@@ -246,6 +246,27 @@ class GoogleSheetsSync {
 
     this.isSyncing = true;
     try {
+      // Non-destructive safeguard: if any entity array is empty and force is not set,
+      // preserve existing records from the remote sheet so partial syncs never wipe other sheets
+      if (!options.force && (submissions.length === 0 || staff.length === 0 || addresses.length === 0)) {
+        try {
+          const pulled = await this.pullFromGoogleSheets();
+          if (pulled.success) {
+            if (submissions.length === 0 && Array.isArray(pulled.students) && pulled.students.length > 0) {
+              submissions = pulled.students;
+            }
+            if (staff.length === 0 && Array.isArray(pulled.staff) && pulled.staff.length > 0) {
+              staff = pulled.staff;
+            }
+            if (addresses.length === 0 && Array.isArray(pulled.addresses) && pulled.addresses.length > 0) {
+              addresses = pulled.addresses;
+            }
+          }
+        } catch (pullErr) {
+          console.warn('[GoogleSheets] Safeguard pull skipped:', pullErr.message);
+        }
+      }
+
       const formattedStaff = excelDb.formatStaffForSheet(staff);
       const formattedStudents = excelDb.formatStudentsForSheet(submissions);
       const formattedAddresses = excelDb.formatAddressesForSheet(addresses);
@@ -322,6 +343,9 @@ class GoogleSheetsSync {
 
       const result = await this.sendRequest(config.webAppUrl, payload);
       if (result.success) {
+        if (result.counts && !result.action) {
+          return this.pushToGoogleSheets([submission], [], []);
+        }
         this.lastPullTime = 0; // invalidate cache
         console.log(`[GoogleSheets] Student ${submission.submissionId || submission.name} permanently saved to live sheet.`);
         return { success: true, result };
@@ -352,6 +376,9 @@ class GoogleSheetsSync {
 
       const result = await this.sendRequest(config.webAppUrl, payload);
       if (result.success) {
+        if (result.counts && !result.action) {
+          return this.pushToGoogleSheets([], [staffMember], []);
+        }
         this.lastPullTime = 0;
         return { success: true, result };
       }
@@ -380,6 +407,9 @@ class GoogleSheetsSync {
 
       const result = await this.sendRequest(config.webAppUrl, payload);
       if (result.success) {
+        if (result.counts && !result.action) {
+          return this.pushToGoogleSheets([], [], [address]);
+        }
         this.lastPullTime = 0;
         return { success: true, result };
       }
@@ -423,13 +453,25 @@ class GoogleSheetsSync {
     }
 
     try {
-      // Send pull request via POST for maximum reliability
-      const payload = {
-        action: 'pull',
-        spreadsheetUrl: config.spreadsheetUrl || ''
-      };
+      // Send pull request via GET (triggers doGet on Google Apps Script, read-only without modifying sheets)
+      const pullUrl = config.webAppUrl + (config.webAppUrl.includes('?') ? '&' : '?') + 'action=pull&spreadsheetUrl=' + encodeURIComponent(config.spreadsheetUrl || '');
 
-      const data = await this.sendRequest(config.webAppUrl, payload);
+      let data;
+      if (typeof fetch === 'function') {
+        const response = await fetch(pullUrl, {
+          method: 'GET',
+          headers: { 'Accept': 'application/json' },
+          redirect: 'follow'
+        });
+        const text = await response.text();
+        try {
+          data = JSON.parse(text);
+        } catch (e) {
+          throw new Error(`Invalid response from Google Sheets: ${text.slice(0, 300)}`);
+        }
+      } else {
+        data = await requestWithRedirect(pullUrl, { method: 'GET', timeout: 35000 });
+      }
 
       if (!data.success) {
         throw new Error(data.error || 'Failed to pull data from Google Sheets');

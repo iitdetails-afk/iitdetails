@@ -25,6 +25,21 @@ const excelDatabasePublicFile = path.join(__dirname, 'database.xlsx');
 const googleSheetsConfigFile = path.join(dataDir, 'google_sheets_config.json');
 const backendPortFile = path.join(__dirname, '.backend-port');
 
+// Seed config from project data directory if running in ephemeral /tmp (e.g. Vercel or cloud container)
+const projectDataDir = path.join(__dirname, 'data');
+if (!fs.existsSync(dataDir)) {
+  try { fs.mkdirSync(dataDir, { recursive: true }); } catch (e) {}
+}
+if (dataDir !== projectDataDir && fs.existsSync(projectDataDir)) {
+  ['google_sheets_config.json', 'database.xlsx', 'admin_config.json', 'submissions.json', 'staff.json', 'addresses.json'].forEach(f => {
+    const src = path.join(projectDataDir, f);
+    const dest = path.join(dataDir, f);
+    if (fs.existsSync(src) && !fs.existsSync(dest)) {
+      try { fs.copyFileSync(src, dest); } catch (e) {}
+    }
+  });
+}
+
 const googleSheetsSync = new GoogleSheetsSync(googleSheetsConfigFile);
 
 // ── Single admin session (in-memory) ──────────────────────────────────
