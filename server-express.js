@@ -1156,11 +1156,9 @@ app.post('/api/addresses', async (req, res) => {
   writeJson(addressesFile, addresses);
 
   if (googleSheetsSync.isConfigured()) {
-    try {
-      await googleSheetsSync.upsertAddress(recordToSave);
-    } catch (e) {
-      console.warn('[GoogleSheets] Address upsert warning:', e.message);
-    }
+    googleSheetsSync.upsertAddress(recordToSave).catch(e => {
+      console.warn('[GoogleSheets] Address upsert background warning:', e.message);
+    });
   }
 
   res.json({ success: true, address: recordToSave });
@@ -1186,11 +1184,9 @@ app.put('/api/addresses/:id', async (req, res) => {
   writeJson(addressesFile, addresses);
 
   if (googleSheetsSync.isConfigured()) {
-    try {
-      await googleSheetsSync.upsertAddress(updated);
-    } catch (e) {
-      console.warn('[GoogleSheets] Address update warning:', e.message);
-    }
+    googleSheetsSync.upsertAddress(updated).catch(e => {
+      console.warn('[GoogleSheets] Address update background warning:', e.message);
+    });
   }
 
   res.json({ success: true, address: updated });

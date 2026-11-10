@@ -4,11 +4,11 @@
   "spreadsheetUrl": "https://docs.google.com/spreadsheets/d/1pqBKWRtoJJJX9JE5pgoEevwkthjicMLLnowEbFCPihY/edit",
   "spreadsheetName": "iit details",
   "autoSync": true,
-  "lastSyncTime": "2026-11-02T07:00:23.161Z",
+  "lastSyncTime": "2026-11-10T10:05:25.161Z",
   "lastSyncStatus": "Success",
   "lastSyncCounts": {
     "staff": 0,
     "students": 0,
-    "addresses": 1
+    "addresses": 2
   }
 }

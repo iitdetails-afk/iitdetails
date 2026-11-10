@@ -510,6 +510,15 @@
   }
   .btn-icon-action:hover { background: var(--border); }
 
+  @keyframes highlightRowPulse {
+    0% { background-color: rgba(34, 197, 94, 0.25); }
+    70% { background-color: rgba(34, 197, 94, 0.25); }
+    100% { background-color: transparent; }
+  }
+  .newly-added-row {
+    animation: highlightRowPulse 3s ease-out;
+  }
+
   /* ── PRINT VIEW AREA ── */
   .print-view-overlay {
     display: none;
@@ -831,7 +840,10 @@
         <label class="radio-option">
           <input type="radio" name="toDefault" id="toSetDefault"> Set as Default
         </label>
-        <button class="reset-link" onclick="resetToForm()">🔄 Reset</button>
+        <div style="display:flex; gap:8px; align-items:center;">
+          <button class="reset-link" onclick="resetToForm()">🔄 Clear</button>
+          <button class="btn-submit-main" style="padding: 6px 14px; font-size: 13px;" onclick="submitAddressPair()">✈️ Submit</button>
+        </div>
       </div>
     </div>
 
@@ -911,14 +923,17 @@
   </section>
 
   <!-- Action Bar -->
-  <section class="action-bar-card">
-    <div class="action-bar-note">All required fields must be completed before submission.</div>
+  <section class="action-bar-card" style="flex-direction: column; align-items: stretch;">
+    <div id="submitStatusBanner" style="display: none; padding: 12px 18px; border-radius: 8px; font-size: 14px; font-weight: 500; margin-bottom: 8px;"></div>
+    <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; width: 100%;">
+      <div class="action-bar-note">All required fields (*) must be completed before submission.</div>
 
-    <div class="action-bar-btns">
-      <button class="btn-outline" onclick="openPrintPreview()">🖨️ Print Current</button>
-      <button class="btn-outline-blue" onclick="exportToWord()">📥 Export to Word</button>
-      <button class="btn-outline" onclick="resetAllForms()">🔄 Reset All</button>
-      <button class="btn-submit-main" id="btnSubmitMain" onclick="submitAddressPair()">✈️ Submit</button>
+      <div class="action-bar-btns">
+        <button class="btn-outline" onclick="openPrintPreview()">🖨️ Print Current</button>
+        <button class="btn-outline-blue" onclick="exportToWord()">📥 Export to Word</button>
+        <button class="btn-outline" onclick="resetAllForms()">🔄 Reset All</button>
+        <button class="btn-submit-main" id="btnSubmitMain" onclick="submitAddressPair()">✈️ Submit</button>
+      </div>
     </div>
   </section>
 
@@ -1051,6 +1066,26 @@
 
   document.addEventListener('DOMContentLoaded', () => {
     loadSavedHistory();
+
+    // Attach real-time input validation clearers and Enter key submission
+    ['toName', 'toLine1', 'toCity', 'toState', 'toPincode', 'toPhone'].forEach(id => {
+      const el = document.getElementById(id);
+      if (el) {
+        el.addEventListener('input', () => {
+          el.style.borderColor = '';
+          const banner = document.getElementById('submitStatusBanner');
+          if (banner && banner.dataset.isError === 'true') {
+            banner.style.display = 'none';
+          }
+        });
+        el.addEventListener('keypress', (e) => {
+          if (e.key === 'Enter') {
+            e.preventDefault();
+            submitAddressPair();
+          }
+        });
+      }
+    });
   });
 
   function toggleTheme() {
@@ -1060,19 +1095,24 @@
   }
 
   function resetToForm() {
-    document.getElementById('toName').value = '';
-    document.getElementById('toLine1').value = '';
-    document.getElementById('toLine2').value = '';
-    document.getElementById('toLine3').value = '';
-    document.getElementById('toPincode').value = '';
-    document.getElementById('toPhone').value = '';
-    document.getElementById('toExtraPhone').value = '';
-    document.getElementById('toCity').value = '';
-    document.getElementById('toState').value = '';
-    document.getElementById('toCountry').value = 'India';
+    ['toName', 'toLine1', 'toLine2', 'toLine3', 'toPincode', 'toPhone', 'toExtraPhone', 'toCity', 'toState'].forEach(id => {
+      const el = document.getElementById(id);
+      if (el) {
+        el.value = '';
+        el.style.borderColor = '';
+      }
+    });
+    const countryEl = document.getElementById('toCountry');
+    if (countryEl) countryEl.value = 'India';
+
     editingRecordId = null;
-    const btn = document.getElementById('btnSubmitMain');
-    if (btn) btn.textContent = '✈️ Submit';
+    const btns = document.querySelectorAll('.btn-submit-main');
+    btns.forEach(b => {
+      b.disabled = false;
+      b.textContent = '✈️ Submit';
+    });
+    const banner = document.getElementById('submitStatusBanner');
+    if (banner && banner.dataset.isError === 'true') banner.style.display = 'none';
     showToast('To Address form reset.');
   }
 
@@ -1088,8 +1128,11 @@
     document.getElementById('fromState').value = 'Tamilnadu';
     document.getElementById('fromCountry').value = 'India';
     editingRecordId = null;
-    const btn = document.getElementById('btnSubmitMain');
-    if (btn) btn.textContent = '✈️ Submit';
+    const btns = document.querySelectorAll('.btn-submit-main');
+    btns.forEach(b => {
+      b.disabled = false;
+      b.textContent = '✈️ Submit';
+    });
     showToast('From Address form reset to default.');
   }
 
@@ -1097,24 +1140,70 @@
     resetToForm();
     resetFromForm();
     editingRecordId = null;
-    const btn = document.getElementById('btnSubmitMain');
-    if (btn) btn.textContent = '✈️ Submit';
+    const banner = document.getElementById('submitStatusBanner');
+    if (banner) banner.style.display = 'none';
   }
 
   async function submitAddressPair() {
-    const toName = document.getElementById('toName').value.trim();
-    const toLine1 = document.getElementById('toLine1').value.trim();
-    const toCity = document.getElementById('toCity').value.trim();
-    const toPincode = document.getElementById('toPincode').value.trim();
-    const toPhone = document.getElementById('toPhone').value.trim();
+    const toNameInput = document.getElementById('toName');
+    const toLine1Input = document.getElementById('toLine1');
+    const toCityInput = document.getElementById('toCity');
+    const toStateInput = document.getElementById('toState');
+    const toPincodeInput = document.getElementById('toPincode');
+    const toPhoneInput = document.getElementById('toPhone');
+    const banner = document.getElementById('submitStatusBanner');
 
-    if (!toName || !toLine1 || !toCity || !toPincode || !toPhone) {
-      alert('Please fill all required (*) fields in the To Address section before submitting.');
+    const toName = toNameInput.value.trim();
+    const toLine1 = toLine1Input.value.trim();
+    const toCity = toCityInput.value.trim();
+    const toState = toStateInput.value.trim();
+    const toPincode = toPincodeInput.value.trim();
+    const toPhone = toPhoneInput.value.trim();
+
+    // Reset previous error borders
+    [toNameInput, toLine1Input, toCityInput, toStateInput, toPincodeInput, toPhoneInput].forEach(inp => {
+      inp.style.borderColor = '';
+    });
+
+    // Validate required fields
+    const missing = [];
+    if (!toName) { missing.push('Full Name'); toNameInput.style.borderColor = '#ef4444'; }
+    if (!toLine1) { missing.push('Address Line 1'); toLine1Input.style.borderColor = '#ef4444'; }
+    if (!toPincode) { missing.push('Pincode'); toPincodeInput.style.borderColor = '#ef4444'; }
+    if (!toPhone) { missing.push('Phone Number'); toPhoneInput.style.borderColor = '#ef4444'; }
+    if (!toCity) { missing.push('District / City'); toCityInput.style.borderColor = '#ef4444'; }
+
+    if (missing.length > 0) {
+      const msg = 'Please fill required field(s): ' + missing.join(', ');
+      if (banner) {
+        banner.style.display = 'block';
+        banner.style.background = '#fef2f2';
+        banner.style.color = '#dc2626';
+        banner.style.border = '1px solid #fecaca';
+        banner.dataset.isError = 'true';
+        banner.innerHTML = '⚠️ ' + msg;
+      }
+      showToast(msg);
+      if (!toName) toNameInput.focus();
+      else if (!toLine1) toLine1Input.focus();
+      else if (!toPincode) toPincodeInput.focus();
+      else if (!toPhone) toPhoneInput.focus();
+      else if (!toCity) toCityInput.focus();
       return;
     }
 
+    // Set UI loading state immediately
+    const submitBtns = document.querySelectorAll('.btn-submit-main');
+    submitBtns.forEach(b => {
+      b.disabled = true;
+      b.innerHTML = '⏳ Saving Address...';
+    });
+
+    const isEdit = !!editingRecordId;
+    const recordId = editingRecordId ? editingRecordId : ('ADDR-' + String(Date.now()).slice(-4) + '-' + String(Math.floor(100 + Math.random() * 900)));
+
     const payload = {
-      id: editingRecordId ? editingRecordId : ('ADDR-' + String(Date.now()).slice(-4) + '-' + String(Math.floor(100 + Math.random() * 900))),
+      id: recordId,
       dateTime: new Date().toLocaleString('en-IN', { dateStyle: 'medium', timeStyle: 'short' }),
       to: {
         name: toName,
@@ -1125,7 +1214,7 @@
         phone: toPhone,
         extraPhone: document.getElementById('toExtraPhone').value.trim(),
         city: toCity,
-        state: document.getElementById('toState').value.trim(),
+        state: toState,
         country: document.getElementById('toCountry').value.trim() || 'India'
       },
       from: {
@@ -1144,8 +1233,8 @@
 
     // Save permanently to Server API and sync with Sheet 3 of Master Excel database
     try {
-      const url = editingRecordId ? `/api/addresses/${encodeURIComponent(editingRecordId)}` : '/api/addresses';
-      const method = editingRecordId ? 'PUT' : 'POST';
+      const url = isEdit ? `/api/addresses/${encodeURIComponent(recordId)}` : '/api/addresses';
+      const method = isEdit ? 'PUT' : 'POST';
       const res = await fetch(url, {
         method: method,
         headers: { 'Content-Type': 'application/json' },
@@ -1159,29 +1248,53 @@
       console.warn('Could not sync address to server, saving locally:', err);
     }
 
-    if (editingRecordId) {
-      const idx = historyRecords.findIndex(r => r.id === editingRecordId);
+    if (isEdit) {
+      const idx = historyRecords.findIndex(r => r.id === recordId);
       if (idx !== -1) {
         historyRecords[idx] = payload;
       } else {
         historyRecords.unshift(payload);
       }
-      showToast(`Record ${editingRecordId} updated permanently!`);
       editingRecordId = null;
     } else {
       historyRecords.unshift(payload);
-      showToast(`Address record (${payload.id}) saved permanently to Excel database!`);
     }
 
-    const btn = document.getElementById('btnSubmitMain');
-    if (btn) btn.textContent = '✈️ Submit';
-
     saveHistoryToStorage();
-    renderHistoryTable();
+    renderHistoryTable(payload.id);
     updateMetrics();
 
-    // Scroll down smoothly to History section to show saved record
-    document.querySelector('.history-section').scrollIntoView({ behavior: 'smooth' });
+    // Clear To Address form inputs so it's ready for the next entry
+    ['toName', 'toLine1', 'toLine2', 'toLine3', 'toPincode', 'toPhone', 'toExtraPhone', 'toCity', 'toState'].forEach(id => {
+      const el = document.getElementById(id);
+      if (el) el.value = '';
+    });
+    const countryEl = document.getElementById('toCountry');
+    if (countryEl) countryEl.value = 'India';
+
+    // Show prominent confirmation banner right at the form
+    if (banner) {
+      banner.style.display = 'block';
+      banner.style.background = '#f0fdf4';
+      banner.style.color = '#15803d';
+      banner.style.border = '1px solid #bbf7d0';
+      banner.dataset.isError = 'false';
+      banner.innerHTML = `✅ Address <strong>${escapeHtml(payload.id)}</strong> for <strong>${escapeHtml(toName)}</strong> submitted & saved permanently!`;
+      setTimeout(() => { banner.style.display = 'none'; }, 7000);
+    }
+
+    showToast(`Address record (${payload.id}) saved permanently!`);
+
+    // Reset button states
+    submitBtns.forEach(b => {
+      b.disabled = false;
+      b.innerHTML = '✅ Saved!';
+      setTimeout(() => { b.innerHTML = '✈️ Submit'; }, 1500);
+    });
+
+    // Smooth scroll down to History section to show saved record
+    const histSection = document.querySelector('.history-section');
+    if (histSection) histSection.scrollIntoView({ behavior: 'smooth' });
   }
 
   async function loadSavedHistory() {
@@ -1271,7 +1384,7 @@
     document.getElementById('savedRecordsCount').textContent = historyRecords.length;
   }
 
-  function renderHistoryTable() {
+  function renderHistoryTable(newRecordId = null) {
     const query = (document.getElementById('tableSearch')?.value || '').toLowerCase().trim();
     const tbody = document.getElementById('historyTbody');
     if (!tbody) return;
@@ -1299,6 +1412,7 @@
     }
 
     tbody.innerHTML = filtered.map(r => {
+      const isNew = r.id === newRecordId;
       const to = r.to || {};
       const from = r.from || {};
       const toLocation = [to.city, to.state].map(s => (s || '').trim()).filter(Boolean).join(', ');
@@ -1309,7 +1423,7 @@
       const fromPin = from.pincode ? ` - ${escapeHtml(from.pincode)}` : '';
 
       return `
-        <tr>
+        <tr class="${isNew ? 'newly-added-row' : ''}">
           <td><strong>${escapeHtml(r.id || '')}</strong></td>
           <td style="color: var(--text-secondary); font-size: 13px;">${escapeHtml(r.dateTime || '')}</td>
           <td>
