@@ -656,11 +656,56 @@
   }
 
   @media print {
-    body * { visibility: hidden; }
-    .print-view-overlay, .print-view-overlay * { visibility: visible; }
-    .print-view-overlay { position: absolute; left: 0; top: 0; width: 100%; height: auto; background: none; }
-    .print-view-header, .print-notice { display: none !important; }
-    .shipping-label-card { box-shadow: none; border-color: #000000; }
+    html, body {
+      background: #ffffff !important;
+      color: #000000 !important;
+      margin: 0 !important;
+      padding: 0 !important;
+      width: 100% !important;
+      height: auto !important;
+    }
+    .navbar,
+    .main-container,
+    .print-view-header,
+    .print-notice,
+    .toast-msg,
+    #themeBtn,
+    button {
+      display: none !important;
+      visibility: hidden !important;
+    }
+    .print-view-overlay {
+      display: block !important;
+      position: static !important;
+      width: 100% !important;
+      height: auto !important;
+      background: transparent !important;
+      overflow: visible !important;
+      padding: 0 !important;
+      margin: 0 !important;
+    }
+    .print-canvas-area {
+      display: flex !important;
+      justify-content: center !important;
+      align-items: flex-start !important;
+      padding: 10mm 0 !important;
+      margin: 0 !important;
+      background: transparent !important;
+    }
+    .shipping-label-card {
+      display: flex !important;
+      box-shadow: none !important;
+      border-color: #000000 !important;
+      page-break-inside: avoid !important;
+      break-inside: avoid !important;
+      margin: 0 auto !important;
+      -webkit-print-color-adjust: exact !important;
+      print-color-adjust: exact !important;
+    }
+    .shipping-label-card * {
+      -webkit-print-color-adjust: exact !important;
+      print-color-adjust: exact !important;
+    }
   }
 </style>
 </head>
@@ -873,7 +918,7 @@
       <button class="btn-outline" onclick="openPrintPreview()">🖨️ Print Current</button>
       <button class="btn-outline-blue" onclick="exportToWord()">📥 Export to Word</button>
       <button class="btn-outline" onclick="resetAllForms()">🔄 Reset All</button>
-      <button class="btn-submit-main" onclick="submitAddressPair()">✈️ Submit</button>
+      <button class="btn-submit-main" id="btnSubmitMain" onclick="submitAddressPair()">✈️ Submit</button>
     </div>
   </section>
 
@@ -934,9 +979,9 @@
       </select>
 
       <label style="font-size:13px; color:#475569;">Print Language:</label>
-      <select id="printLang" class="control-select">
+      <select id="printLang" class="control-select" onchange="updatePrintLanguage()">
         <option value="en">English (To / From)</option>
-        <option value="ta">Tamil</option>
+        <option value="ta">Tamil (பெறுநர் / அனுப்புநர்)</option>
       </select>
 
       <label style="font-size:13px; color:#475569;">Border Width:</label>
@@ -954,7 +999,8 @@
 
     <div style="display: flex; gap: 8px;">
       <button class="btn-outline" onclick="closePrintPreview()">Back</button>
-      <button class="btn-submit-main" onclick="window.print()">Print</button>
+      <button class="btn-outline-blue" onclick="exportToWord()">Word (.doc)</button>
+      <button class="btn-submit-main" onclick="window.print()">🖨️ Print Label</button>
     </div>
   </div>
 
@@ -964,7 +1010,7 @@
     <div class="shipping-label-card" id="printableCard" contenteditable="true">
       <!-- TO SECTION -->
       <div class="label-section">
-        <div class="label-header-tag">TO:</div>
+        <div class="label-header-tag" id="labelTagTo">TO:</div>
         <div class="label-person-name" id="printToName">Mohammed irfan T</div>
         <div class="label-text" id="printToAddress">
           No 27 veera anjaneyar street Mangadu<br>
@@ -980,7 +1026,7 @@
 
       <!-- FROM SECTION -->
       <div class="label-section">
-        <div class="label-header-tag">FROM:</div>
+        <div class="label-header-tag" id="labelTagFrom">FROM:</div>
         <div class="label-person-name" id="printFromName">Indian Info Tech</div>
         <div class="label-text" id="printFromAddress">
           101-C, KM Complex,<br>
@@ -1001,6 +1047,7 @@
 <script>
   let historyRecords = [];
   let editingRecordId = null;
+  let currentPrintRecord = null;
 
   document.addEventListener('DOMContentLoaded', () => {
     loadSavedHistory();
@@ -1024,6 +1071,8 @@
     document.getElementById('toState').value = '';
     document.getElementById('toCountry').value = 'India';
     editingRecordId = null;
+    const btn = document.getElementById('btnSubmitMain');
+    if (btn) btn.textContent = '✈️ Submit';
     showToast('To Address form reset.');
   }
 
@@ -1039,6 +1088,8 @@
     document.getElementById('fromState').value = 'Tamilnadu';
     document.getElementById('fromCountry').value = 'India';
     editingRecordId = null;
+    const btn = document.getElementById('btnSubmitMain');
+    if (btn) btn.textContent = '✈️ Submit';
     showToast('From Address form reset to default.');
   }
 
@@ -1046,6 +1097,8 @@
     resetToForm();
     resetFromForm();
     editingRecordId = null;
+    const btn = document.getElementById('btnSubmitMain');
+    if (btn) btn.textContent = '✈️ Submit';
   }
 
   async function submitAddressPair() {
@@ -1073,26 +1126,28 @@
         extraPhone: document.getElementById('toExtraPhone').value.trim(),
         city: toCity,
         state: document.getElementById('toState').value.trim(),
-        country: document.getElementById('toCountry').value.trim()
+        country: document.getElementById('toCountry').value.trim() || 'India'
       },
       from: {
-        name: document.getElementById('fromName').value.trim(),
-        line1: document.getElementById('fromLine1').value.trim(),
-        line2: document.getElementById('fromLine2').value.trim(),
+        name: document.getElementById('fromName').value.trim() || 'Indian Info Tech',
+        line1: document.getElementById('fromLine1').value.trim() || '101-C, KM Complex,',
+        line2: document.getElementById('fromLine2').value.trim() || 'Amma Unavagam Back Side,',
         line3: document.getElementById('fromLine3').value.trim(),
-        pincode: document.getElementById('fromPincode').value.trim(),
-        phone: document.getElementById('fromPhone').value.trim(),
+        pincode: document.getElementById('fromPincode').value.trim() || '637001',
+        phone: document.getElementById('fromPhone').value.trim() || '9003446612',
         extraPhone: document.getElementById('fromExtraPhone').value.trim(),
-        city: document.getElementById('fromCity').value.trim(),
-        state: document.getElementById('fromState').value.trim(),
-        country: document.getElementById('fromCountry').value.trim()
+        city: document.getElementById('fromCity').value.trim() || 'Namakkal',
+        state: document.getElementById('fromState').value.trim() || 'Tamilnadu',
+        country: document.getElementById('fromCountry').value.trim() || 'India'
       }
     };
 
     // Save permanently to Server API and sync with Sheet 3 of Master Excel database
     try {
-      const res = await fetch('/api/addresses', {
-        method: 'POST',
+      const url = editingRecordId ? `/api/addresses/${encodeURIComponent(editingRecordId)}` : '/api/addresses';
+      const method = editingRecordId ? 'PUT' : 'POST';
+      const res = await fetch(url, {
+        method: method,
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload)
       });
@@ -1117,6 +1172,9 @@
       historyRecords.unshift(payload);
       showToast(`Address record (${payload.id}) saved permanently to Excel database!`);
     }
+
+    const btn = document.getElementById('btnSubmitMain');
+    if (btn) btn.textContent = '✈️ Submit';
 
     saveHistoryToStorage();
     renderHistoryTable();
@@ -1202,24 +1260,37 @@
 
   function updateMetrics() {
     document.getElementById('totalRecordsVal').textContent = historyRecords.length;
-    document.getElementById('submittedTodayVal').textContent = historyRecords.length > 0 ? 1 : 0;
+    document.getElementById('submittedTodayVal').textContent = historyRecords.length;
     
-    const uniqueRecipients = new Set(historyRecords.map(r => r.to.name.toLowerCase()));
+    const uniqueRecipients = new Set(
+      historyRecords
+        .map(r => (r && r.to && r.to.name ? r.to.name.trim().toLowerCase() : ''))
+        .filter(Boolean)
+    );
     document.getElementById('uniqueRecipientsVal').textContent = uniqueRecipients.size;
     document.getElementById('savedRecordsCount').textContent = historyRecords.length;
   }
 
   function renderHistoryTable() {
-    const query = document.getElementById('tableSearch').value.toLowerCase().trim();
+    const query = (document.getElementById('tableSearch')?.value || '').toLowerCase().trim();
     const tbody = document.getElementById('historyTbody');
+    if (!tbody) return;
 
     const filtered = historyRecords.filter(r => {
+      if (!r) return false;
+      const id = (r.id || '').toLowerCase();
+      const to = r.to || {};
+      const from = r.from || {};
+      const toName = (to.name || '').toLowerCase();
+      const toCity = (to.city || '').toLowerCase();
+      const toPhone = (to.phone || '');
+      const fromName = (from.name || '').toLowerCase();
       return !query || 
-        r.id.toLowerCase().includes(query) ||
-        r.to.name.toLowerCase().includes(query) ||
-        r.to.city.toLowerCase().includes(query) ||
-        r.to.phone.includes(query) ||
-        r.from.name.toLowerCase().includes(query);
+        id.includes(query) ||
+        toName.includes(query) ||
+        toCity.includes(query) ||
+        toPhone.includes(query) ||
+        fromName.includes(query);
     });
 
     if (filtered.length === 0) {
@@ -1227,68 +1298,82 @@
       return;
     }
 
-    tbody.innerHTML = filtered.map(r => `
-      <tr>
-        <td><strong>${r.id}</strong></td>
-        <td style="color: var(--text-secondary);">${r.dateTime}</td>
-        <td>
-          <strong>${escapeHtml(r.to.name)}</strong><br>
-          <span style="color: var(--text-secondary); font-size:12px;">${escapeHtml(r.to.city)}, ${escapeHtml(r.to.state)} - ${r.to.pincode}</span><br>
-          <span style="color: var(--text-muted); font-size:11px;">📞 ${r.to.phone} ${r.to.extraPhone ? '/ ' + r.to.extraPhone : ''}</span>
-        </td>
-        <td>
-          <strong>${escapeHtml(r.from.name)}</strong><br>
-          <span style="color: var(--text-secondary); font-size:12px;">${escapeHtml(r.from.city)}, ${escapeHtml(r.from.state)} - ${r.from.pincode}</span>
-        </td>
-        <td style="text-align: right;">
-          <div class="table-actions" style="justify-content: flex-end;">
-            <button class="btn-icon-action" onclick="editHistoryRecord('${r.id}')" title="Edit Address Entry">✏️ Edit</button>
-            <button class="btn-icon-action" onclick="printHistoryRecord('${r.id}')" title="Print Shipping Label">🖨️ Print</button>
-            <button class="btn-icon-action" onclick="deleteHistoryRecord('${r.id}')" style="color: #ef4444;" title="Delete Record">🗑️ Delete</button>
-          </div>
-        </td>
-      </tr>
-    `).join('');
+    tbody.innerHTML = filtered.map(r => {
+      const to = r.to || {};
+      const from = r.from || {};
+      const toLocation = [to.city, to.state].map(s => (s || '').trim()).filter(Boolean).join(', ');
+      const toPin = to.pincode ? ` - ${escapeHtml(to.pincode)}` : '';
+      const toPhones = [to.phone, to.extraPhone].map(s => (s || '').trim()).filter(Boolean).join(' / ');
+      
+      const fromLocation = [from.city, from.state].map(s => (s || '').trim()).filter(Boolean).join(', ');
+      const fromPin = from.pincode ? ` - ${escapeHtml(from.pincode)}` : '';
+
+      return `
+        <tr>
+          <td><strong>${escapeHtml(r.id || '')}</strong></td>
+          <td style="color: var(--text-secondary); font-size: 13px;">${escapeHtml(r.dateTime || '')}</td>
+          <td>
+            <strong>${escapeHtml(to.name || 'N/A')}</strong><br>
+            <span style="color: var(--text-secondary); font-size:12px;">${escapeHtml(toLocation)}${toPin}</span>
+            ${toPhones ? `<br><span style="color: var(--text-muted); font-size:11px;">📞 ${escapeHtml(toPhones)}</span>` : ''}
+          </td>
+          <td>
+            <strong>${escapeHtml(from.name || 'N/A')}</strong><br>
+            <span style="color: var(--text-secondary); font-size:12px;">${escapeHtml(fromLocation)}${fromPin}</span>
+          </td>
+          <td style="text-align: right;">
+            <div class="table-actions" style="justify-content: flex-end;">
+              <button class="btn-icon-action" onclick="editHistoryRecord('${escapeHtml(r.id)}')" title="Edit Address Entry">✏️ Edit</button>
+              <button class="btn-icon-action" onclick="printHistoryRecord('${escapeHtml(r.id)}')" title="Print Shipping Label">🖨️ Print</button>
+              <button class="btn-icon-action" onclick="deleteHistoryRecord('${escapeHtml(r.id)}')" style="color: #ef4444;" title="Delete Record">🗑️ Delete</button>
+            </div>
+          </td>
+        </tr>
+      `;
+    }).join('');
   }
 
   function editHistoryRecord(id) {
     const record = historyRecords.find(r => r.id === id);
     if (!record) return;
 
-    // Set active editing record ID
     editingRecordId = record.id;
+    const to = record.to || {};
+    const from = record.from || {};
 
     // Populate TO form fields
-    document.getElementById('toName').value = record.to.name || '';
-    document.getElementById('toLine1').value = record.to.line1 || '';
-    document.getElementById('toLine2').value = record.to.line2 || '';
-    document.getElementById('toLine3').value = record.to.line3 || '';
-    document.getElementById('toPincode').value = record.to.pincode || '';
-    document.getElementById('toPhone').value = record.to.phone || '';
-    document.getElementById('toExtraPhone').value = record.to.extraPhone || '';
-    document.getElementById('toCity').value = record.to.city || '';
-    document.getElementById('toState').value = record.to.state || '';
-    document.getElementById('toCountry').value = record.to.country || 'India';
+    document.getElementById('toName').value = to.name || '';
+    document.getElementById('toLine1').value = to.line1 || '';
+    document.getElementById('toLine2').value = to.line2 || '';
+    document.getElementById('toLine3').value = to.line3 || '';
+    document.getElementById('toPincode').value = to.pincode || '';
+    document.getElementById('toPhone').value = to.phone || '';
+    document.getElementById('toExtraPhone').value = to.extraPhone || '';
+    document.getElementById('toCity').value = to.city || '';
+    document.getElementById('toState').value = to.state || '';
+    document.getElementById('toCountry').value = to.country || 'India';
 
     // Populate FROM form fields
-    document.getElementById('fromName').value = record.from.name || '';
-    document.getElementById('fromLine1').value = record.from.line1 || '';
-    document.getElementById('fromLine2').value = record.from.line2 || '';
-    document.getElementById('fromLine3').value = record.from.line3 || '';
-    document.getElementById('fromPincode').value = record.from.pincode || '';
-    document.getElementById('fromPhone').value = record.from.phone || '';
-    document.getElementById('fromExtraPhone').value = record.from.extraPhone || '';
-    document.getElementById('fromCity').value = record.from.city || '';
-    document.getElementById('fromState').value = record.from.state || '';
-    document.getElementById('fromCountry').value = record.from.country || 'India';
+    document.getElementById('fromName').value = from.name || '';
+    document.getElementById('fromLine1').value = from.line1 || '';
+    document.getElementById('fromLine2').value = from.line2 || '';
+    document.getElementById('fromLine3').value = from.line3 || '';
+    document.getElementById('fromPincode').value = from.pincode || '';
+    document.getElementById('fromPhone').value = from.phone || '';
+    document.getElementById('fromExtraPhone').value = from.extraPhone || '';
+    document.getElementById('fromCity').value = from.city || '';
+    document.getElementById('fromState').value = from.state || '';
+    document.getElementById('fromCountry').value = from.country || 'India';
 
-    // Scroll smoothly to form section
+    const btn = document.getElementById('btnSubmitMain');
+    if (btn) btn.textContent = `💾 Update (${record.id})`;
+
     document.querySelector('.forms-grid').scrollIntoView({ behavior: 'smooth' });
-    showToast(`Loaded ${record.id} for editing. Modify fields and click Submit to update.`);
+    showToast(`Loaded ${record.id} for editing. Modify fields and click Update.`);
   }
 
   async function deleteHistoryRecord(id) {
-    if (!confirm('Are you sure you want to delete this record?')) return;
+    if (!confirm('Are you sure you want to delete this address record?')) return;
     try {
       await fetch('/api/addresses/' + encodeURIComponent(id), {
         method: 'DELETE'
@@ -1297,64 +1382,188 @@
       console.warn('Could not delete address on server:', err);
     }
     historyRecords = historyRecords.filter(r => r.id !== id);
-    if (editingRecordId === id) editingRecordId = null;
+    if (editingRecordId === id) {
+      editingRecordId = null;
+      const btn = document.getElementById('btnSubmitMain');
+      if (btn) btn.textContent = '✈️ Submit';
+    }
     saveHistoryToStorage();
     renderHistoryTable();
     updateMetrics();
     showToast('Record deleted permanently.');
   }
 
+  function updatePrintLanguage() {
+    const lang = document.getElementById('printLang')?.value || 'en';
+    const tagTo = document.getElementById('labelTagTo');
+    const tagFrom = document.getElementById('labelTagFrom');
+    if (tagTo) tagTo.textContent = lang === 'ta' ? 'பெறுநர் (TO):' : 'TO:';
+    if (tagFrom) tagFrom.textContent = lang === 'ta' ? 'அனுப்புநர் (FROM):' : 'FROM:';
+
+    if (currentPrintRecord) {
+      populatePrintData(currentPrintRecord);
+    }
+  }
+
   function printHistoryRecord(id) {
     const record = historyRecords.find(r => r.id === id);
-    if (!record) return;
-    populatePrintData(record);
-    openPrintPreview();
+    if (!record) {
+      showToast('Record not found.');
+      return;
+    }
+    openPrintPreview(record);
   }
 
   function populatePrintData(record) {
-    document.getElementById('printToName').textContent = record.to.name;
-    document.getElementById('printToAddress').innerHTML = `${escapeHtml(record.to.line1)} ${escapeHtml(record.to.line2)} ${escapeHtml(record.to.line3)}<br>${escapeHtml(record.to.city)}, ${escapeHtml(record.to.state)}`;
-    document.getElementById('printToPin').textContent = `PIN: ${record.to.pincode}`;
-    document.getElementById('printToCountry').textContent = record.to.country || 'India';
+    if (!record) return;
+    const to = record.to || {};
+    const from = record.from || {};
+    const lang = document.getElementById('printLang')?.value || 'en';
+    const phoneLabel = lang === 'ta' ? 'தொலைபேசி எண்' : 'Phone';
+    const pinLabel = lang === 'ta' ? 'அஞ்சல் குறியீடு' : 'PIN';
+
+    // TO Name & Address lines
+    document.getElementById('printToName').textContent = to.name || '';
     
-    let toPhoneStr = `Phone: ${record.to.phone}`;
-    if (record.to.extraPhone) toPhoneStr += ` / ${record.to.extraPhone}`;
-    document.getElementById('printToPhone').textContent = toPhoneStr;
+    const toLines = [to.line1, to.line2, to.line3].map(s => (s || '').trim()).filter(Boolean);
+    const toCityState = [to.city, to.state].map(s => (s || '').trim()).filter(Boolean).join(', ');
+    let toAddrHtml = toLines.map(escapeHtml).join('<br>');
+    if (toCityState) {
+      toAddrHtml += (toAddrHtml ? '<br>' : '') + escapeHtml(toCityState);
+    }
+    document.getElementById('printToAddress').innerHTML = toAddrHtml;
 
-    document.getElementById('printFromName').textContent = record.from.name;
-    document.getElementById('printFromAddress').innerHTML = `${escapeHtml(record.from.line1)}<br>${escapeHtml(record.from.line2)}<br>${escapeHtml(record.from.city)}, ${escapeHtml(record.from.state)}`;
-    document.getElementById('printFromPin').textContent = `PIN: ${record.from.pincode}`;
-    document.getElementById('printFromCountry').textContent = record.from.country || 'India';
-    document.getElementById('printFromPhone').textContent = `Phone: ${record.from.phone}`;
-  }
-
-  function openPrintPreview() {
-    const toName = document.getElementById('toName').value.trim();
-    const toLine1 = document.getElementById('toLine1').value.trim();
-    const toCity = document.getElementById('toCity').value.trim();
-    const toState = document.getElementById('toState').value.trim();
-    const toPincode = document.getElementById('toPincode').value.trim();
-    const toPhone = document.getElementById('toPhone').value.trim();
-    const toExtraPhone = document.getElementById('toExtraPhone').value.trim();
-    const toCountry = document.getElementById('toCountry').value.trim();
-
-    if (toName || toLine1) {
-      document.getElementById('printToName').textContent = toName || 'Mohammed irfan T';
-      document.getElementById('printToAddress').innerHTML = `${escapeHtml(toLine1 || 'No 27 veera anjaneyar street Mangadu')}<br>${escapeHtml(toCity || 'Chennai')}, ${escapeHtml(toState || 'Tamilnadu')}`;
-      document.getElementById('printToPin').textContent = `PIN: ${toPincode || '600122'}`;
-      document.getElementById('printToCountry').textContent = toCountry || 'India';
-      
-      let phoneStr = `Phone: ${toPhone || '9363635355'}`;
-      if (toExtraPhone) phoneStr += ` / ${toExtraPhone}`;
-      document.getElementById('printToPhone').textContent = phoneStr;
-
-      document.getElementById('printFromName').textContent = document.getElementById('fromName').value.trim() || 'Indian Info Tech';
-      document.getElementById('printFromAddress').innerHTML = `${escapeHtml(document.getElementById('fromLine1').value.trim() || '101-C, KM Complex,')}<br>${escapeHtml(document.getElementById('fromLine2').value.trim() || 'Amma Unavagam Back Side,')}<br>${escapeHtml(document.getElementById('fromCity').value.trim() || 'Namakkal')}, ${escapeHtml(document.getElementById('fromState').value.trim() || 'Tamilnadu')}`;
-      document.getElementById('printFromPin').textContent = `PIN: ${document.getElementById('fromPincode').value.trim() || '637001'}`;
-      document.getElementById('printFromCountry').textContent = document.getElementById('fromCountry').value.trim() || 'India';
-      document.getElementById('printFromPhone').textContent = `Phone: ${document.getElementById('fromPhone').value.trim() || '9003446612'}`;
+    const toPinEl = document.getElementById('printToPin');
+    if (to.pincode) {
+      toPinEl.textContent = `${pinLabel}: ${to.pincode}`;
+      toPinEl.style.display = 'block';
+    } else {
+      toPinEl.textContent = '';
+      toPinEl.style.display = 'none';
     }
 
+    document.getElementById('printToCountry').textContent = to.country || 'India';
+
+    const toPhones = [to.phone, to.extraPhone].map(s => (s || '').trim()).filter(Boolean).join(' / ');
+    const toPhoneEl = document.getElementById('printToPhone');
+    if (toPhones) {
+      toPhoneEl.textContent = `${phoneLabel}: ${toPhones}`;
+      toPhoneEl.style.display = 'block';
+    } else {
+      toPhoneEl.textContent = '';
+      toPhoneEl.style.display = 'none';
+    }
+
+    // FROM Name & Address lines
+    document.getElementById('printFromName').textContent = from.name || 'Indian Info Tech';
+    
+    const fromLines = [from.line1, from.line2, from.line3].map(s => (s || '').trim()).filter(Boolean);
+    const fromCityState = [from.city, from.state].map(s => (s || '').trim()).filter(Boolean).join(', ');
+    let fromAddrHtml = fromLines.map(escapeHtml).join('<br>');
+    if (fromCityState) {
+      fromAddrHtml += (fromAddrHtml ? '<br>' : '') + escapeHtml(fromCityState);
+    }
+    document.getElementById('printFromAddress').innerHTML = fromAddrHtml;
+
+    const fromPinEl = document.getElementById('printFromPin');
+    if (from.pincode) {
+      fromPinEl.textContent = `${pinLabel}: ${from.pincode}`;
+      fromPinEl.style.display = 'block';
+    } else {
+      fromPinEl.textContent = '';
+      fromPinEl.style.display = 'none';
+    }
+
+    document.getElementById('printFromCountry').textContent = from.country || 'India';
+
+    const fromPhones = [from.phone, from.extraPhone].map(s => (s || '').trim()).filter(Boolean).join(' / ');
+    const fromPhoneEl = document.getElementById('printFromPhone');
+    if (fromPhones) {
+      fromPhoneEl.textContent = `${phoneLabel}: ${fromPhones}`;
+      fromPhoneEl.style.display = 'block';
+    } else {
+      fromPhoneEl.textContent = '';
+      fromPhoneEl.style.display = 'none';
+    }
+  }
+
+  function openPrintPreview(record = null) {
+    if (record) {
+      currentPrintRecord = record;
+    } else {
+      const toName = document.getElementById('toName').value.trim();
+      const toLine1 = document.getElementById('toLine1').value.trim();
+      const toCity = document.getElementById('toCity').value.trim();
+      const toState = document.getElementById('toState').value.trim();
+      const toPincode = document.getElementById('toPincode').value.trim();
+      const toPhone = document.getElementById('toPhone').value.trim();
+      const toExtraPhone = document.getElementById('toExtraPhone').value.trim();
+      const toCountry = document.getElementById('toCountry').value.trim();
+
+      if (toName || toLine1 || toCity) {
+        currentPrintRecord = {
+          id: 'CURRENT',
+          dateTime: new Date().toLocaleString('en-IN', { dateStyle: 'medium', timeStyle: 'short' }),
+          to: {
+            name: toName,
+            line1: toLine1,
+            line2: document.getElementById('toLine2').value.trim(),
+            line3: document.getElementById('toLine3').value.trim(),
+            pincode: toPincode,
+            phone: toPhone,
+            extraPhone: toExtraPhone,
+            city: toCity,
+            state: toState,
+            country: toCountry || 'India'
+          },
+          from: {
+            name: document.getElementById('fromName').value.trim() || 'Indian Info Tech',
+            line1: document.getElementById('fromLine1').value.trim() || '101-C, KM Complex,',
+            line2: document.getElementById('fromLine2').value.trim() || 'Amma Unavagam Back Side,',
+            line3: document.getElementById('fromLine3').value.trim(),
+            pincode: document.getElementById('fromPincode').value.trim() || '637001',
+            phone: document.getElementById('fromPhone').value.trim() || '9003446612',
+            extraPhone: document.getElementById('fromExtraPhone').value.trim(),
+            city: document.getElementById('fromCity').value.trim() || 'Namakkal',
+            state: document.getElementById('fromState').value.trim() || 'Tamilnadu',
+            country: document.getElementById('fromCountry').value.trim() || 'India'
+          }
+        };
+      } else if (historyRecords && historyRecords.length > 0) {
+        currentPrintRecord = historyRecords[0];
+      } else {
+        currentPrintRecord = {
+          id: 'SAMPLE',
+          to: {
+            name: 'Mohammed irfan T',
+            line1: 'No 27 veera anjaneyar street',
+            line2: 'Mangadu',
+            line3: '',
+            pincode: '600122',
+            phone: '9363635355',
+            extraPhone: '8122666555',
+            city: 'Chennai',
+            state: 'Tamilnadu',
+            country: 'India'
+          },
+          from: {
+            name: 'Indian Info Tech',
+            line1: '101-C, KM Complex,',
+            line2: 'Amma Unavagam Back Side,',
+            line3: '',
+            pincode: '637001',
+            phone: '9003446612',
+            extraPhone: '',
+            city: 'Namakkal',
+            state: 'Tamilnadu',
+            country: 'India'
+          }
+        };
+      }
+    }
+
+    updatePrintLanguage();
+    populatePrintData(currentPrintRecord);
     applyPrintStyles();
     document.getElementById('printPreviewOverlay').style.display = 'flex';
   }
@@ -1367,11 +1576,11 @@
     const card = document.getElementById('printableCard');
     if (!card) return;
 
-    const width = document.getElementById('printBorderWidth').value || 2;
-    const style = document.getElementById('printBorderStyle').value || 'solid';
-    const fontAdjust = parseInt(document.getElementById('printFontSize').value || 0, 10);
-    const orientation = document.getElementById('printOrientation').value || 'portrait';
-    const pageSize = document.getElementById('printPageSize').value || 'A5';
+    const width = document.getElementById('printBorderWidth')?.value || 2;
+    const style = document.getElementById('printBorderStyle')?.value || 'solid';
+    const fontAdjust = parseInt(document.getElementById('printFontSize')?.value || 0, 10);
+    const orientation = document.getElementById('printOrientation')?.value || 'portrait';
+    const pageSize = document.getElementById('printPageSize')?.value || 'A5';
 
     card.style.border = `${width}px ${style} #000000`;
 
@@ -1408,7 +1617,25 @@
   }
 
   function exportToWord() {
-    const cardHtml = document.getElementById('printableCard').outerHTML;
+    const card = document.getElementById('printableCard');
+    if (!card) return;
+    const cardHtml = `
+      <html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:w="urn:schemas-microsoft-com:office:word" xmlns="http://www.w3.org/TR/REC-html40">
+      <head><meta charset="utf-8"><title>Shipping Label</title>
+      <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .shipping-label-card { border: 2px solid #000; padding: 24px; max-width: 520px; }
+        .label-header-tag { font-weight: bold; font-size: 16px; margin-bottom: 4px; }
+        .label-person-name { font-weight: bold; font-size: 18px; margin-bottom: 4px; color: #000; }
+        .label-text { font-size: 14px; line-height: 1.45; }
+        .label-divider { border-top: 2px dashed #000; margin: 16px 0; }
+      </style>
+      </head>
+      <body>
+        ${card.outerHTML}
+      </body>
+      </html>
+    `;
     const blob = new Blob(['\ufeff' + cardHtml], { type: 'application/msword' });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
@@ -1417,7 +1644,7 @@
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);
-    showToast('Exported to Word document.');
+    showToast('Exported to Word document (.doc).');
   }
 
   function exportHistoryCSV() {
@@ -1425,12 +1652,28 @@
       showToast('No records to export.');
       return;
     }
-    const headers = ['ID', 'DateTime', 'To_Name', 'To_City', 'To_Pincode', 'To_Phone', 'From_Name', 'From_City', 'From_Phone'];
-    const rows = historyRecords.map(r => [
-      r.id, r.dateTime, r.to.name, r.to.city, r.to.pincode, r.to.phone, r.from.name, r.from.city, r.from.phone
-    ].map(v => `"${(v || '').replace(/"/g, '""')}"`));
+    const headers = ['ID', 'DateTime', 'To_Name', 'To_Line1', 'To_Line2', 'To_City', 'To_State', 'To_Pincode', 'To_Phone', 'To_ExtraPhone', 'From_Name', 'From_City', 'From_Phone'];
+    const rows = historyRecords.map(r => {
+      const to = r.to || {};
+      const from = r.from || {};
+      return [
+        r.id || '',
+        r.dateTime || '',
+        to.name || '',
+        to.line1 || '',
+        to.line2 || '',
+        to.city || '',
+        to.state || '',
+        to.pincode || '',
+        to.phone || '',
+        to.extraPhone || '',
+        from.name || '',
+        from.city || '',
+        from.phone || ''
+      ].map(v => `"${(v || '').toString().replace(/"/g, '""')}"`);
+    });
 
-    const csvContent = 'data:text/csv;charset=utf-8,' + [headers.join(','), ...rows.map(e => e.join(','))].join('\n');
+    const csvContent = 'data:text/csv;charset=utf-8,\ufeff' + [headers.join(','), ...rows.map(e => e.join(','))].join('\n');
     const encoded = encodeURI(csvContent);
     const link = document.createElement('a');
     link.href = encoded;
@@ -1438,7 +1681,7 @@
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
-    showToast('Exported history to CSV/Excel.');
+    showToast('Exported history to CSV.');
   }
 
   function escapeHtml(str) {
@@ -1447,6 +1690,7 @@
 
   function showToast(msg) {
     const toast = document.getElementById('toastMsg');
+    if (!toast) return;
     toast.textContent = msg;
     toast.style.display = 'block';
     setTimeout(() => { toast.style.display = 'none'; }, 3000);
