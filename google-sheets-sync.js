@@ -74,7 +74,8 @@ class GoogleSheetsSync {
     this.configFilePath = configFilePath;
     this.isSyncing = false;
     this.lastPullTime = 0;
-    this.cacheTTLMs = 25000; // 25 seconds
+    this.cacheTTLMs = 60000; // 60 seconds TTL for background freshness
+    this.cachedData = null;
   }
 
   getConfig() {
@@ -247,23 +248,35 @@ class GoogleSheetsSync {
     this.isSyncing = true;
     try {
       // Non-destructive safeguard: if any entity array is empty and force is not set,
-      // preserve existing records from the remote sheet so partial syncs never wipe other sheets
+      // preserve existing records from cache or remote sheet so partial syncs never wipe other sheets
       if (!options.force && (submissions.length === 0 || staff.length === 0 || addresses.length === 0)) {
-        try {
-          const pulled = await this.pullFromGoogleSheets();
-          if (pulled.success) {
-            if (submissions.length === 0 && Array.isArray(pulled.students) && pulled.students.length > 0) {
-              submissions = pulled.students;
-            }
-            if (staff.length === 0 && Array.isArray(pulled.staff) && pulled.staff.length > 0) {
-              staff = pulled.staff;
-            }
-            if (addresses.length === 0 && Array.isArray(pulled.addresses) && pulled.addresses.length > 0) {
-              addresses = pulled.addresses;
-            }
+        if (this.cachedData && (this.cachedData.students?.length > 0 || this.cachedData.staff?.length > 0 || this.cachedData.addresses?.length > 0)) {
+          if (submissions.length === 0 && Array.isArray(this.cachedData.students) && this.cachedData.students.length > 0) {
+            submissions = this.cachedData.students;
           }
-        } catch (pullErr) {
-          console.warn('[GoogleSheets] Safeguard pull skipped:', pullErr.message);
+          if (staff.length === 0 && Array.isArray(this.cachedData.staff) && this.cachedData.staff.length > 0) {
+            staff = this.cachedData.staff;
+          }
+          if (addresses.length === 0 && Array.isArray(this.cachedData.addresses) && this.cachedData.addresses.length > 0) {
+            addresses = this.cachedData.addresses;
+          }
+        } else {
+          try {
+            const pulled = await this.pullFromGoogleSheets();
+            if (pulled.success) {
+              if (submissions.length === 0 && Array.isArray(pulled.students) && pulled.students.length > 0) {
+                submissions = pulled.students;
+              }
+              if (staff.length === 0 && Array.isArray(pulled.staff) && pulled.staff.length > 0) {
+                staff = pulled.staff;
+              }
+              if (addresses.length === 0 && Array.isArray(pulled.addresses) && pulled.addresses.length > 0) {
+                addresses = pulled.addresses;
+              }
+            }
+          } catch (pullErr) {
+            console.warn('[GoogleSheets] Safeguard pull skipped:', pullErr.message);
+          }
         }
       }
 
@@ -446,10 +459,24 @@ class GoogleSheetsSync {
   /**
    * Pulls rows from Google Sheet to restore / import into database
    */
-  async pullFromGoogleSheets() {
+  async pullFromGoogleSheets(options = {}) {
     const config = this.getConfig();
     if (!config.webAppUrl || !config.webAppUrl.trim()) {
       return { success: false, error: 'Google Apps Script Web App URL is not configured' };
+    }
+
+    const force = typeof options === 'boolean' ? options : !!options.force;
+    const now = Date.now();
+    if (!force && this.cachedData && (now - this.lastPullTime < this.cacheTTLMs)) {
+      return {
+        success: true,
+        spreadsheetName: this.cachedData.spreadsheetName || config.spreadsheetName || 'IIT Database Master',
+        spreadsheetUrl: this.cachedData.spreadsheetUrl || config.spreadsheetUrl,
+        staff: this.cachedData.staff || [],
+        students: this.cachedData.students || [],
+        addresses: this.cachedData.addresses || [],
+        cached: true
+      };
     }
 
     try {
@@ -552,6 +579,14 @@ class GoogleSheetsSync {
       })).filter(a => a.id || (a.to && a.to.name));
 
       // Update cached info
+      this.cachedData = {
+        staff: staffList,
+        students: studentList,
+        addresses: addressList,
+        spreadsheetName: data.spreadsheetName || config.spreadsheetName || 'IIT Database Master',
+        spreadsheetUrl: data.spreadsheetUrl || config.spreadsheetUrl
+      };
+
       this.saveConfig({
         spreadsheetName: data.spreadsheetName || config.spreadsheetName || 'IIT Database Master',
         spreadsheetUrl: data.spreadsheetUrl || config.spreadsheetUrl

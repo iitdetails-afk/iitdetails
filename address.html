@@ -1067,6 +1067,9 @@
   let isSubmitting = false;
 
   document.addEventListener('DOMContentLoaded', () => {
+    // 0ms instant render from local storage cache
+    renderCachedAddressesFirst();
+    // Background seamless refresh from server API
     loadSavedHistory();
 
     // Attach real-time input validation clearers and Enter key submission
@@ -1377,6 +1380,22 @@
         b.innerHTML = '✅ Saved!';
         setTimeout(() => { b.innerHTML = '✈️ Submit'; }, 1500);
       });
+    }
+  }
+
+  function renderCachedAddressesFirst() {
+    try {
+      const local = localStorage.getItem('iit_address_history');
+      if (local) {
+        const parsed = JSON.parse(local);
+        if (Array.isArray(parsed) && parsed.length > 0) {
+          historyRecords = deduplicateRecords(parsed);
+          renderHistoryTable();
+          updateMetrics();
+        }
+      }
+    } catch (e) {
+      console.warn('Local cache render error:', e);
     }
   }
 
