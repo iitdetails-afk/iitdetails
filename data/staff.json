@@ -1,1 +1,13 @@
-[]
+[
+  {
+    "staffId": "STF123k",
+    "name": "KISHOOR .n",
+    "mobile": "9361092298",
+    "email": "nkishoork@gmail.com",
+    "department": "web",
+    "role": "trainee",
+    "status": "Active",
+    "createdAt": "2026-02-11T04:54:59.000Z",
+    "updatedAt": "2026-02-11T05:29:45.000Z"
+  }
+]

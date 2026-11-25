@@ -7,119 +7,185 @@
 <link rel="stylesheet" href="theme.css">
 <style>
   :root{
-    --paper: var(--theme-surface, #ffffff);
-    --ink: var(--theme-text, #0f172a);
-    --navy: var(--theme-bg, #091322);
-    --brass: var(--theme-accent, #3b82f6);
-    --rule: var(--theme-border, #e2e8f0);
-    --accent: var(--theme-accent-hover, #2563eb);
+    --paper: #ffffff;
+    --paper-card: #f8fafc;
+    --ink: #0f172a;
+    --ink-muted: #64748b;
+    --navy: #0f2744;
+    --navy-mid: #1e3a8a;
+    --brass: #2563eb;
+    --rule: #cbd5e1;
+    --rule-card: #e2e8f0;
+    --accent: #2563eb;
+    --accent-hover: #1d4ed8;
+    --success: #16a34a;
   }
   *{box-sizing:border-box;}
+  
   body{
     margin:0;
     min-height:100vh;
-    background: var(--theme-bg-gradient, linear-gradient(135deg, #091322 0%, #152844 100%));
+    background: radial-gradient(circle at 50% 0%, #ffffff 0%, #eef3f9 60%, #e2e8f0 100%);
     font-family:'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
     color:var(--ink);
     padding:24px 16px;
   }
+  
   .wrap{
-    max-width:840px;
+    max-width:920px;
     margin:0 auto;
-    background:var(--paper);
-    padding:32px;
-    box-shadow: var(--theme-card-shadow, 0 20px 50px rgba(0,0,0,0.2));
-    border-radius:24px;
-    border:1px solid var(--rule);
-    backdrop-filter: blur(16px);
+    background:#ffffff;
+    padding:36px;
+    box-shadow: 0 20px 45px rgba(15, 23, 42, 0.08), 0 1px 3px rgba(15, 23, 42, 0.05);
+    border-radius:20px;
+    border:1px solid #cbd5e1;
   }
+  
   .top-nav{
     display:flex;
     flex-wrap:wrap;
     gap:10px;
     justify-content:flex-end;
-    margin-bottom:14px;
+    margin-bottom:20px;
   }
   .top-nav a{
     text-decoration:none;
     color:var(--navy);
-    padding:8px 12px;
+    padding:8px 14px;
     border:1px solid var(--rule);
     border-radius:999px;
-    background:#fffdf9;
+    background:#ffffff;
     font-size:13px;
+    font-weight:600;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+    transition: all 0.2s ease;
   }
-  .top-nav a.active{background:var(--navy); color:#fff; border-color:var(--navy);} 
-  .page-meta{font-size:13px; color:var(--brass); margin:0 0 12px; text-align:center;}
+  .top-nav a:hover{ border-color: var(--accent); color: var(--accent); }
+  .top-nav a.active{ background:var(--navy); color:#fff; border-color:var(--navy); } 
+  
   .page-header{
     display:flex;
     align-items:center;
-    gap:16px;
-    padding:10px 12px 18px;
-    margin-bottom:8px;
-    border-bottom:1px solid var(--rule);
+    gap:18px;
+    padding-bottom:20px;
+    margin-bottom:24px;
+    border-bottom:2px solid #e2e8f0;
   }
   .brand-mark{
     width:76px;
     height:76px;
-    border-radius:50%;
+    border-radius:16px;
     display:grid;
     place-items:center;
     background:#fff;
     padding:8px;
-    box-shadow:0 8px 18px rgba(19,38,61,.12);
+    box-shadow:0 8px 20px rgba(15,39,68,.1);
+    border: 1px solid #cbd5e1;
     flex-shrink:0;
   }
   .brand-mark img{width:100%; height:100%; object-fit:contain;}
-  .page-header h1{margin:0 0 4px; color:var(--navy); font-size:24px; letter-spacing:.04em;}
-  .page-header p{margin:0; font-size:13px; color:var(--brass); line-height:1.5;}
-  .field{margin-bottom:14px;}
-  label{display:block; margin-bottom:6px; font-size:13px; color:var(--navy); font-weight:600;}
-  input, textarea, select{
-    width:100%;
-    padding:10px 12px;
-    border:1px solid var(--rule);
-    border-radius:10px;
-    font-family:inherit;
-    font-size:14px;
-    background:#fffdf9;
-    color:var(--ink);
-    box-shadow:inset 0 1px 2px rgba(0,0,0,.04);
+  .page-header h1{margin:0 0 6px; color:var(--navy); font-size:26px; font-weight:800; letter-spacing:-0.02em;}
+  .page-header p{margin:0; font-size:14px; color:#475569; line-height:1.5;}
+  
+  /* Section Cards */
+  .form-section-card {
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 14px;
+    padding: 24px;
+    margin-bottom: 24px;
+    box-shadow: 0 2px 8px rgba(15, 23, 42, 0.03);
+    position: relative;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
   }
-  input:focus, textarea:focus{outline:none; border-color:var(--accent); box-shadow:0 0 0 3px rgba(139,34,52,.12);} 
-  textarea{min-height:62px; resize:vertical;}
-  .checkbox-row{display:grid; grid-template-columns:repeat(2, minmax(0, 1fr)); gap:16px; margin-top:6px;}
-  .checkbox-row .field{background:#fffdf9; border:1px solid var(--rule); border-radius:12px; padding:12px;}
-  .checkbox-row input{width:auto; margin-right:8px; accent-color:var(--accent);}
-  .photo-preview{margin-top:8px; display:flex; align-items:center; justify-content:flex-start;}
-  .photo-preview img{max-width:140px; max-height:140px; object-fit:cover; border-radius:12px; border:1px solid var(--rule); background:#fff; display:none;}
-  .actions{display:flex; gap:10px; flex-wrap:wrap; margin-top:18px;}
-  button, .link-btn{
-    border:1px solid var(--navy);
-    background:var(--navy);
-    color:#fff;
-    padding:10px 16px;
-    border-radius:999px;
-    cursor:pointer;
-    font-family:inherit;
-    text-decoration:none;
-    display:inline-block;
-    box-shadow:0 6px 14px rgba(19,38,61,.12);
+  .form-section-card:hover {
+    border-color: #cbd5e1;
+    box-shadow: 0 4px 16px rgba(15, 23, 42, 0.06);
   }
-  button.secondary, .link-btn.secondary{background:transparent;color:var(--navy);}
-  .note{font-size:13px; color:var(--brass); margin:0 0 14px; text-align:center;}
-  @media (max-width:600px){
-    .wrap{padding:20px 16px;}
-    .page-header{flex-direction:column; align-items:flex-start;}
-    .brand-mark{width:64px; height:64px;}
-    .checkbox-row{grid-template-columns:1fr;}
+  .section-card-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 18px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid #f1f5f9;
   }
-  @media print {
-    body{background:#fff; padding:8mm;}
-    .wrap{box-shadow:none; border:1px solid var(--navy); border-radius:0; padding:10mm 12mm; max-width:none; margin:0;}
-    .top-nav, .actions{display:none !important;}
-    .field{page-break-inside:avoid;}
+  .section-card-num {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    background: var(--navy);
+    color: #ffffff;
+    font-size: 13px;
+    font-weight: 700;
+    display: grid;
+    place-items: center;
+    flex-shrink: 0;
   }
+  .section-card-title {
+    margin: 0;
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--navy);
+  }
+  .section-card-desc {
+    margin: 2px 0 0;
+    font-size: 12px;
+    color: var(--ink-muted);
+  }
+  
+  /* Form Grid Layout */
+  .form-grid-2 {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 16px 20px;
+  }
+  .field {
+    display: flex;
+    flex-direction: column;
+  }
+  .field.span-2 {
+    grid-column: span 2;
+  }
+  
+  label {
+    display: block;
+    margin-bottom: 6px;
+    font-size: 13px;
+    color: var(--navy);
+    font-weight: 700;
+    letter-spacing: 0.01em;
+  }
+  label .req {
+    color: #ef4444;
+  }
+  
+  input, textarea, select {
+    width: 100%;
+    padding: 10px 14px;
+    border: 1.5px solid #cbd5e1;
+    border-radius: 10px;
+    font-family: inherit;
+    font-size: 14px;
+    font-weight: 500;
+    background: #ffffff;
+    color: var(--ink);
+    box-shadow: inset 0 1px 2px rgba(0,0,0,.03);
+    transition: all 0.2s ease;
+  }
+  input:focus, textarea:focus {
+    outline: none;
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
+    background: #ffffff;
+  }
+  textarea {
+    min-height: 72px;
+    resize: vertical;
+    line-height: 1.45;
+  }
+  
+  /* Photo & Signature Styling */
   .photo-mode-selector {
     display: flex;
     gap: 8px;
@@ -127,39 +193,38 @@
   }
   .mode-btn {
     flex: 1;
-    padding: 10px;
-    border: 1px solid var(--rule);
-    border-radius: 10px;
-    background: #fffdf9;
+    padding: 9px 12px;
+    border: 1.5px solid #cbd5e1;
+    border-radius: 8px;
+    background: #f8fafc;
     cursor: pointer;
-    font-size: 13px;
-    font-weight: 600;
+    font-size: 12px;
+    font-weight: 700;
     color: var(--navy);
     transition: all 0.2s ease;
   }
   .mode-btn.active {
     background: var(--navy);
-    color: #fff;
+    color: #ffffff;
     border-color: var(--navy);
   }
   .camera-container {
-    border: 1px solid var(--rule);
+    border: 1px solid #cbd5e1;
     border-radius: 12px;
-    padding: 16px;
-    background: #fffdf9;
+    padding: 14px;
+    background: #f8fafc;
     text-align: center;
     margin-bottom: 12px;
   }
   .camera-stream-wrapper {
     position: relative;
     width: 100%;
-    max-width: 320px;
+    max-width: 280px;
     margin: 0 auto;
     aspect-ratio: 4/3;
-    background: #13263d;
-    border-radius: 10px;
+    background: #091322;
+    border-radius: 8px;
     overflow: hidden;
-    box-shadow: inset 0 2px 6px rgba(0,0,0,0.3);
   }
   .camera-stream-wrapper video {
     width: 100%;
@@ -167,38 +232,312 @@
     object-fit: cover;
   }
   .camera-controls {
-    margin-top: 12px;
+    margin-top: 10px;
     display: flex;
     gap: 8px;
     justify-content: center;
   }
   .camera-controls button {
-    padding: 8px 14px;
+    padding: 7px 12px;
     font-size: 12px;
+    border-radius: 6px;
+    font-weight: 600;
+  }
+  .photo-preview-box {
+    margin-top: 10px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .preview-label {
+    font-size: 12px;
+    font-weight: 600;
+    color: #64748b;
   }
   .photo-preview-wrapper {
     position: relative;
     display: inline-block;
   }
+  .photo-preview-wrapper img {
+    width: 90px;
+    height: 110px;
+    object-fit: cover;
+    border-radius: 8px;
+    border: 1.5px solid #cbd5e1;
+    background: #fff;
+    display: none;
+  }
   .remove-photo-btn {
     position: absolute;
-    top: -8px;
-    right: -8px;
-    width: 24px;
-    height: 24px;
+    top: -6px;
+    right: -6px;
+    width: 22px;
+    height: 22px;
     border-radius: 50%;
     border: none;
-    background: var(--accent);
+    background: #ef4444;
     color: white;
     cursor: pointer;
     display: none;
     align-items: center;
     justify-content: center;
     font-weight: bold;
-    font-size: 14px;
+    font-size: 13px;
     box-shadow: 0 2px 6px rgba(0,0,0,0.25);
     padding: 0;
     line-height: 1;
+  }
+  
+  /* Signature Box */
+  .signature-preview-card {
+    margin-top: 10px;
+    border: 1.5px dashed #cbd5e1;
+    border-radius: 10px;
+    padding: 12px;
+    background: #f8fafc;
+    text-align: center;
+  }
+  .sig-preview-title {
+    display: block;
+    font-size: 11px;
+    font-weight: 700;
+    color: #64748b;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: 4px;
+  }
+  .sig-render-text {
+    font-family: 'Brush Script MT', cursive, Georgia, serif;
+    font-size: 24px;
+    color: #0f172a;
+    min-height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  /* Term Toggles */
+  .term-toggles-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 12px;
+    margin-top: 6px;
+  }
+  .term-toggle-card {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 14px;
+    border: 1.5px solid #cbd5e1;
+    border-radius: 10px;
+    background: #f8fafc;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    user-select: none;
+  }
+  .term-toggle-card:hover {
+    border-color: var(--accent);
+    background: #ffffff;
+  }
+  .term-toggle-card input[type="checkbox"] {
+    width: 18px;
+    height: 18px;
+    cursor: pointer;
+    accent-color: var(--accent);
+    margin: 0;
+  }
+  .term-toggle-card .term-name {
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--navy);
+  }
+  
+  /* Actions */
+  .actions {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+    margin-top: 28px;
+    padding-top: 20px;
+    border-top: 1px solid #e2e8f0;
+  }
+  button, .link-btn {
+    font-family: inherit;
+    font-size: 14px;
+    font-weight: 600;
+    padding: 11px 22px;
+    border-radius: 999px;
+    cursor: pointer;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    box-shadow: 0 4px 14px rgba(15,39,68,.12);
+    transition: transform .2s ease, box-shadow .2s ease, background .2s ease;
+  }
+  button.btn-primary {
+    background: var(--navy);
+    color: #ffffff;
+    border: 1px solid var(--navy);
+  }
+  button.btn-primary:hover {
+    background: var(--navy-mid);
+    transform: translateY(-1px);
+    box-shadow: 0 6px 18px rgba(15,39,68,.2);
+  }
+  button.btn-secondary {
+    background: #ffffff;
+    color: var(--navy);
+    border: 1.5px solid #cbd5e1;
+  }
+  button.btn-secondary:hover {
+    border-color: var(--navy);
+    background: #f8fafc;
+    transform: translateY(-1px);
+  }
+  button.btn-ghost, .link-btn.secondary {
+    background: transparent;
+    color: var(--navy);
+    border: 1.5px solid #cbd5e1;
+    box-shadow: none;
+  }
+  button.btn-ghost:hover, .link-btn.secondary:hover {
+    border-color: var(--navy);
+    background: #f8fafc;
+  }
+  
+  @media (max-width: 640px) {
+    .wrap { padding: 20px 16px; }
+    .form-grid-2 { grid-template-columns: 1fr; }
+    .field.span-2 { grid-column: span 1; }
+    .term-toggles-grid { grid-template-columns: repeat(2, 1fr); }
+    .actions { flex-direction: column; }
+    .actions button, .actions a { width: 100%; justify-content: center; }
+  }
+  
+  /* Print Styles */
+  @media print {
+    @page { size: A4 portrait; margin: 8mm 10mm; }
+    html, body {
+      background: #ffffff !important;
+      color: #000000 !important;
+      margin: 0 !important;
+      padding: 0 !important;
+      font-size: 12px !important;
+      display: block !important;
+      -webkit-print-color-adjust: exact !important;
+      print-color-adjust: exact !important;
+    }
+    body::before {
+      display: none !important;
+    }
+    .wrap {
+      box-shadow: none !important;
+      border: none !important;
+      border-radius: 0 !important;
+      padding: 0 !important;
+      max-width: none !important;
+      margin: 0 !important;
+      page-break-inside: avoid !important;
+      break-inside: avoid !important;
+    }
+    .top-nav, .actions, .photo-mode-selector, #uploadContainer, #cameraContainer, #liveSyncStatusBadge, .remove-photo-btn {
+      display: none !important;
+    }
+    .page-header {
+      padding-bottom: 8px !important;
+      margin-bottom: 12px !important;
+      border-bottom: 2px solid #000 !important;
+    }
+    .brand-mark {
+      width: 60px !important;
+      height: 60px !important;
+      box-shadow: none !important;
+      border: 1px solid #000 !important;
+    }
+    .page-header h1 {
+      font-size: 18px !important;
+      color: #000 !important;
+    }
+    .page-header p {
+      font-size: 11px !important;
+      color: #333 !important;
+    }
+    .form-section-card {
+      border: 1.5px solid #000 !important;
+      box-shadow: none !important;
+      background: #ffffff !important;
+      margin-bottom: 10px !important;
+      padding: 10px 14px !important;
+      page-break-inside: avoid !important;
+    }
+    .section-card-header {
+      border-bottom: 1px solid #000 !important;
+      padding-bottom: 4px !important;
+      margin-bottom: 8px !important;
+    }
+    .section-card-num {
+      background: #000 !important;
+      color: #fff !important;
+      width: 20px !important;
+      height: 20px !important;
+      font-size: 11px !important;
+    }
+    .section-card-title {
+      color: #000 !important;
+      font-size: 13px !important;
+    }
+    .section-card-desc {
+      display: none !important;
+    }
+    .field label {
+      color: #000 !important;
+      font-size: 11px !important;
+      font-weight: bold !important;
+      margin-bottom: 2px !important;
+    }
+    input, textarea {
+      border: none !important;
+      border-bottom: 1px solid #000 !important;
+      border-radius: 0 !important;
+      background: transparent !important;
+      color: #000 !important;
+      font-weight: bold !important;
+      font-size: 12px !important;
+      padding: 1px 0 !important;
+      box-shadow: none !important;
+      min-height: auto !important;
+    }
+    textarea {
+      min-height: 28px !important;
+    }
+    .photo-preview-wrapper img {
+      width: 75px !important;
+      height: 90px !important;
+      border: 1px solid #000 !important;
+    }
+    .signature-preview-card {
+      border: 1px solid #000 !important;
+      padding: 4px !important;
+      background: #fff !important;
+    }
+    .sig-render-text {
+      color: #000 !important;
+      font-size: 18px !important;
+      min-height: 24px !important;
+    }
+    .term-toggles-grid {
+      gap: 8px !important;
+    }
+    .term-toggle-card {
+      border: 1px solid #000 !important;
+      padding: 3px 6px !important;
+      background: #fff !important;
+    }
+    .term-toggle-card .term-name {
+      color: #000 !important;
+      font-size: 11px !important;
+    }
   }
 </style>
 </head>
@@ -218,143 +557,203 @@
       <div>
         <h1>Saved User Details</h1>
         <p>Enter your information in clear sections so it stays easy to review and reuse in the application form.</p>
-        <div id="liveSyncStatusBadge" style="display: inline-flex; align-items: center; gap: 6px; font-size: 11px; padding: 3px 10px; border-radius: 999px; background: #f0fdf4; color: #15803d; border: 1px solid #bbf7d0; font-weight: 600; margin-top: 6px;">
+        <div id="liveSyncStatusBadge" style="display: inline-flex; align-items: center; gap: 6px; font-size: 11px; padding: 4px 12px; border-radius: 999px; background: #f0fdf4; color: #15803d; border: 1px solid #bbf7d0; font-weight: 600; margin-top: 6px;">
           <span style="display: inline-block; width: 7px; height: 7px; border-radius: 50%; background: #22c55e;"></span>
           <span>Checking database sync status...</span>
         </div>
       </div>
     </div>
 
-    
-
     <form id="detailsForm">
-      <div class="field">
-        <label for="name">Name</label>
-        <input id="name" name="name" type="text">
-      </div>
-
-      <div class="field">
-        <label for="yearDept">Year / Dept</label>
-        <input id="yearDept" name="yearDept" type="text">
-      </div>
-
-      <div class="field">
-        <label for="collegeSchool">College / School</label>
-        <input id="collegeSchool" name="collegeSchool" type="text">
-      </div>
-
-      <div class="field">
-        <label for="email">Email</label>
-        <input id="email" name="email" type="email">
-      </div>
-
-      <div class="field">
-        <label>Photo</label>
-        <div class="photo-mode-selector">
-          <button type="button" id="btnModeUpload" class="mode-btn active">📁 Upload File</button>
-          <button type="button" id="btnModeCamera" class="mode-btn">📷 Use Camera</button>
-        </div>
-
-        <div id="uploadContainer">
-          <input id="photo" name="photo" type="file" accept="image/*">
-        </div>
-
-        <div id="cameraContainer" class="camera-container" style="display: none;">
-          <div class="camera-stream-wrapper">
-            <video id="cameraVideo" autoplay playsinline></video>
-            <canvas id="cameraCanvas" style="display: none;"></canvas>
-          </div>
-          <div class="camera-controls">
-            <button type="button" id="btnCapturePhoto" class="secondary">Capture Photo</button>
-            <button type="button" id="btnSwitchCamera" class="secondary" style="display: none;">Switch Camera</button>
+      <!-- Section 1: Personal & Academic Details -->
+      <div class="form-section-card">
+        <div class="section-card-header">
+          <span class="section-card-num">1</span>
+          <div>
+            <h3 class="section-card-title">Personal & Academic Details</h3>
+            <p class="section-card-desc">Basic student credentials and institutional affiliation</p>
           </div>
         </div>
-
-        <div class="photo-preview" style="margin-top: 12px; display: flex; flex-direction: column; align-items: flex-start;">
-          <label style="font-size: 12px; color: var(--brass);">Preview:</label>
-          <div class="photo-preview-wrapper">
-            <img id="photoPreview" alt="Selected photo preview">
-            <button type="button" id="btnRemovePhoto" class="remove-photo-btn" title="Remove Photo">×</button>
+        <div class="form-grid-2">
+          <div class="field">
+            <label for="name">Full Name <span class="req">*</span></label>
+            <input id="name" name="name" type="text" placeholder="e.g. Rahul Sharma" required>
+          </div>
+          <div class="field">
+            <label for="yearDept">Year / Department</label>
+            <input id="yearDept" name="yearDept" type="text" placeholder="e.g. III Year / B.Tech CSE">
+          </div>
+          <div class="field">
+            <label for="collegeSchool">College / School</label>
+            <input id="collegeSchool" name="collegeSchool" type="text" placeholder="e.g. Government Engineering College">
+          </div>
+          <div class="field">
+            <label for="email">Email Address</label>
+            <input id="email" name="email" type="email" placeholder="e.g. student@example.com">
           </div>
         </div>
       </div>
 
-      <div class="field">
-        <label for="address">Address</label>
-        <textarea id="address" name="address"></textarea>
-      </div>
-
-      <div class="field">
-        <label for="mobile1">Mobile 1</label>
-        <input id="mobile1" name="mobile1" type="tel">
-      </div>
-
-      <div class="field">
-        <label for="mobile2">Mobile 2</label>
-        <input id="mobile2" name="mobile2" type="tel">
-      </div>
-
-      <div class="field">
-        <label for="pincode">Pincode</label>
-        <input id="pincode" name="pincode" type="text">
-      </div>
-
-      <div class="field">
-        <label for="title">Title Course / Project</label>
-        <input id="title" name="title" type="text">
-      </div>
-
-      <div class="field">
-        <label for="howKnow">How you know about this institute?</label>
-        <input id="howKnow" name="howKnow" type="text">
-      </div>
-
-      <div class="field">
-        <label for="signature">Signature</label>
-        <input id="signature" name="signature" type="text">
-      </div>
-
-      <div class="field">
-        <label for="feesFixed">Fees Fixed</label>
-        <input id="feesFixed" name="feesFixed" type="text">
-      </div>
-
-      <div class="field">
-        <label for="dateJoining">Date of Joining</label>
-        <input id="dateJoining" name="dateJoining" type="date">
-      </div>
-
-      <div class="field">
-        <label for="certNo">Certificate No.</label>
-        <input id="certNo" name="certNo" type="text">
-      </div>
-
-      <div class="field">
-        <label for="dateIssue">Date of Issue</label>
-        <input id="dateIssue" name="dateIssue" type="date">
-      </div>
-
-      <div class="checkbox-row">
-        <div class="field">
-          <label for="term1"><input id="term1" name="term1" type="checkbox"> Term 1</label>
+      <!-- Section 2: Photo & Signature Identification -->
+      <div class="form-section-card">
+        <div class="section-card-header">
+          <span class="section-card-num">2</span>
+          <div>
+            <h3 class="section-card-title">Photo & Signature Identification</h3>
+            <p class="section-card-desc">Passport size student portrait and official signature</p>
+          </div>
         </div>
-        <div class="field">
-          <label for="term2"><input id="term2" name="term2" type="checkbox"> Term 2</label>
+        <div class="form-grid-2">
+          <div class="field photo-field-container">
+            <label>Student Photograph</label>
+            <div class="photo-mode-selector">
+              <button type="button" id="btnModeUpload" class="mode-btn active">📁 Upload File</button>
+              <button type="button" id="btnModeCamera" class="mode-btn">📷 Use Camera</button>
+            </div>
+
+            <div id="uploadContainer">
+              <input id="photo" name="photo" type="file" accept="image/*">
+            </div>
+
+            <div id="cameraContainer" class="camera-container" style="display: none;">
+              <div class="camera-stream-wrapper">
+                <video id="cameraVideo" autoplay playsinline></video>
+                <canvas id="cameraCanvas" style="display: none;"></canvas>
+              </div>
+              <div class="camera-controls">
+                <button type="button" id="btnCapturePhoto" class="btn-primary" style="padding: 7px 14px; font-size: 12px;">📸 Capture Photo</button>
+                <button type="button" id="btnSwitchCamera" class="btn-secondary" style="display: none; padding: 7px 14px; font-size: 12px;">🔄 Switch</button>
+              </div>
+            </div>
+
+            <div class="photo-preview-box">
+              <span class="preview-label">Preview:</span>
+              <div class="photo-preview-wrapper">
+                <img id="photoPreview" alt="Selected photo preview">
+                <button type="button" id="btnRemovePhoto" class="remove-photo-btn" title="Remove Photo">×</button>
+              </div>
+            </div>
+          </div>
+
+          <div class="field signature-field-container">
+            <label for="signature">Student Signature (Full Name)</label>
+            <input id="signature" name="signature" type="text" placeholder="Type name for stylized signature">
+            <div class="signature-preview-card">
+              <span class="sig-preview-title">Signature Preview</span>
+              <div id="sigPreviewText" class="sig-render-text">Your Signature</div>
+            </div>
+          </div>
         </div>
-        <div class="field">
-          <label for="term3"><input id="term3" name="term3" type="checkbox"> Term 3</label>
+      </div>
+
+      <!-- Section 3: Contact & Address Details -->
+      <div class="form-section-card">
+        <div class="section-card-header">
+          <span class="section-card-num">3</span>
+          <div>
+            <h3 class="section-card-title">Residential Address & Contact Information</h3>
+            <p class="section-card-desc">Permanent postal address and active phone numbers</p>
+          </div>
         </div>
-        <div class="field">
-          <label for="term4"><input id="term4" name="term4" type="checkbox"> Term 4</label>
+        <div class="form-grid-2">
+          <div class="field span-2">
+            <label for="address">Full Residential Address</label>
+            <textarea id="address" name="address" rows="2" placeholder="Door No, Street Name, City, District, State"></textarea>
+          </div>
+          <div class="field">
+            <label for="mobile1">Primary Mobile (Mobile 1)</label>
+            <input id="mobile1" name="mobile1" type="tel" placeholder="10-digit primary number">
+          </div>
+          <div class="field">
+            <label for="mobile2">Secondary Mobile (Mobile 2)</label>
+            <input id="mobile2" name="mobile2" type="tel" placeholder="Alternative contact number">
+          </div>
+          <div class="field">
+            <label for="pincode">Postal Pincode</label>
+            <input id="pincode" name="pincode" type="text" maxlength="6" placeholder="e.g. 637001">
+          </div>
+        </div>
+      </div>
+
+      <!-- Section 4: Course & Referral -->
+      <div class="form-section-card">
+        <div class="section-card-header">
+          <span class="section-card-num">4</span>
+          <div>
+            <h3 class="section-card-title">Course & Referral Details</h3>
+            <p class="section-card-desc">Program enrolled and institution reference source</p>
+          </div>
+        </div>
+        <div class="form-grid-2">
+          <div class="field">
+            <label for="title">Applied Course / Project Title</label>
+            <input id="title" name="title" type="text" placeholder="e.g. Full Stack Web Development">
+          </div>
+          <div class="field">
+            <label for="howKnow">How did you know about this institute?</label>
+            <input id="howKnow" name="howKnow" type="text" placeholder="e.g. Friends / Social Media / College Seminar">
+          </div>
+        </div>
+      </div>
+
+      <!-- Section 5: Office Administration & Fee Terms -->
+      <div class="form-section-card">
+        <div class="section-card-header">
+          <span class="section-card-num">5</span>
+          <div>
+            <h3 class="section-card-title">Office Administration & Fee Terms</h3>
+            <p class="section-card-desc">Administrative records, fee structure, and certificate tracking</p>
+          </div>
+        </div>
+        <div class="form-grid-2">
+          <div class="field">
+            <label for="feesFixed">Fees Fixed (₹)</label>
+            <input id="feesFixed" name="feesFixed" type="text" placeholder="e.g. 15000">
+          </div>
+          <div class="field">
+            <label for="dateJoining">Date of Joining</label>
+            <input id="dateJoining" name="dateJoining" type="date">
+          </div>
+          <div class="field">
+            <label for="certNo">Certificate Number</label>
+            <input id="certNo" name="certNo" type="text" placeholder="e.g. IIT-CERT-2026-089">
+          </div>
+          <div class="field">
+            <label for="dateIssue">Date of Issue</label>
+            <input id="dateIssue" name="dateIssue" type="date">
+          </div>
+          <div class="field span-2">
+            <label>Fee Installment Terms Covered:</label>
+            <div class="term-toggles-grid">
+              <label class="term-toggle-card">
+                <input id="term1" name="term1" type="checkbox">
+                <span class="term-name">Term 1</span>
+              </label>
+              <label class="term-toggle-card">
+                <input id="term2" name="term2" type="checkbox">
+                <span class="term-name">Term 2</span>
+              </label>
+              <label class="term-toggle-card">
+                <input id="term3" name="term3" type="checkbox">
+                <span class="term-name">Term 3</span>
+              </label>
+              <label class="term-toggle-card">
+                <input id="term4" name="term4" type="checkbox">
+                <span class="term-name">Term 4</span>
+              </label>
+            </div>
+          </div>
         </div>
       </div>
 
       <div class="actions">
-        <button type="submit">Save & Fill Form</button>
-        <button type="button" id="clearBtn" class="secondary">Clear Form</button>
-        <a class="link-btn secondary" href="form.html">Open Application Form</a>
+        <button type="submit" class="btn-primary">💾 Save & Fill Form</button>
+        <button type="button" onclick="window.print()" class="btn-secondary">🖨️ Print Details</button>
+        <button type="button" id="clearBtn" class="btn-ghost">🧹 Clear Form</button>
+        <a class="link-btn secondary" href="form.html">📄 Open Application Form</a>
       </div>
     </form>
+  </div>
   </div>
 
 <script>
@@ -377,6 +776,14 @@
   let currentPhotoDataUrl = '';
   let cameraStream = null;
   let useFacingMode = 'user'; // 'user' or 'environment'
+
+  const sigInput = document.getElementById('signature');
+  const sigPreviewText = document.getElementById('sigPreviewText');
+  sigInput?.addEventListener('input', () => {
+    if (sigPreviewText) {
+      sigPreviewText.textContent = sigInput.value.trim() || 'Your Signature';
+    }
+  });
 
   function setPhotoPreview(dataUrl) {
     currentPhotoDataUrl = dataUrl || '';
@@ -486,6 +893,7 @@
     if (confirm('Are you sure you want to clear the form and reset draft details?')) {
       form.reset();
       setPhotoPreview('');
+      if (sigPreviewText) sigPreviewText.textContent = 'Your Signature';
       if (photoInput) photoInput.value = '';
       localStorage.removeItem(DETAILS_KEY);
       try {
@@ -529,6 +937,10 @@
       setPhotoPreview(data.photo);
     } else {
       setPhotoPreview('');
+    }
+
+    if (sigPreviewText) {
+      sigPreviewText.textContent = data.signature && data.signature.trim() ? data.signature.trim() : 'Your Signature';
     }
   }
 
@@ -661,7 +1073,7 @@
         const resData = await response.json().catch(() => ({}));
         if (response.ok && resData.success && resData.saved) {
           const savedId = resData.saved.submissionId;
-          const submissions = getStoredSubmissions();
+          const submissions = readStoredSubmissions();
           if (editingSubmissionId) {
             const idx = submissions.findIndex(s => s.submissionId === editingSubmissionId);
             if (idx !== -1) submissions[idx] = resData.saved; else submissions.push(resData.saved);

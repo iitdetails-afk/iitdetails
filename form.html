@@ -6,58 +6,76 @@
 <link rel="stylesheet" href="theme.css">
 <style>
   :root{
-    --paper: var(--theme-surface, #ffffff);
-    --ink: var(--theme-text, #0f172a);
-    --navy: var(--theme-bg, #091322);
-    --brass: var(--theme-accent, #3b82f6);
-    --rule: var(--theme-border, #e2e8f0);
-    --accent: var(--theme-accent-hover, #2563eb);
-    --soft: var(--theme-surface-secondary, #f8fafc);
+    --paper: #ffffff;
+    --ink: #0f172a;
+    --navy: #0f2744;
+    --navy-mid: #1e3a8a;
+    --brass: #2563eb;
+    --rule: #cbd5e1;
+    --rule-dark: #334155;
+    --accent: #2563eb;
+    --soft: #f8fafc;
   }
   *{box-sizing:border-box;}
-  @page { size: A4; margin: 8mm; }
+  
   body{
     margin:0;
     min-height:100vh;
-    background: var(--theme-bg-gradient, linear-gradient(135deg, #091322 0%, #152844 100%));
+    background: radial-gradient(circle at 50% 0%, #ffffff 0%, #eef3f9 60%, #e2e8f0 100%);
     font-family:'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
     color:var(--ink);
-    padding:16px;
+    padding:24px 16px;
     display:flex;
     justify-content:center;
   }
+  
   .sheet{
-    background:#fffdf9;
+    background:#ffffff;
     width:100%;
-    max-width:780px;
-    padding:30px 40px;
-    box-shadow:0 10px 30px rgba(0,0,0,0.08);
+    max-width:820px;
+    padding:36px 44px;
+    box-shadow: 0 20px 45px rgba(15, 23, 42, 0.08), 0 1px 3px rgba(15, 23, 42, 0.05);
     position:relative;
-    border-radius:12px;
-    border:1px solid var(--rule);
+    border-radius:16px;
+    border:1px solid #cbd5e1;
   }
   .top-nav{display:flex;flex-wrap:wrap;gap:10px;justify-content:flex-end;margin-bottom:20px;}
-  .top-nav a{text-decoration:none;color:var(--navy);padding:8px 12px;border:1px solid var(--rule);border-radius:999px;background:#fffdf9;font-size:13px;font-weight:600;}
+  .top-nav a{text-decoration:none;color:var(--navy);padding:8px 14px;border:1px solid var(--rule);border-radius:999px;background:#ffffff;font-size:13px;font-weight:600;box-shadow: 0 1px 2px rgba(0,0,0,0.05);transition: all 0.2s ease;}
+  .top-nav a:hover{border-color: var(--accent); color: var(--accent);}
   .top-nav a.active{background:var(--navy);color:#fff;border-color:var(--navy);} 
   
   .crest{
-    display:flex; flex-direction:column; align-items:center; gap:6px;
-    margin-bottom:15px;
+    display:flex; flex-direction:column; align-items:center; gap:4px;
+    margin-bottom:12px;
   }
   .crest img{
-    width:110px;height:70px;object-fit:contain;
+    width:100px;height:65px;object-fit:contain;
+  }
+  .crest .brand-title {
+    font-size: 16px;
+    font-weight: 800;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--navy);
+  }
+  .crest .brand-sub {
+    font-size: 10px;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: #64748b;
+    font-weight: 600;
   }
   
   h1.title{
     text-align:center;
     font-size:22px;
-    letter-spacing:.1em;
-    margin:10px 0 25px;
+    letter-spacing:.12em;
+    margin:10px 0 20px;
     text-decoration:underline;
     text-underline-offset:6px;
     text-transform:uppercase;
     color:var(--navy);
-    font-weight:bold;
+    font-weight:800;
   }
 
   /* Personal Details Layout */
@@ -65,84 +83,96 @@
     display: flex;
     justify-content: space-between;
     align-items: flex-start;
-    gap: 20px;
+    gap: 24px;
     margin-bottom: 12px;
   }
   .left-fields {
     flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
   }
   .right-photo {
     flex-shrink: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
   }
   
   .field-row {
     display: flex;
     align-items: flex-end;
-    margin-bottom: 14px;
   }
   .field-row.tall {
     align-items: flex-start;
   }
   .field-label {
-    font-size: 15px;
+    font-size: 14px;
     color: var(--navy);
-    font-weight: 600;
+    font-weight: 700;
     width: 140px;
     flex-shrink: 0;
+    letter-spacing: 0.01em;
   }
   .field-colon {
-    font-size: 15px;
+    font-size: 14px;
     color: var(--navy);
-    font-weight: 600;
-    width: 20px;
+    font-weight: 700;
+    width: 16px;
     flex-shrink: 0;
+    text-align: center;
   }
   .line-input {
     border: none;
-    border-bottom: 1px dotted #555;
+    border-bottom: 1.5px dotted #64748b;
     background: transparent;
     font-family: inherit;
     font-size: 15px;
+    font-weight: 600;
     color: var(--ink);
-    padding: 2px 4px;
+    padding: 2px 6px;
     flex: 1;
     width: 100%;
+    transition: border-color 0.2s ease, background 0.2s ease;
   }
   .line-input:focus {
     outline: none;
-    border-bottom: 1px solid var(--navy);
+    border-bottom: 2px solid var(--accent);
+    background: rgba(37, 99, 235, 0.03);
   }
   textarea.line-input {
-    resize: none;
-    min-height: 52px;
+    resize: vertical;
+    min-height: 48px;
     line-height: 1.4;
+    padding-top: 4px;
   }
   
   /* Photo Box */
   .photo-box {
-    width: 120px;
+    width: 115px;
     height: 140px;
-    border: 1px solid #777;
-    border-radius: 12px;
+    border: 1.5px dashed #64748b;
+    border-radius: 10px;
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    font-size: 12px;
+    font-size: 11px;
     text-align: center;
-    color: #444;
-    font-weight: bold;
+    color: #64748b;
+    font-weight: 700;
     overflow: hidden;
-    background: transparent;
-    padding: 4px;
-    line-height: 1.4;
+    background: #f8fafc;
+    padding: 6px;
+    line-height: 1.35;
+    box-shadow: inset 0 1px 3px rgba(0,0,0,0.04);
   }
   .photo-box img {
     width: 100%;
     height: 100%;
     object-fit: cover;
     display: none;
-    border-radius: 8px;
+    border-radius: 6px;
   }
   
   /* Contact Details Layout */
@@ -150,18 +180,17 @@
     display: flex;
     justify-content: space-between;
     align-items: flex-start;
-    gap: 20px;
+    gap: 24px;
     margin-bottom: 12px;
   }
   .left-contact {
     flex: 1;
   }
   .right-contact {
-    width: 260px;
+    width: 270px;
     display: flex;
     flex-direction: column;
-    align-items: stretch;
-    gap: 15px;
+    gap: 12px;
   }
   
   .mobile-row {
@@ -179,75 +208,61 @@
     align-items: center;
     gap: 8px;
   }
-  .mobile-input-item span {
-    font-size: 15px;
-    font-weight: bold;
-    color: var(--navy);
-  }
-  
-  .email-row {
-    display: flex;
-    align-items: flex-end;
-    width: 100%;
-  }
-  .email-row .field-label {
-    width: 75px;
+  .num-prefix {
     font-size: 14px;
+    font-weight: 700;
+    color: var(--navy);
+    width: 16px;
   }
   
-  .pincode-container {
-    display: flex;
-    justify-content: flex-start;
-    padding-left: 75px;
+  .email-label, .pincode-label-row {
+    width: 75px !important;
   }
+  
   .pincode-box-custom {
-    border: 1px solid #555;
-    border-radius: 8px;
-    width: 150px;
-    padding: 6px;
+    border: 1.5px solid #64748b;
+    border-radius: 6px;
+    width: 100%;
+    max-width: 150px;
+    padding: 4px 8px;
     display: flex;
-    flex-direction: column;
     align-items: center;
-  }
-  .pincode-label {
-    font-size: 11px;
-    font-weight: bold;
-    color: #555;
-    margin-bottom: 2px;
+    background: #ffffff;
   }
   .pincode-val {
     border: none;
     background: transparent;
-    font-size: 16px;
-    font-weight: bold;
+    font-size: 15px;
+    font-weight: 700;
+    letter-spacing: 0.15em;
     text-align: center;
     width: 100%;
     outline: none;
+    color: var(--ink);
   }
   
   /* Course row */
   .course-row {
     display: flex;
     align-items: center;
-    margin-bottom: 15px;
-  }
-  .course-row .field-label {
-    width: 160px;
+    margin-bottom: 14px;
   }
   .course-box-custom {
-    border: 1px solid #555;
-    border-radius: 4px;
+    border: 1.5px solid #64748b;
+    border-radius: 6px;
     flex: 1;
     padding: 6px 12px;
+    background: #ffffff;
   }
   .course-input {
     border: none;
     background: transparent;
     width: 100%;
-    font-size: 16px;
-    font-weight: bold;
+    font-size: 15px;
+    font-weight: 700;
     outline: none;
     font-family: inherit;
+    color: var(--ink);
   }
   
   /* How Know & Signature */
@@ -255,7 +270,7 @@
     display: flex;
     justify-content: space-between;
     align-items: flex-end;
-    gap: 20px;
+    gap: 24px;
     margin-bottom: 12px;
   }
   .know-field {
@@ -263,8 +278,8 @@
   }
   .field-label-block {
     display: block;
-    font-size: 15px;
-    font-weight: 600;
+    font-size: 14px;
+    font-weight: 700;
     color: var(--navy);
     margin-bottom: 8px;
   }
@@ -272,48 +287,54 @@
     flex-shrink: 0;
   }
   .signature-box-custom {
-    border: 1px solid #555;
+    border: 1.5px solid #64748b;
     border-radius: 8px;
     width: 220px;
-    padding: 8px;
+    padding: 8px 12px;
     display: flex;
     flex-direction: column;
     align-items: center;
-    min-height: 70px;
+    min-height: 72px;
     justify-content: space-between;
+    background: #ffffff;
   }
   .signature-label {
-    font-size: 11px;
-    font-weight: bold;
-    color: #555;
+    font-size: 10px;
+    font-weight: 700;
+    color: #64748b;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
   }
   .signature-val {
     border: none;
     background: transparent;
     font-family: 'Brush Script MT', cursive, Georgia, serif;
-    font-size: 18px;
+    font-size: 20px;
     text-align: center;
     width: 100%;
     outline: none;
+    color: #0f172a;
   }
   
   /* Divider */
   .thick-divider {
     border: none;
-    border-top: 1.5px solid #333;
-    margin: 15px 0;
+    border-top: 2px solid var(--navy);
+    border-bottom: 1px solid var(--navy);
+    height: 4px;
+    margin: 16px 0;
   }
   
   /* Office Use Only */
   .office-title {
     text-align: center;
-    font-size: 16px;
+    font-size: 15px;
     text-decoration: underline;
     text-underline-offset: 5px;
-    letter-spacing: 0.1em;
-    margin: 15px 0;
+    letter-spacing: 0.12em;
+    margin: 14px 0;
     color: var(--navy);
-    font-weight: bold;
+    font-weight: 800;
     text-transform: uppercase;
   }
   
@@ -321,219 +342,293 @@
     display: flex;
     justify-content: space-between;
     align-items: stretch;
-    gap: 15px;
+    gap: 16px;
   }
   .office-left, .office-right {
-    width: 38%;
+    width: 37%;
     display: flex;
     flex-direction: column;
     gap: 10px;
   }
   .office-middle {
-    width: 20%;
+    width: 26%;
     display: flex;
     align-items: center;
     justify-content: center;
   }
   
   .office-box-custom {
-    border: 1px solid #555;
-    border-radius: 4px;
+    border: 1.5px solid #64748b;
+    border-radius: 6px;
     padding: 6px 10px;
     display: flex;
     flex-direction: column;
     justify-content: space-between;
     min-height: 48px;
+    background: #ffffff;
   }
   .office-box-label {
-    font-size: 11px;
-    color: #555;
-    font-weight: bold;
+    font-size: 10px;
+    color: #475569;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
     margin-bottom: 2px;
   }
   .office-box-val {
     border: none;
     background: transparent;
     font-size: 14px;
-    font-weight: bold;
+    font-weight: 700;
     outline: none;
     padding: 0;
     font-family: inherit;
+    color: var(--ink);
   }
   
   .term-print-container {
-    border: 1px solid #555;
-    border-radius: 4px;
+    border: 1.5px solid #64748b;
+    border-radius: 6px;
     width: 100%;
     overflow: hidden;
+    background: #ffffff;
   }
   .term-print-item {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 6px 10px;
+    padding: 6px 12px;
     font-size: 12px;
-    font-weight: bold;
-    border-bottom: 1px solid #555;
-    background: #fff;
+    font-weight: 700;
+    border-bottom: 1px solid #cbd5e1;
+    color: var(--navy);
+    transition: background 0.2s ease;
   }
   .term-print-item:last-child {
     border-bottom: none;
   }
+  .term-print-item.checked {
+    background: #f0fdf4;
+    color: #15803d;
+  }
   .term-cb {
-    width: 15px;
-    height: 15px;
+    width: 16px;
+    height: 16px;
     cursor: pointer;
+    accent-color: var(--accent);
   }
   
   .actions{
-    display:flex; justify-content:center; gap:14px; margin-top:30px; flex-wrap:wrap;
+    display:flex; justify-content:center; gap:12px; margin-top:28px; flex-wrap:wrap;
   }
   button{
-    font-family:'Georgia',serif;
+    font-family:inherit;
     font-size:14px;
-    letter-spacing:.05em;
-    padding:10px 22px;
+    font-weight:600;
+    letter-spacing:.02em;
+    padding:11px 22px;
     border:1px solid var(--navy);
     background:var(--navy);
     color:#fff;
     cursor:pointer;
     border-radius:999px;
-    box-shadow:0 6px 14px rgba(19,38,61,.12);
-    transition:transform .2s ease, box-shadow .2s ease;
+    box-shadow:0 4px 14px rgba(15,39,68,.15);
+    transition:transform .2s ease, box-shadow .2s ease, background .2s ease;
   }
-  button.secondary{background:transparent;color:var(--navy);}
-  button:hover{opacity:.95;transform:translateY(-1px);box-shadow:0 8px 18px rgba(19,38,61,.16);}
+  button.secondary{background:transparent;color:var(--navy);border-color:#cbd5e1;}
+  button:hover{transform:translateY(-1px);box-shadow:0 6px 18px rgba(15,39,68,.22);}
+  button.secondary:hover{border-color:var(--navy);background:rgba(15,39,68,0.04);}
   
   @media print{
-    @page { size: A4; margin: 6mm; }
-    html, body{width:210mm; height:297mm; margin:0; padding:0; background:#fff; overflow:hidden; display:block;}
-    body{display:block;}
-    .sheet{
-      box-shadow:none;
-      border-radius:0;
-      padding:0;
-      border:none;
-      width:100%;
-      background:transparent;
-      height: 268mm;
-      display: flex;
-      flex-direction: column;
-      justify-content: space-between;
+    @page { size: A4 portrait; margin: 8mm 10mm; }
+    html, body{
+      width: 100% !important;
+      height: auto !important;
+      margin: 0 !important;
+      padding: 0 !important;
+      background: #ffffff !important;
+      color: #000000 !important;
+      font-size: 13px !important;
+      overflow: visible !important;
+      display: block !important;
+      -webkit-print-color-adjust: exact !important;
+      print-color-adjust: exact !important;
     }
-    .top-nav, .actions{display:none !important;}
-    .crest{margin-bottom:8px;}
-    .crest img{width:80px;height:50px;}
-    h1.title{font-size:15px; margin:2px 0 10px;}
+    body::before {
+      display: none !important;
+    }
+    .sheet{
+      box-shadow: none !important;
+      border-radius: 0 !important;
+      padding: 0 !important;
+      border: none !important;
+      width: 100% !important;
+      max-width: 100% !important;
+      background: transparent !important;
+      height: auto !important;
+      max-height: 275mm !important;
+      display: block !important;
+      page-break-inside: avoid !important;
+      break-inside: avoid !important;
+    }
+    .top-nav, .actions, .camera-modal-overlay, .photo-controls-admin, #liveSyncStatusBadge {
+      display: none !important;
+    }
+    .crest{
+      margin-bottom: 6px !important;
+      gap: 2px !important;
+    }
+    .crest img{
+      width: 85px !important;
+      height: 52px !important;
+    }
+    .crest .brand-title {
+      font-size: 15px !important;
+      color: #000 !important;
+    }
+    .crest .brand-sub {
+      color: #333 !important;
+      font-size: 9px !important;
+    }
+    h1.title{
+      font-size: 16px !important;
+      margin: 2px 0 10px !important;
+      color: #000 !important;
+      font-weight: 800 !important;
+    }
     .personal-details-container {
-      margin-bottom: 8px;
+      margin-bottom: 6px !important;
+      gap: 16px !important;
     }
     .field-row {
-      margin-bottom: 8px;
+      margin-bottom: 7px !important;
     }
-    .field-label, .field-colon, .field-label-block, .mobile-input-item span {
+    .field-label, .field-colon, .field-label-block, .num-prefix {
       color: #000 !important;
-      font-size: 13px;
+      font-size: 13px !important;
+      font-weight: bold !important;
     }
     .line-input {
-      font-size: 13px;
-      border-bottom: none !important;
-      padding: 1px 2px;
+      font-size: 13px !important;
+      font-weight: 600 !important;
+      color: #000 !important;
+      border-bottom: 1px solid #000 !important;
+      padding: 1px 2px !important;
     }
     textarea.line-input {
-      min-height: 36px;
+      min-height: 38px !important;
+      line-height: 1.35 !important;
     }
     .photo-box {
-      width: 95px;
-      height: 110px;
-      border: 1px solid #000 !important;
-      border-radius: 8px;
-      font-size: 10px;
+      width: 100px !important;
+      height: 122px !important;
+      border: 1.5px solid #000 !important;
+      border-radius: 6px !important;
+      color: #000 !important;
+      font-size: 10px !important;
+      background: #fff !important;
     }
     .contact-details-container {
-      margin-bottom: 8px;
+      margin-bottom: 6px !important;
+      gap: 16px !important;
     }
     .mobile-inputs {
-      gap: 6px;
-    }
-    .email-row {
-      margin-bottom: 10px;
-    }
-    .pincode-container {
-      padding-left: 75px;
+      gap: 6px !important;
     }
     .pincode-box-custom {
-      padding: 4px;
-      width: 140px;
-    }
-    .pincode-label {
-      font-size: 9px;
+      border: 1.5px solid #000 !important;
+      padding: 2px 6px !important;
+      max-width: 130px !important;
     }
     .pincode-val {
-      font-size: 14px;
+      font-size: 13px !important;
+      color: #000 !important;
+      font-weight: bold !important;
     }
     .course-row {
-      margin-bottom: 10px;
+      margin-bottom: 8px !important;
     }
     .course-box-custom {
-      padding: 4px 10px;
+      border: 1.5px solid #000 !important;
+      padding: 3px 8px !important;
+    }
+    .course-input {
+      font-size: 13px !important;
+      font-weight: bold !important;
+      color: #000 !important;
     }
     .know-signature-container {
-      margin-bottom: 10px;
+      margin-bottom: 6px !important;
+      gap: 16px !important;
     }
     .signature-box-custom {
-      width: 200px;
-      min-height: 60px;
-      padding: 6px;
+      width: 190px !important;
+      min-height: 52px !important;
+      padding: 4px 6px !important;
+      border: 1.5px solid #000 !important;
     }
-    .pincode-box-custom, .course-box-custom, .signature-box-custom, .office-box-custom, .term-print-container {
-      border: 1px solid #000 !important;
-    }
-    .pincode-label, .signature-label, .office-box-label {
+    .signature-label {
       color: #000 !important;
-      font-size: 9px;
+      font-size: 9px !important;
     }
-    .pincode-val, .course-input, .signature-val, .office-box-val {
-      font-size: 13px;
-    }
-    .office-title {
-      font-size: 14px;
-      margin: 10px 0;
-    }
-    .office-container {
-      gap: 10px;
-    }
-    .office-left, .office-right {
-      gap: 8px;
-    }
-    .office-box-custom {
-      min-height: 42px;
-      padding: 4px 8px;
-    }
-    .term-print-item {
-      font-size: 11px;
-      border-bottom: 1px solid #000 !important;
-      padding: 4px 8px;
-    }
-    .term-print-item.checked {
-      background: #ddd !important;
-      -webkit-print-color-adjust: exact;
-      print-color-adjust: exact;
-      position: relative;
-    }
-    .term-print-item.checked::after {
-      content: '✓';
-      position: absolute;
-      right: 8px;
-      font-weight: bold;
-      font-size: 12px;
-    }
-    .term-cb {
-      display: none;
+    .signature-val {
+      font-size: 18px !important;
+      color: #000 !important;
     }
     .thick-divider {
-      border-top: 1.5px solid #000 !important;
-      margin: 10px 0;
+      border-top: 2px solid #000 !important;
+      border-bottom: none !important;
+      height: 2px !important;
+      margin: 8px 0 !important;
+    }
+    .office-title {
+      font-size: 13px !important;
+      margin: 6px 0 !important;
+      color: #000 !important;
+    }
+    .office-container {
+      gap: 10px !important;
+    }
+    .office-left, .office-right {
+      gap: 6px !important;
+    }
+    .office-box-custom {
+      border: 1.5px solid #000 !important;
+      min-height: 38px !important;
+      padding: 3px 6px !important;
+    }
+    .office-box-label {
+      color: #000 !important;
+      font-size: 9px !important;
+    }
+    .office-box-val {
+      color: #000 !important;
+      font-size: 13px !important;
+      font-weight: bold !important;
+    }
+    .term-print-container {
+      border: 1.5px solid #000 !important;
+    }
+    .term-print-item {
+      font-size: 11px !important;
+      border-bottom: 1px solid #000 !important;
+      padding: 3px 8px !important;
+      color: #000 !important;
+    }
+    .term-print-item.checked {
+      background: #e2e8f0 !important;
+      position: relative !important;
+    }
+    .term-print-item.checked::after {
+      content: '✓' !important;
+      position: absolute !important;
+      right: 8px !important;
+      font-weight: bold !important;
+      font-size: 12px !important;
+      color: #000 !important;
+    }
+    .term-cb {
+      display: none !important;
     }
   }
   @media (max-width:768px){
@@ -675,13 +770,11 @@
   </div>
   <div class="crest">
     <img src="logo.png" alt="IIT logo" onerror="this.onerror=null; this.src='iit-logo.svg';">
-    <div class="brand">Indian Info Tech</div>
-    <div class="brand" style="font-size:9px;letter-spacing:.2em;color:var(--ink);">Enrich Your Innovation</div>
+    <div class="brand-title">Indian Info Tech</div>
+    <div class="brand-sub">Enrich Your Innovation</div>
   </div>
 
-
- 
-  <h1 class="title">Application</h1>
+  <h1 class="title">Application Form</h1>
 
   <div style="text-align: center; margin-bottom: 16px;">
     <div id="liveSyncStatusBadge" style="display: inline-flex; align-items: center; gap: 6px; font-size: 11px; padding: 4px 12px; border-radius: 999px; background: #f0fdf4; color: #15803d; border: 1px solid #bbf7d0; font-weight: 600;">
@@ -700,12 +793,12 @@
           <input class="line-input" id="name" name="name" type="text">
         </div>
         <div class="field-row">
-          <label class="field-label" for="yearDept">Year/Dept</label>
+          <label class="field-label" for="yearDept">Year / Dept</label>
           <span class="field-colon">:</span>
           <input class="line-input" id="yearDept" name="yearDept" type="text">
         </div>
         <div class="field-row">
-          <label class="field-label" for="collegeSchool">College/School</label>
+          <label class="field-label" for="collegeSchool">College / School</label>
           <span class="field-colon">:</span>
           <input class="line-input" id="collegeSchool" name="collegeSchool" type="text">
         </div>
@@ -718,7 +811,7 @@
       <div class="right-photo">
         <div class="photo-box" id="photoBox">
           <img id="photoPreview" alt="Uploaded photo">
-          <span id="photoPlaceholder">Fix photo<br>If You Have</span>
+          <span id="photoPlaceholder">Affix Passport<br>Size Photo</span>
         </div>
         <!-- Admin Photo Actions -->
         <div class="photo-controls-admin">
@@ -748,29 +841,31 @@
     <!-- Contact Details Container -->
     <div class="contact-details-container">
       <div class="left-contact">
-        <div class="mobile-row">
-          <label class="field-label" for="mobile1">Mo:No</label>
+        <div class="field-row mobile-row">
+          <label class="field-label" for="mobile1">Mobile No</label>
           <span class="field-colon">:</span>
           <div class="mobile-inputs">
             <div class="mobile-input-item">
-              <span>1.</span>
+              <span class="num-prefix">1.</span>
               <input class="line-input" id="mobile1" name="mobile1" type="tel">
             </div>
             <div class="mobile-input-item">
-              <span>2.</span>
+              <span class="num-prefix">2.</span>
               <input class="line-input" id="mobile2" name="mobile2" type="tel">
             </div>
           </div>
         </div>
       </div>
       <div class="right-contact">
-        <div class="email-row">
-          <label class="field-label" for="email">email-id:</label>
+        <div class="field-row email-row">
+          <label class="field-label email-label" for="email">Email ID</label>
+          <span class="field-colon">:</span>
           <input class="line-input" id="email" name="email" type="email">
         </div>
-        <div class="pincode-container">
+        <div class="field-row pincode-row">
+          <label class="field-label pincode-label-row" for="pincode">Pincode</label>
+          <span class="field-colon">:</span>
           <div class="pincode-box-custom">
-            <div class="pincode-label">Pincode:</div>
             <input class="pincode-val" id="pincode" name="pincode" type="text" maxlength="6">
           </div>
         </div>
@@ -779,7 +874,7 @@
 
     <!-- Title Course / Project -->
     <div class="course-row">
-      <label class="field-label" for="title">Title Course/project</label>
+      <label class="field-label" for="title">Course / Project</label>
       <span class="field-colon">:</span>
       <div class="course-box-custom">
         <input class="course-input" id="title" name="title" type="text">
@@ -853,13 +948,13 @@
   </form>
  
   <div class="actions">
-    <button type="submit" form="appForm">Submit Application</button>
-    <button type="button" onclick="window.location.href='details.html'">Go Back to Details</button>
-    <button type="button" onclick="window.location.href='ss.html'">View Saved Submissions</button>
-    <button type="button" onclick="window.print()">Print / Save PDF</button>
+    <button type="submit" form="appForm">✈️ Submit Application</button>
+    <button type="button" onclick="window.location.href='details.html'">✏️ Edit Details in Data Form</button>
+    <button type="button" onclick="window.location.href='ss.html'">📋 View Submissions</button>
+    <button type="button" onclick="window.print()" style="background:var(--navy-mid);color:#fff;">🖨️ Print Application Form</button>
     <button type="button" class="secondary" onclick="window.location.href='/api/excel/download'">📊 Master Excel (3 Sheets)</button>
-    <button type="button" class="secondary" id="downloadBtn">Download as JSON</button>
-    <button type="button" class="secondary" id="resetBtn">Clear form</button>
+    <button type="button" class="secondary" id="downloadBtn">📥 Download JSON</button>
+    <button type="button" class="secondary" id="resetBtn">🧹 Clear form</button>
   </div>
 
 </div>
