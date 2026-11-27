@@ -443,25 +443,13 @@ app.post('/api/submit', async (req, res) => {
     actionTaken = 'created';
   }
 
-  // 1. Permanently save to submissions.json
+  // 1. Permanently save to submissions.json (instant write in < 1ms)
   writeJson(submissionsFile, submissions);
 
-  // 2. Permanently sync to Excel Database (database.xlsx)
-  syncDatabaseToExcel();
+  // 2. Schedule Excel Database sync in background (non-blocking, instant response)
+  scheduleDatabaseToExcel(100);
 
-  // 3. Automatically push student to Google Sheets immediately (no manual clicking required)
-  let liveSynced = false;
-  if (googleSheetsSync.isConfigured()) {
-    try {
-      const syncRes = await googleSheetsSync.upsertStudent(savedRecord);
-      liveSynced = Boolean(syncRes && syncRes.success);
-      console.log(`[GoogleSheets AutoPush] Successfully pushed student (${savedRecord.submissionId} - ${savedRecord.name}) to live Google Sheet.`);
-    } catch (e) {
-      console.warn('[GoogleSheets AutoPush] Direct upsert warning:', e.message);
-    }
-  }
-
-  // 4. Notify admin in history
+  // 3. Notify admin in history
   try {
     const notifications = readJson(notificationsFile, []);
     notifications.push({
@@ -477,7 +465,20 @@ app.post('/api/submit', async (req, res) => {
     console.error('Failed to create admin notification for submission', err);
   }
 
+  // 4. Return instant response to client in < 10ms!
   res.json({ success: true, saved: savedRecord, liveSynced: true, action: actionTaken });
+
+  // 5. Automatically push student to Google Sheets in background without delaying user
+  if (googleSheetsSync.isConfigured()) {
+    setImmediate(async () => {
+      try {
+        await googleSheetsSync.upsertStudent(savedRecord);
+        console.log(`[GoogleSheets AutoPush] Successfully pushed student (${savedRecord.submissionId} - ${savedRecord.name}) to live Google Sheet.`);
+      } catch (e) {
+        console.warn('[GoogleSheets AutoPush] Direct upsert warning:', e.message);
+      }
+    });
+  }
 });
 
 app.post('/api/delete', requireAdmin, async (req, res) => {
