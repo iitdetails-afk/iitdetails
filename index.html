@@ -38,6 +38,62 @@
     padding: 24px 16px;
   }
 
+  /* Full-bleed ambient background video */
+  .bg-video-wrap {
+    position: fixed;
+    top: 0; left: 0;
+    width: 100vw; height: 100vh;
+    overflow: hidden;
+    z-index: 0;
+    pointer-events: none;
+  }
+  .bg-video {
+    width: 100%; height: 100%;
+    object-fit: cover;
+    object-position: center;
+    position: absolute;
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    opacity: 0.52;
+    filter: brightness(0.85) contrast(1.12);
+    transition: opacity 0.8s ease;
+  }
+  .bg-video-overlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+      145deg,
+      rgba(11, 26, 46, 0.78) 0%,
+      rgba(15, 39, 68, 0.68) 40%,
+      rgba(19, 45, 82, 0.74) 70%,
+      rgba(13, 32, 64, 0.85) 100%
+    );
+    backdrop-filter: blur(1.5px);
+    -webkit-backdrop-filter: blur(1.5px);
+  }
+
+  .btn-video-control {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 16px;
+    background: rgba(255,255,255,0.08);
+    border: 1px solid rgba(255,255,255,0.2);
+    border-radius: 999px;
+    color: rgba(255,255,255,0.85);
+    font-family: 'Inter', sans-serif;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    letter-spacing: 0.03em;
+    transition: all 0.2s ease;
+  }
+  .btn-video-control:hover {
+    background: rgba(255,255,255,0.16);
+    border-color: rgba(255,255,255,0.35);
+    color: #ffffff;
+  }
+
   /* Animated background rings */
   .bg-rings {
     position: fixed;
@@ -485,7 +541,10 @@
     <img class="topbar-logo" src="logo.png" alt="IIT" onerror="this.style.display='none'">
     <div class="topbar-name">Indian <span>Info Tech</span></div>
   </div>
-  <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+  <div style="display: flex; gap: 8px; flex-wrap: wrap; align-items: center;">
+    <button id="btnToggleVideo" class="btn-video-control" onclick="toggleBgVideo()" title="Pause/Play Background Video Motion">
+      ⏸️ Video
+    </button>
     <button class="btn-admin-top" onclick="openStaffModal()" style="background: rgba(59,130,246,0.12); border-color: rgba(59,130,246,0.45); color: #93c5fd; box-shadow: 0 0 16px rgba(59,130,246,0.1);">
       👥 Staff Login
     </button>
@@ -493,6 +552,15 @@
       🛡️ Admin Login
     </button>
   </div>
+</div>
+
+<!-- Ambient Video Background -->
+<div class="bg-video-wrap">
+  <video id="bgVideo" class="bg-video" autoplay loop muted playsinline preload="auto">
+    <source src="background.mp4" type="video/mp4">
+    <source src="https://d8j0ntlcm91z4.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/hf_20260624_210218_173f8eba-17ff-4e27-972b-d128af25bf49.mp4" type="video/mp4">
+  </video>
+  <div class="bg-video-overlay"></div>
 </div>
 
 <!-- Background effects -->
@@ -773,6 +841,20 @@
     btn.disabled = false;
     spinner.style.display = 'none';
     btnText.textContent = 'Login →';
+  }
+
+  // ── Ambient Background Video Controls ──
+  function toggleBgVideo() {
+    const video = document.getElementById('bgVideo');
+    const btn = document.getElementById('btnToggleVideo');
+    if (!video) return;
+    if (video.paused) {
+      video.play();
+      if (btn) btn.innerHTML = '⏸️ Video';
+    } else {
+      video.pause();
+      if (btn) btn.innerHTML = '▶️ Video';
+    }
   }
 </script>
 <script src="theme.js"></script>
