@@ -3,46 +3,44 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Indian Info Tech — Student Application Portal</title>
-<meta name="description" content="Official Student Application and Registration Form for Indian Info Tech.">
+<title>Indian Info Tech — Student Application Form</title>
+<meta name="description" content="Official Student Application and Registration Portal for Indian Info Tech.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Playfair+Display:wght@700;800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&family=Google+Sans:wght@400;500;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="theme.css">
 <style>
   :root {
-    --ink: #000000;
-    --navy: #0f2744;
-    --navy-mid: #1e3a8a;
-    --accent: #2563eb;
-    --accent-hover: #1d4ed8;
-    --paper: #ffffff;
-    --rule: #000000;
-    --success: #15803d;
-    --red: #dc2626;
+    --gf-purple: #1a73e8;
+    --gf-purple-hover: #1557b0;
+    --gf-bg: #f0f4f9;
+    --gf-card-bg: #ffffff;
+    --gf-border: #dadce0;
+    --gf-text-main: #202124;
+    --gf-text-secondary: #5f6368;
+    --gf-red: #d93025;
   }
 
   * { box-sizing: border-box; margin: 0; padding: 0; }
 
   body {
-    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-    background: radial-gradient(circle at 50% 0%, #ffffff 0%, #eef3f9 60%, #e2e8f0 100%);
+    font-family: 'Roboto', 'Google Sans', 'Inter', -apple-system, sans-serif;
+    background-color: var(--gf-bg);
+    color: var(--gf-text-main);
     min-height: 100vh;
-    color: var(--ink);
     padding: 0 0 60px 0;
   }
 
   /* ── Top Bar ── */
   .topbar {
-    background: #0f2744;
-    padding: 12px 24px;
+    background: #ffffff;
+    border-bottom: 1px solid #dadce0;
+    padding: 10px 24px;
     display: flex;
     align-items: center;
     justify-content: space-between;
-    gap: 16px;
     position: sticky;
     top: 0;
     z-index: 50;
-    box-shadow: 0 4px 20px rgba(0,0,0,0.15);
   }
   .topbar-brand {
     display: flex;
@@ -50,927 +48,950 @@
     gap: 12px;
   }
   .topbar-logo {
-    width: 38px;
-    height: 38px;
+    width: 36px;
+    height: 36px;
     border-radius: 50%;
-    background: #ffffff;
-    padding: 4px;
     object-fit: contain;
   }
   .topbar-title {
-    font-size: 17px;
-    color: #ffffff;
-    font-weight: 700;
-    letter-spacing: 0.02em;
-  }
-  .topbar-subtitle {
-    font-size: 11px;
-    color: #93c5fd;
-    letter-spacing: 0.12em;
-    text-transform: uppercase;
-    font-weight: 600;
-  }
-  .btn-nav {
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    padding: 7px 14px;
-    background: rgba(255,255,255,0.1);
-    border: 1px solid rgba(255,255,255,0.2);
-    border-radius: 999px;
-    color: #ffffff;
-    font-size: 12px;
-    font-weight: 600;
-    text-decoration: none;
-    transition: all 0.2s ease;
-  }
-  .btn-nav:hover {
-    background: rgba(255,255,255,0.2);
-    color: #ffffff;
-  }
-
-  /* ── Main Container ── */
-  .sheet-container {
-    max-width: 860px;
-    margin: 32px auto 0;
-    padding: 0 16px;
-  }
-
-  .form-sheet {
-    background: #ffffff;
-    border: 1.5px solid #000000;
-    border-radius: 8px;
-    padding: 36px 44px;
-    box-shadow: 0 15px 40px rgba(15, 23, 42, 0.12);
-    position: relative;
-  }
-
-  /* ── Crest & Heading ── */
-  .crest {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 4px;
-    margin-bottom: 12px;
-    text-align: center;
-  }
-  .crest img {
-    width: 105px;
-    height: 70px;
-    object-fit: contain;
-  }
-  .crest .brand-title {
-    font-size: 17px;
-    font-weight: 800;
-    letter-spacing: 0.12em;
-    text-transform: uppercase;
-    color: #000000;
-  }
-  .crest .brand-sub {
-    font-size: 10px;
-    letter-spacing: 0.22em;
-    text-transform: uppercase;
-    color: #1e293b;
-    font-weight: 700;
-  }
-
-  h1.title {
-    text-align: center;
-    font-size: 22px;
-    letter-spacing: 0.14em;
-    margin: 8px 0 22px;
-    text-decoration: underline;
-    text-underline-offset: 6px;
-    text-transform: uppercase;
-    color: #000000;
-    font-weight: 900;
-  }
-
-  /* ── Form Row Alignment ── */
-  .field-row {
-    display: flex;
-    align-items: flex-end;
-    margin-bottom: 12px;
-  }
-  .field-row.tall {
-    align-items: flex-start;
-  }
-
-  .field-label {
-    font-size: 14px;
-    color: #000000;
-    font-weight: 700;
-    width: 140px;
-    flex-shrink: 0;
-    letter-spacing: 0.01em;
-  }
-
-  .field-colon {
-    font-size: 14px;
-    color: #000000;
-    font-weight: 800;
-    width: 16px;
-    flex-shrink: 0;
-    text-align: center;
-  }
-
-  /* ── Solid Black Underline Inputs ── */
-  .line-input {
-    border: none;
-    border-bottom: 1.5px solid #000000;
-    background: transparent;
-    font-family: inherit;
-    font-size: 15px;
-    font-weight: 600;
-    color: #000000;
-    padding: 2px 6px;
-    flex: 1;
-    width: 100%;
-    outline: none;
-    transition: border-color 0.2s ease, background 0.2s ease;
-  }
-  .line-input:focus {
-    border-bottom: 2px solid #2563eb;
-    background: rgba(37, 99, 235, 0.04);
-  }
-  textarea.line-input {
-    resize: vertical;
-    min-height: 48px;
-    line-height: 1.4;
-    padding-top: 4px;
-  }
-
-  /* ── Personal Details Area ── */
-  .personal-details-container {
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-start;
-    gap: 24px;
-    margin-bottom: 12px;
-  }
-  .left-fields {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    gap: 4px;
-  }
-  .right-photo {
-    flex-shrink: 0;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-  }
-
-  /* ── Photo Box ── */
-  .photo-box {
-    width: 115px;
-    height: 140px;
-    border: 1.5px solid #000000;
-    border-radius: 6px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    font-size: 11px;
-    text-align: center;
-    color: #000000;
-    font-weight: 700;
-    overflow: hidden;
-    padding: 4px;
-    line-height: 1.4;
-    background: #f8fafc;
-    position: relative;
-  }
-  .photo-box img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    border-radius: 4px;
-    display: none;
-  }
-
-  .photo-action-controls {
-    display: flex;
-    gap: 4px;
-    margin-top: 6px;
-    justify-content: center;
-    flex-wrap: wrap;
-    max-width: 130px;
-  }
-  .photo-btn {
-    font-size: 11px;
-    font-weight: 600;
-    padding: 4px 8px;
-    border: 1px solid #000000;
-    border-radius: 4px;
-    background: #ffffff;
-    color: #000000;
-    cursor: pointer;
-    text-decoration: none;
-    transition: all 0.15s ease;
-  }
-  .photo-btn:hover {
-    background: #000000;
-    color: #ffffff;
-  }
-  .photo-btn.remove {
-    color: #dc2626;
-    border-color: #dc2626;
-  }
-  .photo-btn.remove:hover {
-    background: #dc2626;
-    color: #ffffff;
-  }
-
-  /* ── Camera Stream ── */
-  .camera-container {
-    border: 1.5px solid #000000;
-    border-radius: 8px;
-    padding: 10px;
-    background: #f8fafc;
-    text-align: center;
-    margin-top: 8px;
-    display: none;
-    max-width: 260px;
-  }
-  .camera-stream-wrapper {
-    position: relative;
-    width: 100%;
-    aspect-ratio: 4/3;
-    background: #000000;
-    border-radius: 6px;
-    overflow: hidden;
-  }
-  .camera-stream-wrapper video {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-  }
-  .camera-controls {
-    margin-top: 8px;
-    display: flex;
-    gap: 6px;
-    justify-content: center;
-  }
-  .btn-cam-action {
-    padding: 5px 10px;
-    font-size: 11px;
-    font-weight: 700;
-    border: 1px solid #000000;
-    background: #ffffff;
-    color: #000000;
-    border-radius: 4px;
-    cursor: pointer;
-  }
-  .btn-cam-action:hover {
-    background: #000000;
-    color: #ffffff;
-  }
-
-  /* ── Contact Details Area ── */
-  .contact-details-container {
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-start;
-    gap: 24px;
-    margin-bottom: 12px;
-  }
-  .left-contact {
-    flex: 1;
-  }
-  .right-contact {
-    width: 270px;
-    display: flex;
-    flex-direction: column;
-    align-items: stretch;
-    gap: 12px;
-  }
-
-  .mobile-row {
-    display: flex;
-    align-items: flex-start;
-  }
-  .mobile-inputs {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-  }
-  .mobile-input-item {
-    display: flex;
-    align-items: flex-end;
-    gap: 6px;
-    width: 100%;
-  }
-  .num-prefix {
-    font-size: 14px;
-    font-weight: 800;
-    color: #000000;
-    width: 16px;
-    flex-shrink: 0;
-  }
-
-  .email-row {
-    display: flex;
-    align-items: flex-end;
-    gap: 8px;
-    width: 100%;
-  }
-  .email-row .field-label {
-    width: 70px;
-    font-size: 13px;
-    font-weight: 700;
-    color: #000000;
-    flex-shrink: 0;
-  }
-  .email-row .field-colon {
-    font-size: 13px;
-    font-weight: 800;
-    color: #000000;
-    width: 12px;
-    flex-shrink: 0;
-    text-align: center;
-  }
-
-  .pincode-container {
-    display: flex;
-    justify-content: flex-end;
-  }
-  .pincode-box-custom {
-    border: 1.5px solid #000000;
-    border-radius: 6px;
-    width: 170px;
-    padding: 6px 10px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    background: #ffffff;
-  }
-  .pincode-label {
-    font-size: 11px;
-    color: #000000;
-    font-weight: 800;
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
-    margin-bottom: 2px;
-  }
-  .pincode-box-custom .line-input {
-    border: none;
-    border-bottom: 1.5px solid #000000;
-    text-align: center;
-    font-weight: 800;
     font-size: 16px;
-    letter-spacing: 0.1em;
-    padding: 2px;
-    width: 100%;
+    font-weight: 500;
+    color: #202124;
   }
-
-  /* ── Course Row ── */
-  .course-row {
-    display: flex;
-    align-items: center;
-    margin-bottom: 14px;
-  }
-  .course-box-custom {
-    border: 1.5px solid #000000;
-    border-radius: 6px;
-    flex: 1;
-    padding: 6px 12px;
-    background: #ffffff;
-    display: flex;
-    align-items: center;
-    min-height: 40px;
-  }
-  .course-box-custom .line-input {
-    border: none;
-    font-size: 15px;
-    font-weight: 700;
-    padding: 0;
-  }
-
-  /* ── Referral & Signature Row ── */
-  .know-signature-container {
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-end;
-    gap: 24px;
-    margin-bottom: 16px;
-  }
-  .know-field {
-    flex: 1;
-  }
-  .field-label-block {
-    display: block;
+  .btn-nav-home {
+    text-decoration: none;
+    color: #1a73e8;
     font-size: 14px;
-    font-weight: 700;
-    color: #000000;
-    margin-bottom: 8px;
+    font-weight: 500;
+    padding: 6px 14px;
+    border-radius: 4px;
+    transition: background 0.15s;
   }
-  .signature-field {
-    flex-shrink: 0;
-  }
-  .signature-box-custom {
-    border: 1.5px solid #000000;
-    border-radius: 6px;
-    width: 220px;
-    padding: 8px 12px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    min-height: 72px;
-    justify-content: space-between;
-    background: #ffffff;
-  }
-  .signature-label {
-    font-size: 10px;
-    font-weight: 800;
-    color: #000000;
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
-  }
-  .signature-val {
-    border: none;
-    border-bottom: 1px dashed #000000;
-    background: transparent;
-    font-family: 'Brush Script MT', cursive, Georgia, serif;
-    font-size: 21px;
-    text-align: center;
-    width: 100%;
-    outline: none;
-    color: #000000;
-    font-weight: 600;
-  }
-
-  /* ── Action Buttons ── */
-  .actions {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    gap: 12px;
-    margin-top: 28px;
-    padding-top: 20px;
-    border-top: 1.5px solid #000000;
-    flex-wrap: wrap;
-  }
-  .btn-submit {
-    background: #0f2744;
-    color: #ffffff;
-    font-size: 15px;
-    font-weight: 700;
-    padding: 12px 28px;
-    border: 1.5px solid #0f2744;
-    border-radius: 999px;
-    cursor: pointer;
-    box-shadow: 0 4px 15px rgba(15, 39, 68, 0.25);
-    transition: all 0.2s ease;
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-  }
-  .btn-submit:hover {
-    background: #1e3a8a;
-    transform: translateY(-1px);
-    box-shadow: 0 6px 20px rgba(15, 39, 68, 0.35);
-  }
-  .btn-secondary {
-    background: #ffffff;
-    color: #000000;
-    font-size: 14px;
-    font-weight: 700;
-    padding: 11px 22px;
-    border: 1.5px solid #000000;
-    border-radius: 999px;
-    cursor: pointer;
-    transition: all 0.2s ease;
-  }
-  .btn-secondary:hover {
-    background: #f1f5f9;
+  .btn-nav-home:hover {
+    background: #e8f0fe;
   }
 
   /* ══════════════════════════════════════════
-     STUDENT SUMMARY / SUBMITTED RECEIPT VIEW
+     GOOGLE FORM STYLE USER PANEL
      ══════════════════════════════════════════ */
-  .summary-status-header {
-    background: #f0fdf4;
-    border: 1.5px solid #22c55e;
+  .gf-container {
+    max-width: 680px;
+    margin: 20px auto 0;
+    padding: 0 16px;
+  }
+
+  /* Header Card with Accent Stripe */
+  .gf-header-card {
+    background: var(--gf-card-bg);
+    border: 1px solid var(--gf-border);
+    border-top: 10px solid #1a73e8;
     border-radius: 8px;
-    padding: 16px 20px;
+    padding: 24px 28px;
+    margin-bottom: 12px;
+    box-shadow: 0 1px 3px rgba(60,64,67,0.08);
+  }
+  .gf-crest-row {
     display: flex;
-    justify-content: space-between;
     align-items: center;
-    margin-bottom: 24px;
+    gap: 14px;
+    margin-bottom: 12px;
+  }
+  .gf-crest-row img {
+    width: 50px;
+    height: 50px;
+    object-fit: contain;
+  }
+  .gf-form-brand {
+    font-size: 12px;
+    letter-spacing: 0.12em;
+    font-weight: 700;
+    color: #5f6368;
+    text-transform: uppercase;
+  }
+  .gf-form-title {
+    font-size: 26px;
+    font-weight: 500;
+    color: #202124;
+    line-height: 1.3;
+    margin-bottom: 8px;
+  }
+  .gf-form-desc {
+    font-size: 14px;
+    color: var(--gf-text-secondary);
+    line-height: 1.5;
+    margin-bottom: 16px;
+  }
+  .gf-required-notice {
+    font-size: 13px;
+    color: var(--gf-red);
+    padding-top: 12px;
+    border-top: 1px solid #f1f3f4;
+  }
+
+  /* Question Cards */
+  .gf-card {
+    background: var(--gf-card-bg);
+    border: 1px solid var(--gf-border);
+    border-radius: 8px;
+    padding: 24px 28px;
+    margin-bottom: 12px;
+    box-shadow: 0 1px 3px rgba(60,64,67,0.08);
+    transition: border-left 0.2s ease, box-shadow 0.2s ease;
+  }
+  .gf-card:focus-within {
+    border-left: 5px solid #1a73e8;
+    box-shadow: 0 2px 6px rgba(26,115,232,0.15);
+  }
+  .gf-question-title {
+    font-size: 15px;
+    font-weight: 500;
+    color: #202124;
+    margin-bottom: 4px;
+  }
+  .gf-question-title .req {
+    color: var(--gf-red);
+    margin-left: 2px;
+  }
+  .gf-question-desc {
+    font-size: 12px;
+    color: #5f6368;
+    margin-bottom: 16px;
+  }
+
+  /* Google Form Style Underline Inputs */
+  .gf-input-text {
+    width: 100%;
+    border: none;
+    border-bottom: 1px solid #dadce0;
+    font-size: 14px;
+    font-family: inherit;
+    padding: 8px 0;
+    color: #202124;
+    background: transparent;
+    outline: none;
+    transition: border-bottom 0.2s ease, background 0.2s ease;
+  }
+  .gf-input-text:focus {
+    border-bottom: 2px solid #1a73e8;
+    background: #f8fafd;
+  }
+  .gf-input-textarea {
+    width: 100%;
+    border: none;
+    border-bottom: 1px solid #dadce0;
+    font-size: 14px;
+    font-family: inherit;
+    padding: 8px 0;
+    color: #202124;
+    background: transparent;
+    outline: none;
+    resize: vertical;
+    min-height: 50px;
+    line-height: 1.4;
+  }
+  .gf-input-textarea:focus {
+    border-bottom: 2px solid #1a73e8;
+    background: #f8fafd;
+  }
+
+  .gf-input-signature {
+    font-family: 'Brush Script MT', cursive, Georgia, serif;
+    font-size: 22px;
+    color: #000000;
+    border: none;
+    border-bottom: 1.5px dashed #1a73e8;
+    width: 100%;
+    padding: 6px 0;
+    outline: none;
+  }
+
+  /* Photo Upload Component (Google Form Style File Picker) */
+  .gf-file-upload-box {
+    border: 1.5px dashed #dadce0;
+    border-radius: 8px;
+    padding: 20px;
+    text-align: center;
+    background: #f8fafc;
+  }
+  .gf-file-upload-box:hover {
+    border-color: #1a73e8;
+  }
+  .gf-file-actions {
+    display: flex;
+    justify-content: center;
+    gap: 12px;
+    margin-top: 10px;
+    flex-wrap: wrap;
+  }
+  .btn-gf-action {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 13px;
+    font-weight: 500;
+    color: #1a73e8;
+    background: #ffffff;
+    border: 1px solid #dadce0;
+    padding: 8px 16px;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.15s ease;
+  }
+  .btn-gf-action:hover {
+    background: #f1f3f4;
+    border-color: #1a73e8;
+  }
+  .btn-gf-action.danger {
+    color: #d93025;
+  }
+
+  .photo-preview-container {
+    display: none;
+    margin: 14px auto 0;
+    width: 110px;
+    height: 130px;
+    border: 1px solid #dadce0;
+    border-radius: 4px;
+    overflow: hidden;
+    position: relative;
+    background: #ffffff;
+  }
+  .photo-preview-container img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  /* Camera Stream in Google Form Card */
+  .camera-stream-box {
+    display: none;
+    max-width: 320px;
+    margin: 14px auto 0;
+    border-radius: 6px;
+    overflow: hidden;
+    background: #000;
+    border: 1px solid #dadce0;
+  }
+  .camera-stream-box video {
+    width: 100%;
+    display: block;
+  }
+  .camera-stream-controls {
+    display: flex;
+    gap: 8px;
+    justify-content: center;
+    padding: 8px;
+    background: #f1f3f4;
+  }
+
+  /* Action Buttons Bar */
+  .gf-buttons-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-top: 20px;
+    padding: 0 4px;
     flex-wrap: wrap;
     gap: 12px;
   }
-  .status-badge-pill {
+  .btn-gf-submit {
+    background: #1a73e8;
+    color: #ffffff;
+    font-size: 14px;
+    font-weight: 500;
+    border: none;
+    border-radius: 4px;
+    padding: 10px 24px;
+    cursor: pointer;
+    box-shadow: 0 1px 2px rgba(60,64,67,0.3);
+    transition: background 0.15s ease, box-shadow 0.15s ease;
+  }
+  .btn-gf-submit:hover {
+    background: #1557b0;
+    box-shadow: 0 2px 4px rgba(60,64,67,0.35);
+  }
+  .btn-gf-print {
+    background: #ffffff;
+    color: #0f2744;
+    font-size: 14px;
+    font-weight: 600;
+    border: 1.5px solid #0f2744;
+    border-radius: 4px;
+    padding: 9px 20px;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    transition: background 0.15s ease;
+  }
+  .btn-gf-print:hover {
+    background: #e8f0fe;
+  }
+  .btn-gf-clear {
+    color: #1a73e8;
+    background: none;
+    border: none;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    padding: 8px 12px;
+  }
+  .btn-gf-clear:hover {
+    background: #e8f0fe;
+    border-radius: 4px;
+  }
+
+  /* ══════════════════════════════════════════
+     CONFIRMATION SCREEN (Google Form Style)
+     ══════════════════════════════════════════ */
+  .gf-confirmation-card {
+    display: none;
+    background: #ffffff;
+    border: 1px solid #dadce0;
+    border-top: 10px solid #1a73e8;
+    border-radius: 8px;
+    padding: 32px 28px;
+    box-shadow: 0 1px 3px rgba(60,64,67,0.08);
+  }
+  .conf-title {
+    font-size: 24px;
+    font-weight: 500;
+    color: #202124;
+    margin-bottom: 12px;
+  }
+  .conf-desc {
+    font-size: 14px;
+    color: #5f6368;
+    line-height: 1.5;
+    margin-bottom: 24px;
+  }
+  .conf-id-badge {
     display: inline-flex;
     align-items: center;
     gap: 8px;
-    font-size: 16px;
-    font-weight: 800;
+    background: #f0fdf4;
+    border: 1.5px solid #22c55e;
     color: #15803d;
-  }
-  .submission-ref-box {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    font-size: 13px;
+    font-size: 15px;
     font-weight: 700;
+    padding: 10px 18px;
+    border-radius: 8px;
+    margin-bottom: 24px;
   }
-  .ref-id-val {
+  .conf-id-val {
     font-family: monospace;
     font-size: 18px;
-    font-weight: 800;
     color: #0f2744;
-    background: #ffffff;
-    padding: 4px 10px;
-    border-radius: 6px;
-    border: 1px solid #22c55e;
   }
-  .ref-date-val {
-    font-size: 12px;
-    color: #166534;
+  .conf-actions {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+    margin-top: 10px;
   }
 
-  .summary-body-grid {
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-start;
-    gap: 24px;
-    margin-bottom: 20px;
-  }
-  .summary-rows-container {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-  }
-  .summary-val {
-    font-size: 14px;
-    color: #000000;
-    font-weight: 600;
-    padding: 2px 4px;
-    border-bottom: 1.5px solid #000000;
-    flex: 1;
-    min-height: 22px;
-    word-break: break-word;
-  }
-  .summary-media-column {
-    width: 170px;
-    flex-shrink: 0;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 16px;
-  }
-  .summary-sig-box {
-    border: 1.5px solid #000000;
-    border-radius: 6px;
-    width: 100%;
-    padding: 8px;
-    text-align: center;
-    background: #ffffff;
-    min-height: 64px;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-  }
-  .summary-footer-notice {
-    background: #f8fafc;
-    border: 1.5px solid #000000;
-    border-radius: 6px;
-    padding: 14px 18px;
-    font-size: 12px;
-    color: #000000;
-    line-height: 1.5;
-    margin-top: 14px;
+  /* ══════════════════════════════════════════
+     OFFICIAL APPLICATION FORM (FOR PRINT)
+     Visible ONLY when printing / window.print()
+     ══════════════════════════════════════════ */
+  .official-print-sheet {
+    display: none;
   }
 
-  /* ── Toast Notification ── */
-  .toast {
-    position: fixed;
-    bottom: 28px;
-    right: 28px;
-    z-index: 999;
-    background: #0f2744;
-    color: #ffffff;
-    padding: 14px 22px;
-    border-radius: 10px;
-    font-size: 14px;
-    font-weight: 600;
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.3);
-    transform: translateY(100px);
-    opacity: 0;
-    transition: all 0.35s cubic-bezier(0.34,1.56,0.64,1);
-    pointer-events: none;
-  }
-  .toast.show { transform: translateY(0); opacity: 1; }
-  .toast.success { background: #15803d; }
-  .toast.error { background: #b91c1c; }
-
-  /* ── Print Styles ── */
   @media print {
-    @page { size: A4 portrait; margin: 8mm 10mm; }
+    @page {
+      size: A4 portrait;
+      margin: 8mm 10mm;
+    }
     html, body {
       background: #ffffff !important;
       padding: 0 !important;
       margin: 0 !important;
+      color: #000000 !important;
+      font-family: 'Georgia', 'Times New Roman', serif !important;
     }
-    .topbar, .actions, .photo-action-controls, .camera-container, .toast, .no-print {
+    /* Hide all Google Form screen elements */
+    .topbar, .gf-container, .toast, .no-print {
       display: none !important;
     }
-    .sheet-container {
-      margin: 0 !important;
-      padding: 0 !important;
+    /* Show ONLY the official Application Form Sheet */
+    .official-print-sheet {
+      display: block !important;
+      width: 100% !important;
       max-width: 100% !important;
-    }
-    .form-sheet {
-      border: 1px solid #000000 !important;
+      height: auto !important;
+      max-height: 275mm !important;
+      margin: 0 auto !important;
+      padding: 0 !important;
       box-shadow: none !important;
-      padding: 10mm 12mm !important;
-      border-radius: 0 !important;
+      border: none !important;
       page-break-inside: avoid !important;
+      box-sizing: border-box !important;
+    }
+
+    .p-crest {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+      margin-bottom: 10px;
+    }
+    .p-crest img {
+      width: 130px;
+      height: 75px;
+      object-fit: contain;
+    }
+
+    h1.p-title {
+      text-align: center;
+      font-size: 20px;
+      letter-spacing: 0.12em;
+      margin: 4px 0 16px;
+      text-decoration: underline;
+      text-underline-offset: 5px;
+      text-transform: uppercase;
+      font-weight: 800;
+      color: #000000;
+    }
+
+    .p-personal-details {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 18px;
+      margin-bottom: 10px;
+    }
+    .p-left-fields {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    .p-right-photo {
+      flex-shrink: 0;
+    }
+
+    .p-field-row {
+      display: flex;
+      align-items: flex-end;
+    }
+    .p-field-row.tall {
+      align-items: flex-start;
+    }
+    .p-field-label {
+      font-size: 14px;
+      font-weight: bold;
+      width: 140px;
+      flex-shrink: 0;
+      color: #000000;
+    }
+    .p-field-colon {
+      font-size: 14px;
+      font-weight: bold;
+      width: 16px;
+      flex-shrink: 0;
+      text-align: center;
+      color: #000000;
+    }
+    .p-field-val {
+      font-size: 14px;
+      border-bottom: 1px solid #000000;
+      padding: 2px 4px;
+      flex: 1;
+      min-height: 22px;
+      word-break: break-word;
+      color: #000000;
+      font-weight: 600;
+    }
+
+    .p-photo-box {
+      width: 105px;
+      height: 126px;
+      border: 1.5px solid #000000;
+      border-radius: 4px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      font-size: 11px;
+      text-align: center;
+      color: #000000;
+      font-weight: bold;
+      overflow: hidden;
+      padding: 3px;
+      line-height: 1.35;
+      background: #fafafa;
+    }
+    .p-photo-box img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: none;
+    }
+
+    .p-contact-container {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 18px;
+      margin-bottom: 10px;
+    }
+    .p-left-contact {
+      flex: 1;
+    }
+    .p-right-contact {
+      width: 250px;
+      display: flex;
+      flex-direction: column;
+      align-items: stretch;
+      gap: 10px;
+    }
+
+    .p-mobile-row {
+      display: flex;
+      align-items: flex-start;
+    }
+    .p-mobile-inputs {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .p-mobile-input-item {
+      display: flex;
+      align-items: flex-end;
+      gap: 6px;
+      width: 100%;
+    }
+    .p-num-prefix {
+      font-size: 13px;
+      font-weight: bold;
+      width: 16px;
+      color: #000000;
+    }
+
+    .p-email-row {
+      display: flex;
+      align-items: flex-end;
+      width: 100%;
+    }
+    .p-email-row .p-field-label {
+      width: 70px;
+      font-size: 13px;
+      font-weight: bold;
+      flex-shrink: 0;
+    }
+    .p-email-row .p-field-colon {
+      width: 12px;
+      font-size: 13px;
+      font-weight: bold;
+      flex-shrink: 0;
+      text-align: center;
+    }
+
+    .p-pincode-container {
+      display: flex;
+      justify-content: flex-end;
+    }
+    .p-pincode-box {
+      border: 1.5px solid #000000;
+      border-radius: 4px;
+      width: 150px;
+      padding: 4px 8px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      background: #ffffff;
+    }
+    .p-pincode-label {
+      font-size: 10px;
+      font-weight: bold;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-bottom: 2px;
+      color: #000000;
+    }
+    .p-pincode-val {
+      font-size: 14px;
+      font-weight: bold;
+      text-align: center;
+      letter-spacing: 0.1em;
+      color: #000000;
+    }
+
+    .p-course-row {
+      display: flex;
+      align-items: center;
+      margin-bottom: 10px;
+    }
+    .p-course-box {
+      border: 1.5px solid #000000;
+      border-radius: 4px;
+      flex: 1;
+      padding: 5px 10px;
+      font-size: 14px;
+      font-weight: bold;
+      min-height: 28px;
+      display: flex;
+      align-items: center;
+      background: #ffffff;
+      color: #000000;
+    }
+
+    .p-know-signature-container {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+      gap: 18px;
+      margin-bottom: 10px;
+    }
+    .p-know-field {
+      flex: 1;
+    }
+    .p-field-label-block {
+      display: block;
+      font-size: 13px;
+      font-weight: bold;
+      margin-bottom: 6px;
+      color: #000000;
+    }
+    .p-signature-field {
+      flex-shrink: 0;
+    }
+    .p-signature-box {
+      border: 1.5px solid #000000;
+      border-radius: 6px;
+      width: 200px;
+      padding: 6px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      min-height: 56px;
+      justify-content: space-between;
+      background: #ffffff;
+    }
+    .p-signature-label {
+      font-size: 10px;
+      font-weight: bold;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      color: #000000;
+    }
+    .p-signature-val {
+      font-family: 'Brush Script MT', cursive, Georgia, serif;
+      font-size: 19px;
+      text-align: center;
+      width: 100%;
+      min-height: 22px;
+      color: #000000;
     }
   }
 
-  /* ── Responsive Mobile ── */
-  @media (max-width: 640px) {
-    .form-sheet { padding: 20px 16px; }
-    .personal-details-container { flex-direction: column-reverse; align-items: center; }
-    .summary-body-grid { flex-direction: column-reverse; align-items: center; }
-    .summary-media-column { width: 100%; flex-direction: row; justify-content: space-around; }
-    .right-photo { margin-bottom: 16px; }
-    .contact-details-container { flex-direction: column; }
-    .right-contact { width: 100%; }
-    .know-signature-container { flex-direction: column; align-items: stretch; }
-    .signature-box-custom { width: 100%; }
-    .field-label { width: 120px; font-size: 13px; }
+  /* Toast Notification */
+  .toast {
+    position: fixed;
+    bottom: 24px;
+    left: 24px;
+    z-index: 999;
+    background: #323232;
+    color: #ffffff;
+    padding: 12px 20px;
+    border-radius: 4px;
+    font-size: 14px;
+    box-shadow: 0 3px 10px rgba(0,0,0,0.3);
+    transform: translateY(100px);
+    opacity: 0;
+    transition: all 0.3s ease;
+    pointer-events: none;
   }
+  .toast.show { transform: translateY(0); opacity: 1; }
+  .toast.error { background: #d93025; }
 </style>
 </head>
 <body>
 
-<!-- Top Navigation (For Student User Panel) -->
+<!-- Topbar Navigation -->
 <div class="topbar no-print">
   <div class="topbar-brand">
     <img class="topbar-logo" src="logo.png" alt="IIT" onerror="this.style.display='none'">
-    <div>
-      <div class="topbar-title">Indian Info Tech</div>
-      <div class="topbar-subtitle">Student Application User Panel</div>
-    </div>
+    <span class="topbar-title">Indian Info Tech — Student Portal</span>
   </div>
   <div>
-    <a href="index.html" class="btn-nav">🏠 Home</a>
+    <a href="index.html" class="btn-nav-home">🏠 Home</a>
   </div>
 </div>
 
-<div class="sheet-container">
-
-  <!-- VIEW 1: STUDENT ENTRY FORM (Active by default for students to fill & submit) -->
-  <div class="form-sheet" id="entryFormSheet">
-    <form id="detailsForm">
-      
-      <!-- Crest Header -->
-      <div class="crest">
-        <img src="logo.png" alt="Indian Info Tech Logo" onerror="this.onerror=null; this.style.display='none';">
-        <div class="brand-title">INDIAN INFO TECH</div>
-        <div class="brand-sub">STUDENT REGISTRATION & APPLICATION FORM</div>
-      </div>
-
-      <h1 class="title">Application</h1>
-
-      <!-- Section 1: Personal Details & Photo -->
-      <div class="personal-details-container">
-        <div class="left-fields">
-          <div class="field-row">
-            <span class="field-label">Name</span>
-            <span class="field-colon">:</span>
-            <input class="line-input" id="name" name="name" type="text" placeholder="Enter Full Name" required>
-          </div>
-          <div class="field-row">
-            <span class="field-label">Year/Dept</span>
-            <span class="field-colon">:</span>
-            <input class="line-input" id="yearDept" name="yearDept" type="text" placeholder="e.g. 2nd Year / CSE">
-          </div>
-          <div class="field-row">
-            <span class="field-label">College/School</span>
-            <span class="field-colon">:</span>
-            <input class="line-input" id="collegeSchool" name="collegeSchool" type="text" placeholder="Institution / College Name">
-          </div>
-          <div class="field-row tall">
-            <span class="field-label">Address</span>
-            <span class="field-colon">:</span>
-            <textarea class="line-input" id="address" name="address" rows="2" placeholder="Full Residential Address with Town/City"></textarea>
-          </div>
-        </div>
-
-        <!-- Photo Frame -->
-        <div class="right-photo">
-          <div class="photo-box" id="photoBox">
-            <img id="photoPreview" alt="Applicant Photo">
-            <div id="photoPlaceholder">
-              <div>Fix photo</div>
-              <div style="font-size:10px;font-weight:normal;color:#475569;">If You Have</div>
-            </div>
-          </div>
-          
-          <div class="photo-action-controls no-print">
-            <label class="photo-btn" for="photoInput">
-              📁 Upload
-              <input id="photoInput" name="photoFile" type="file" accept="image/*" style="display:none;">
-            </label>
-            <button type="button" class="photo-btn" id="btnToggleCamera" onclick="toggleCamera()">📷 Camera</button>
-            <button type="button" class="photo-btn remove" id="btnRemovePhoto" onclick="removePhoto()" style="display:none;">✕</button>
-          </div>
-
-          <!-- Camera Stream -->
-          <div class="camera-container" id="cameraContainer">
-            <div class="camera-stream-wrapper">
-              <video id="cameraVideo" autoplay playsinline></video>
-              <canvas id="cameraCanvas" style="display:none;"></canvas>
-            </div>
-            <div class="camera-controls">
-              <button type="button" class="btn-cam-action" onclick="capturePhoto()">📸 Capture</button>
-              <button type="button" class="btn-cam-action" id="btnSwitchCam" onclick="switchCamera()" style="display:none;">🔄</button>
-              <button type="button" class="btn-cam-action" onclick="stopCamera()">✕ Close</button>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Section 2: Contact Details -->
-      <div class="contact-details-container">
-        <div class="left-contact">
-          <div class="mobile-row">
-            <span class="field-label">Mo:No</span>
-            <span class="field-colon">:</span>
-            <div class="mobile-inputs">
-              <div class="mobile-input-item">
-                <span class="num-prefix">1.</span>
-                <input class="line-input" id="mobile1" name="mobile1" type="tel" placeholder="Primary Mobile Number" required>
-              </div>
-              <div class="mobile-input-item">
-                <span class="num-prefix">2.</span>
-                <input class="line-input" id="mobile2" name="mobile2" type="tel" placeholder="Secondary Contact (Optional)">
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div class="right-contact">
-          <div class="email-row">
-            <span class="field-label">email-id</span>
-            <span class="field-colon">:</span>
-            <input class="line-input" id="email" name="email" type="email" placeholder="Email Address">
-          </div>
-          <div class="pincode-container">
-            <div class="pincode-box-custom">
-              <span class="pincode-label">Pincode:</span>
-              <input class="line-input" id="pincode" name="pincode" type="text" maxlength="6" placeholder="Pincode">
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Section 3: Course Title -->
-      <div class="course-row">
-        <span class="field-label">Title Course/project</span>
-        <span class="field-colon">:</span>
-        <div class="course-box-custom">
-          <input class="line-input" id="title" name="title" type="text" placeholder="Applied Course or Project Title (e.g. Python Full Stack)">
-        </div>
-      </div>
-
-      <!-- Section 4: Referral & Signature -->
-      <div class="know-signature-container">
-        <div class="know-field">
-          <span class="field-label-block">How you Know about this institute?</span>
-          <input class="line-input" id="howKnow" name="howKnow" type="text" placeholder="e.g. Friends / Social Media / College Seminar">
-        </div>
-        <div class="signature-field">
-          <div class="signature-box-custom">
-            <span class="signature-label">Student Signature</span>
-            <input class="signature-val" id="signature" name="signature" type="text" placeholder="Sign Name Here">
-          </div>
-        </div>
-      </div>
-
-      <!-- Action Buttons for Student -->
-      <div class="actions no-print" id="formActions">
-        <button type="button" class="btn-submit" onclick="submitApplication()">✈️ Submit Application</button>
-        <button type="button" class="btn-secondary" onclick="clearFormDetails()">🧹 Reset Form</button>
-      </div>
-
-    </form>
-  </div>
-
-  <!-- VIEW 2: STUDENT APPLICATION SUMMARY & ACKNOWLEDGMENT (Shown immediately after submit) -->
-  <div class="form-sheet" id="studentSummaryView" style="display:none;">
+<!-- ══════════════════════════════════════════
+     GOOGLE FORM STYLE APPLICATION PANEL
+     ══════════════════════════════════════════ -->
+<div class="gf-container no-print">
+  
+  <!-- FORM ENTRY VIEW -->
+  <form id="googleApplicationForm">
     
-    <!-- Crest Header -->
-    <div class="crest">
-      <img src="logo.png" alt="Indian Info Tech Logo" onerror="this.onerror=null; this.style.display='none';">
-      <div class="brand-title">INDIAN INFO TECH</div>
-      <div class="brand-sub">STUDENT APPLICATION RECEIPT & ACKNOWLEDGMENT</div>
+    <!-- Header Card -->
+    <div class="gf-header-card">
+      <div class="gf-crest-row">
+        <img src="logo.png" alt="Indian Info Tech" onerror="this.style.display='none'">
+        <div>
+          <div class="gf-form-brand">Indian Info Tech</div>
+          <div style="font-size:11px;color:#5f6368;">Official Student Enrollment Portal</div>
+        </div>
+      </div>
+      <h1 class="gf-form-title">Student Application Form</h1>
+      <p class="gf-form-desc">
+        Please complete the application form below. All responses are registered directly into the student database. You can print your official application form anytime using the print option.
+      </p>
+      <div class="gf-required-notice">* Indicates required question</div>
     </div>
 
-    <h1 class="title">Application Details</h1>
+    <!-- Question 1: Name -->
+    <div class="gf-card">
+      <div class="gf-question-title">Full Name <span class="req">*</span></div>
+      <div class="gf-question-desc">Enter your full legal name as per school or college certificates</div>
+      <input type="text" class="gf-input-text" id="name" name="name" placeholder="Your answer" required>
+    </div>
 
-    <!-- Status Header -->
-    <div class="summary-status-header">
-      <div class="status-badge-pill">✅ Application Submitted Successfully</div>
-      <div class="submission-ref-box">
-        <span>Submission ID:</span>
-        <span class="ref-id-val" id="sumSubmissionId">ID-0000</span>
-        <span class="ref-date-val" id="sumSubmittedAt"></span>
+    <!-- Question 2: Year / Department -->
+    <div class="gf-card">
+      <div class="gf-question-title">Year / Department</div>
+      <div class="gf-question-desc">e.g. 2nd Year B.E. / CSE, Final Year BCA, etc.</div>
+      <input type="text" class="gf-input-text" id="yearDept" name="yearDept" placeholder="Your answer">
+    </div>
+
+    <!-- Question 3: College / School -->
+    <div class="gf-card">
+      <div class="gf-question-title">College / School Name <span class="req">*</span></div>
+      <div class="gf-question-desc">Name of your current or most recent educational institution</div>
+      <input type="text" class="gf-input-text" id="collegeSchool" name="collegeSchool" placeholder="Your answer" required>
+    </div>
+
+    <!-- Question 4: Residential Address -->
+    <div class="gf-card">
+      <div class="gf-question-title">Full Residential Address <span class="req">*</span></div>
+      <div class="gf-question-desc">Door No, Street name, Town/Village, District, and State</div>
+      <textarea class="gf-input-textarea" id="address" name="address" rows="2" placeholder="Your answer" required></textarea>
+    </div>
+
+    <!-- Question 5: Primary Mobile Number -->
+    <div class="gf-card">
+      <div class="gf-question-title">Primary Mobile Number (Mo:No 1) <span class="req">*</span></div>
+      <div class="gf-question-desc">10-digit active phone number for SMS and WhatsApp communications</div>
+      <input type="tel" class="gf-input-text" id="mobile1" name="mobile1" placeholder="Your answer" required>
+    </div>
+
+    <!-- Question 6: Secondary Mobile Number -->
+    <div class="gf-card">
+      <div class="gf-question-title">Secondary Mobile Number (Mo:No 2)</div>
+      <div class="gf-question-desc">Alternative contact or parent/guardian mobile number (Optional)</div>
+      <input type="tel" class="gf-input-text" id="mobile2" name="mobile2" placeholder="Your answer">
+    </div>
+
+    <!-- Question 7: Email Address -->
+    <div class="gf-card">
+      <div class="gf-question-title">Email Address <span class="req">*</span></div>
+      <div class="gf-question-desc">Active email address for enrollment confirmation and notifications</div>
+      <input type="email" class="gf-input-text" id="email" name="email" placeholder="Your answer" required>
+    </div>
+
+    <!-- Question 8: Postal Pincode -->
+    <div class="gf-card">
+      <div class="gf-question-title">Postal Pincode <span class="req">*</span></div>
+      <div class="gf-question-desc">6-digit postal area code</div>
+      <input type="text" class="gf-input-text" id="pincode" name="pincode" maxlength="6" placeholder="Your answer" required>
+    </div>
+
+    <!-- Question 9: Course Title -->
+    <div class="gf-card">
+      <div class="gf-question-title">Applied Course / Project Title <span class="req">*</span></div>
+      <div class="gf-question-desc">Title of the technical training, internship, or course enrolled</div>
+      <input type="text" class="gf-input-text" id="title" name="title" placeholder="Your answer" required>
+    </div>
+
+    <!-- Question 10: How you know -->
+    <div class="gf-card">
+      <div class="gf-question-title">How did you know about this institute?</div>
+      <div class="gf-question-desc">e.g. Friends, Social Media, College Campus Drive, Senior recommendation</div>
+      <input type="text" class="gf-input-text" id="howKnow" name="howKnow" placeholder="Your answer">
+    </div>
+
+    <!-- Question 11: Photo Upload -->
+    <div class="gf-card">
+      <div class="gf-question-title">Passport Size Photograph</div>
+      <div class="gf-question-desc">Upload a photo file or capture live from your camera for the application form</div>
+      
+      <div class="gf-file-upload-box">
+        <div id="photoPlaceholderTxt" style="font-size:13px;color:#5f6368;margin-bottom:8px;">
+          Attach your photo for official record
+        </div>
+
+        <div class="gf-file-actions">
+          <label class="btn-gf-action">
+            📁 Upload Photo
+            <input type="file" id="photoInput" accept="image/*" style="display:none;">
+          </label>
+          <button type="button" class="btn-gf-action" id="btnToggleCam" onclick="toggleCamera()">
+            📷 Use Camera
+          </button>
+          <button type="button" class="btn-gf-action danger" id="btnRemovePhoto" onclick="removePhoto()" style="display:none;">
+            ✕ Remove
+          </button>
+        </div>
+
+        <!-- Camera box -->
+        <div class="camera-stream-box" id="cameraBox">
+          <video id="cameraVideo" autoplay playsinline></video>
+          <canvas id="cameraCanvas" style="display:none;"></canvas>
+          <div class="camera-stream-controls">
+            <button type="button" class="btn-gf-action" onclick="capturePhoto()">📸 Capture</button>
+            <button type="button" class="btn-gf-action" id="btnSwitchCam" onclick="switchCamera()" style="display:none;">🔄 Switch</button>
+            <button type="button" class="btn-gf-action" onclick="stopCamera()">✕ Close</button>
+          </div>
+        </div>
+
+        <!-- Preview box -->
+        <div class="photo-preview-container" id="photoPreviewWrap">
+          <img id="photoPreviewImg" alt="Selected Photo">
+        </div>
       </div>
     </div>
 
-    <!-- Application Details Grid -->
-    <div class="summary-body-grid">
-      <!-- Left Rows -->
-      <div class="summary-rows-container">
-        <div class="field-row">
-          <span class="field-label">Name</span>
-          <span class="field-colon">:</span>
-          <span class="summary-val" id="sumName">—</span>
-        </div>
-        <div class="field-row">
-          <span class="field-label">Year/Dept</span>
-          <span class="field-colon">:</span>
-          <span class="summary-val" id="sumYearDept">—</span>
-        </div>
-        <div class="field-row">
-          <span class="field-label">College/School</span>
-          <span class="field-colon">:</span>
-          <span class="summary-val" id="sumCollegeSchool">—</span>
-        </div>
-        <div class="field-row tall">
-          <span class="field-label">Address</span>
-          <span class="field-colon">:</span>
-          <span class="summary-val" id="sumAddress" style="white-space: pre-wrap; min-height: 44px;">—</span>
-        </div>
-        <div class="field-row">
-          <span class="field-label">Mo:No (1)</span>
-          <span class="field-colon">:</span>
-          <span class="summary-val" id="sumMobile1">—</span>
-        </div>
-        <div class="field-row">
-          <span class="field-label">Mo:No (2)</span>
-          <span class="field-colon">:</span>
-          <span class="summary-val" id="sumMobile2">—</span>
-        </div>
-        <div class="field-row">
-          <span class="field-label">email-id</span>
-          <span class="field-colon">:</span>
-          <span class="summary-val" id="sumEmail">—</span>
-        </div>
-        <div class="field-row">
-          <span class="field-label">Pincode</span>
-          <span class="field-colon">:</span>
-          <span class="summary-val" id="sumPincode">—</span>
-        </div>
-        <div class="field-row">
-          <span class="field-label">Title Course</span>
-          <span class="field-colon">:</span>
-          <span class="summary-val" id="sumTitle" style="font-weight: 700;">—</span>
-        </div>
-        <div class="field-row">
-          <span class="field-label">Reference</span>
-          <span class="field-colon">:</span>
-          <span class="summary-val" id="sumHowKnow">—</span>
-        </div>
-      </div>
-
-      <!-- Right Media (Photo & Signature) -->
-      <div class="summary-media-column">
-        <div class="photo-box" id="sumPhotoBox">
-          <img id="sumPhotoImg" alt="Applicant Photo">
-          <div id="sumPhotoPlaceholder" style="font-size:11px;color:#64748b;font-weight:600;">No Photo<br>Provided</div>
-        </div>
-        <div class="summary-sig-box">
-          <span class="signature-label">Student Signature</span>
-          <span class="signature-val" id="sumSignatureText">—</span>
-        </div>
-      </div>
+    <!-- Question 12: Student Signature -->
+    <div class="gf-card">
+      <div class="gf-question-title">Student Signature (Full Name) <span class="req">*</span></div>
+      <div class="gf-question-desc">Type your name below. It will be printed in stylized signature script on the official form</div>
+      <input type="text" class="gf-input-signature" id="signature" name="signature" placeholder="Type name for stylized signature" required>
     </div>
 
-    <!-- Administrative Notice -->
-    <div class="summary-footer-notice">
-      <strong>📌 Student Notice:</strong> Your application details have been safely registered. The official Application Form with administration records, fee structure, and certificate issuance is managed directly by the Administration Office. Please keep your <strong>Submission ID</strong> for your records.
+    <!-- Google Form Buttons Row -->
+    <div class="gf-buttons-row">
+      <button type="submit" class="btn-gf-submit">Submit</button>
+      <button type="button" class="btn-gf-print" onclick="printApplicationDirectly()">
+        🖨️ Print Application Form
+      </button>
+      <button type="button" class="btn-gf-clear" onclick="clearGoogleForm()">Clear form</button>
     </div>
 
-    <!-- Actions for Student -->
-    <div class="actions no-print">
-      <button type="button" class="btn-submit" onclick="window.print()">🖨️ Print Application Copy</button>
-      <button type="button" class="btn-secondary" onclick="resetForNewSubmission()">➕ Submit Another Application</button>
+  </form>
+
+  <!-- CONFIRMATION CARD (Shown after submit) -->
+  <div class="gf-confirmation-card" id="confirmationCard">
+    <div class="gf-crest-row" style="margin-bottom: 16px;">
+      <img src="logo.png" alt="Indian Info Tech" onerror="this.style.display='none'">
+      <div class="gf-form-brand">Indian Info Tech</div>
+    </div>
+    <h2 class="conf-title">Student Application Form</h2>
+    <p class="conf-desc">Your application has been recorded in the database.</p>
+    
+    <div class="conf-id-badge">
+      <span>Official Submission ID:</span>
+      <span class="conf-id-val" id="confirmedSubmissionId">ID-0000</span>
     </div>
 
+    <div class="conf-actions">
+      <button type="button" class="btn-gf-submit" onclick="printApplicationDirectly()">
+        🖨️ Print Official Application Form (A4)
+      </button>
+      <button type="button" class="btn-gf-clear" onclick="submitAnotherResponse()">
+        Submit another response
+      </button>
+    </div>
   </div>
 
+</div>
+
+<!-- ══════════════════════════════════════════
+     OFFICIAL APPLICATION FORM (PRINT VIEW)
+     Prints cleanly on 1 single A4 page
+     ══════════════════════════════════════════ -->
+<div class="official-print-sheet">
+  <div class="p-crest">
+    <img src="logo.png" alt="IIT logo" onerror="this.style.display='none';">
+  </div>
+  
+  <h1 class="p-title">Application</h1>
+  
+  <div class="p-personal-details">
+    <div class="p-left-fields">
+      <div class="p-field-row">
+        <span class="p-field-label">Name</span>
+        <span class="p-field-colon">:</span>
+        <span class="p-field-val" id="p_name"></span>
+      </div>
+      <div class="p-field-row">
+        <span class="p-field-label">Year/Dept</span>
+        <span class="p-field-colon">:</span>
+        <span class="p-field-val" id="p_yearDept"></span>
+      </div>
+      <div class="p-field-row">
+        <span class="p-field-label">College/School</span>
+        <span class="p-field-colon">:</span>
+        <span class="p-field-val" id="p_collegeSchool"></span>
+      </div>
+      <div class="p-field-row p-field-row-tall">
+        <span class="p-field-label">Address</span>
+        <span class="p-field-colon">:</span>
+        <span class="p-field-val" id="p_address" style="min-height:45px;"></span>
+      </div>
+    </div>
+    <div class="p-right-photo">
+      <div class="p-photo-box" id="p_photoBox">
+        <img id="p_photoImg" alt="Photo">
+        <span id="p_photoPlaceholder">Fix photo<br>If You Have</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="p-contact-container">
+    <div class="p-left-contact">
+      <div class="p-mobile-row">
+        <span class="p-field-label">Mo:No</span>
+        <span class="p-field-colon">:</span>
+        <div class="p-mobile-inputs">
+          <div class="p-mobile-input-item">
+            <span class="p-num-prefix">1.</span>
+            <span class="p-field-val" id="p_mobile1"></span>
+          </div>
+          <div class="p-mobile-input-item">
+            <span class="p-num-prefix">2.</span>
+            <span class="p-field-val" id="p_mobile2"></span>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="p-right-contact">
+      <div class="p-email-row">
+        <span class="p-field-label">email-id</span>
+        <span class="p-field-colon">:</span>
+        <span class="p-field-val" id="p_email"></span>
+      </div>
+      <div class="p-pincode-container">
+        <div class="p-pincode-box">
+          <span class="p-pincode-label">Pincode:</span>
+          <span class="p-pincode-val" id="p_pincode"></span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="p-course-row">
+    <span class="p-field-label">Title Course/project</span>
+    <span class="p-field-colon">:</span>
+    <div class="p-course-box" id="p_title"></div>
+  </div>
+
+  <div class="p-know-signature-container">
+    <div class="p-know-field">
+      <span class="p-field-label-block">How you Know about this institute?</span>
+      <span class="p-field-val" id="p_howKnow" style="display:block; width:100%;"></span>
+    </div>
+    <div class="p-signature-field">
+      <div class="p-signature-box">
+        <span class="p-signature-label">Student Signature</span>
+        <span class="p-signature-val" id="p_signature"></span>
+      </div>
+    </div>
+  </div>
 </div>
 
 <!-- Toast -->
@@ -980,44 +1001,42 @@
   const DETAILS_KEY = 'indianInfoTechUserDetails';
   const STORAGE_KEY = 'indianInfoTechSubmissions';
   const COUNTER_KEY = 'iitSubmissionCounter';
-  
-  const form = document.getElementById('detailsForm');
+
+  const form = document.getElementById('googleApplicationForm');
   const photoInput = document.getElementById('photoInput');
-  const photoPreview = document.getElementById('photoPreview');
-  const photoPlaceholder = document.getElementById('photoPlaceholder');
+  const photoPreviewWrap = document.getElementById('photoPreviewWrap');
+  const photoPreviewImg = document.getElementById('photoPreviewImg');
   const btnRemovePhoto = document.getElementById('btnRemovePhoto');
-  
+  const photoPlaceholderTxt = document.getElementById('photoPlaceholderTxt');
+
   let currentPhotoDataUrl = '';
   let cameraStream = null;
   let useFacingMode = 'user';
-  
-  const urlParams = new URLSearchParams(window.location.search);
-  let editingSubmissionId = urlParams.get('submissionId')?.trim() || '';
-  const viewMode = urlParams.get('view')?.trim() || '';
+  let activeSubmissionId = '';
 
   // ── Toast notification ──
-  function showToast(msg, type = '') {
+  function showToast(msg, isError = false) {
     const t = document.getElementById('toast');
     if (!t) return;
     t.textContent = msg;
-    t.className = 'toast show ' + type;
+    t.className = 'toast show' + (isError ? ' error' : '');
     clearTimeout(t._timer);
-    t._timer = setTimeout(() => { t.className = 'toast'; }, 3200);
+    t._timer = setTimeout(() => { t.className = 'toast'; }, 3000);
   }
 
-  // ── Photo Handling ──
+  // ── Photo Upload ──
   function setPhoto(dataUrl) {
     currentPhotoDataUrl = dataUrl || '';
     if (dataUrl) {
-      photoPreview.src = dataUrl;
-      photoPreview.style.display = 'block';
-      photoPlaceholder.style.display = 'none';
-      if (btnRemovePhoto) btnRemovePhoto.style.display = 'inline-block';
+      photoPreviewImg.src = dataUrl;
+      photoPreviewWrap.style.display = 'block';
+      if (btnRemovePhoto) btnRemovePhoto.style.display = 'inline-flex';
+      if (photoPlaceholderTxt) photoPlaceholderTxt.textContent = 'Photo attached successfully';
     } else {
-      photoPreview.removeAttribute('src');
-      photoPreview.style.display = 'none';
-      photoPlaceholder.style.display = 'block';
+      photoPreviewImg.removeAttribute('src');
+      photoPreviewWrap.style.display = 'none';
       if (btnRemovePhoto) btnRemovePhoto.style.display = 'none';
+      if (photoPlaceholderTxt) photoPlaceholderTxt.textContent = 'Attach your photo for official record';
     }
   }
 
@@ -1038,10 +1057,10 @@
     reader.readAsDataURL(file);
   });
 
-  // ── Camera Handling ──
+  // ── Camera Controls ──
   async function toggleCamera() {
-    const container = document.getElementById('cameraContainer');
-    if (container.style.display === 'block') {
+    const box = document.getElementById('cameraBox');
+    if (box.style.display === 'block') {
       stopCamera();
     } else {
       await startCamera();
@@ -1050,8 +1069,8 @@
 
   async function startCamera() {
     stopCamera();
-    const container = document.getElementById('cameraContainer');
-    container.style.display = 'block';
+    const box = document.getElementById('cameraBox');
+    box.style.display = 'block';
     try {
       cameraStream = await navigator.mediaDevices.getUserMedia({
         video: { facingMode: useFacingMode },
@@ -1060,15 +1079,15 @@
       const vid = document.getElementById('cameraVideo');
       vid.srcObject = cameraStream;
       vid.play();
-      
-      const devices = await navigator.mediaDevices.enumerateDevices();
-      const videoDevs = devices.filter(d => d.kind === 'videoinput');
+
+      const devs = await navigator.mediaDevices.enumerateDevices();
+      const videoDevs = devs.filter(d => d.kind === 'videoinput');
       const switchBtn = document.getElementById('btnSwitchCam');
       if (switchBtn) {
-        switchBtn.style.display = videoDevs.length > 1 ? 'inline-block' : 'none';
+        switchBtn.style.display = videoDevs.length > 1 ? 'inline-flex' : 'none';
       }
-    } catch (err) {
-      alert('Camera access denied or unavailable. Please upload a photo instead.');
+    } catch(err) {
+      alert('Camera access denied or unavailable. Please upload a photo file instead.');
       stopCamera();
     }
   }
@@ -1078,8 +1097,8 @@
       cameraStream.getTracks().forEach(t => t.stop());
       cameraStream = null;
     }
-    const container = document.getElementById('cameraContainer');
-    if (container) container.style.display = 'none';
+    const box = document.getElementById('cameraBox');
+    if (box) box.style.display = 'none';
     const vid = document.getElementById('cameraVideo');
     if (vid) vid.srcObject = null;
   }
@@ -1094,7 +1113,7 @@
     const dataUrl = canvas.toDataURL('image/jpeg');
     setPhoto(dataUrl);
     stopCamera();
-    showToast('Photo captured successfully!', 'success');
+    showToast('Photo captured successfully!');
   }
 
   function switchCamera() {
@@ -1102,119 +1121,48 @@
     startCamera();
   }
 
-  // ── Apply Data to Form ──
-  function applyFormData(data) {
-    if (!data || typeof data !== 'object') return;
-    Object.entries(data).forEach(([key, val]) => {
-      const field = form.elements[key];
-      if (field && key !== 'photo') {
-        field.value = val || '';
-      }
+  // ── Sync Google Form Fields into Official Application Print Sheet ──
+  function syncToOfficialApplicationPrintSheet(data) {
+    const fields = ['name', 'yearDept', 'collegeSchool', 'address', 'mobile1', 'mobile2', 'email', 'pincode', 'title', 'howKnow', 'signature'];
+    fields.forEach(f => {
+      const el = document.getElementById('p_' + f);
+      if (el) el.textContent = (data && data[f]) || form.elements[f]?.value?.trim() || '—';
     });
-    if (data.photo) {
-      setPhoto(data.photo);
-    }
-  }
 
-  // ── Display Submitted Application in Summary View ──
-  function renderSubmittedSummary(data) {
-    document.getElementById('sumSubmissionId').textContent = data.submissionId || 'ID-0000';
-    document.getElementById('sumSubmittedAt').textContent = data.submittedAt ? `(${data.submittedAt})` : '';
-    document.getElementById('sumName').textContent = data.name || '—';
-    document.getElementById('sumYearDept').textContent = data.yearDept || '—';
-    document.getElementById('sumCollegeSchool').textContent = data.collegeSchool || '—';
-    document.getElementById('sumAddress').textContent = data.address || '—';
-    document.getElementById('sumMobile1').textContent = data.mobile1 || '—';
-    document.getElementById('sumMobile2').textContent = data.mobile2 || '—';
-    document.getElementById('sumEmail').textContent = data.email || '—';
-    document.getElementById('sumPincode').textContent = data.pincode || '—';
-    document.getElementById('sumTitle').textContent = data.title || '—';
-    document.getElementById('sumHowKnow').textContent = data.howKnow || '—';
-    
-    // Photo render
-    const photoImg = document.getElementById('sumPhotoImg');
-    const noPhoto = document.getElementById('sumNoPhoto');
-    if (data.photo && data.photo.length > 50) {
-      photoImg.src = data.photo;
-      photoImg.style.display = 'block';
-      noPhoto.style.display = 'none';
+    const photoUrl = (data && data.photo) || currentPhotoDataUrl;
+    const pPhotoImg = document.getElementById('p_photoImg');
+    const pPhotoPlaceholder = document.getElementById('p_photoPlaceholder');
+    if (photoUrl && photoUrl.length > 50) {
+      pPhotoImg.src = photoUrl;
+      pPhotoImg.style.display = 'block';
+      pPhotoPlaceholder.style.display = 'none';
     } else {
-      photoImg.style.display = 'none';
-      noPhoto.style.display = 'block';
+      pPhotoImg.style.display = 'none';
+      pPhotoPlaceholder.style.display = 'inline-block';
     }
-
-    // Signature render
-    document.getElementById('sumSignatureText').textContent = data.signature || data.name || '—';
-
-    // Transition view
-    document.getElementById('entryFormSheet').style.display = 'none';
-    document.getElementById('studentSummaryView').style.display = 'block';
-    window.scrollTo({ top: 0, behavior: 'smooth' });
   }
 
-  // ── Load Saved Details / Drafts ──
-  async function loadData() {
-    if (editingSubmissionId) {
-      try {
-        const res = await fetch('/api/submissions');
-        if (res.ok) {
-          const subs = await res.json();
-          const match = subs.find(s => String(s.submissionId) === editingSubmissionId);
-          if (match) {
-            if (viewMode === 'summary') {
-              renderSubmittedSummary(match);
-            } else {
-              applyFormData(match);
-            }
-            return;
-          }
-        }
-      } catch (e) {}
-
-      const localSubs = getStoredSubmissions();
-      const localMatch = localSubs.find(s => String(s.submissionId) === editingSubmissionId);
-      if (localMatch) {
-        if (viewMode === 'summary') {
-          renderSubmittedSummary(localMatch);
-        } else {
-          applyFormData(localMatch);
-        }
-        return;
-      }
-    }
-
-    try {
-      const res = await fetch('/api/details');
-      if (res.ok) {
-        const details = await res.json();
-        if (details && typeof details === 'object' && Object.keys(details).length) {
-          applyFormData(details);
-          return;
-        }
-      }
-    } catch (e) {}
-
-    try {
-      const local = JSON.parse(localStorage.getItem(DETAILS_KEY) || '{}');
-      applyFormData(local);
-    } catch (e) {}
+  // ── Print Application Directly From User Panel ──
+  function printApplicationDirectly() {
+    const data = collectFormData();
+    syncToOfficialApplicationPrintSheet(data);
+    window.print();
   }
 
-  // ── Clear Form ──
-  function clearFormDetails() {
-    if (!confirm('Are you sure you want to reset all fields in the form?')) return;
-    form.reset();
-    removePhoto();
-    localStorage.removeItem(DETAILS_KEY);
-    fetch('/api/details', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({})
-    }).catch(() => {});
-    showToast('Form has been reset.');
+  // ── Data Collection & Storage ──
+  function collectFormData() {
+    const fd = new FormData(form);
+    const data = Object.fromEntries(fd.entries());
+    data.photo = currentPhotoDataUrl;
+    
+    // Default office values
+    ['term1', 'term2', 'term3', 'term4'].forEach(k => { data[k] = false; });
+    ['feesFixed', 'dateJoining', 'certNo', 'dateIssue'].forEach(k => { data[k] = ''; });
+    if (activeSubmissionId) data.submissionId = activeSubmissionId;
+    
+    return data;
   }
 
-  // ── Submissions Storage ──
   function getStoredSubmissions() {
     try {
       const d1 = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
@@ -1254,43 +1202,28 @@
         }),
         redirect: 'follow'
       });
-      console.log('[GoogleSheet Direct] Synced from user panel successfully.');
+      console.log('[GoogleSheet Direct] Synced successfully.');
     } catch (e) {
-      console.warn('[GoogleSheet Direct] Error pushing to cloud sheet:', e);
+      console.warn('[GoogleSheet Direct] Cloud push error:', e);
     }
   }
 
-  function collectFormData() {
-    const fd = new FormData(form);
-    const data = Object.fromEntries(fd.entries());
-    delete data.photoFile;
-    data.photo = currentPhotoDataUrl;
-    
-    // Default office administration fields
-    ['term1', 'term2', 'term3', 'term4'].forEach(t => { data[t] = false; });
-    ['feesFixed', 'dateJoining', 'certNo', 'dateIssue'].forEach(f => { data[f] = ''; });
-    
-    return data;
-  }
-
-  async function submitApplication() {
+  // ── Form Submission ──
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
     const data = collectFormData();
+    
     if (!data.name || !data.name.trim()) {
-      showToast('Please enter your Name before submitting.', 'error');
+      showToast('Please enter your Full Name', true);
       document.getElementById('name').focus();
       return;
     }
     if (!data.mobile1 || !data.mobile1.trim()) {
-      showToast('Please enter your Primary Mobile Number.', 'error');
+      showToast('Please enter your Primary Mobile Number', true);
       document.getElementById('mobile1').focus();
       return;
     }
 
-    if (editingSubmissionId) {
-      data.submissionId = editingSubmissionId;
-    }
-
-    // Direct background cloud push
     pushDirectToGoogleSheet(data);
 
     try {
@@ -1303,51 +1236,82 @@
 
       if (res.ok && resData.success && resData.saved) {
         const saved = resData.saved;
+        activeSubmissionId = saved.submissionId;
         const subs = getStoredSubmissions();
-        if (editingSubmissionId) {
-          const idx = subs.findIndex(s => s.submissionId === editingSubmissionId);
-          if (idx !== -1) subs[idx] = saved; else subs.push(saved);
-        } else {
-          subs.push(saved);
-        }
+        subs.push(saved);
         saveStoredSubmissions(subs);
-        
-        // Show student their entered details summary
-        renderSubmittedSummary(saved);
-        showToast(`Application successfully submitted! ID: ${saved.submissionId}`, 'success');
+        showConfirmation(saved);
         return;
       } else if (!res.ok) {
-        showToast(resData.error || 'Submission rejected by server.', 'error');
+        showToast(resData.error || 'Submission failed.', true);
         return;
       }
-    } catch (err) {
+    } catch(err) {
       console.warn('Server offline, saving locally:', err);
       let c = parseInt(localStorage.getItem(COUNTER_KEY) || '0', 10) + 1;
       localStorage.setItem(COUNTER_KEY, String(c));
-      const generatedId = editingSubmissionId || `ID-${String(c).padStart(4, '0')}`;
+      const generatedId = `ID-${String(c).padStart(4, '0')}`;
       data.submissionId = generatedId;
       data.submittedAt = new Date().toLocaleString();
-      
+      activeSubmissionId = generatedId;
+
       const subs = getStoredSubmissions();
       subs.push(data);
       saveStoredSubmissions(subs);
-      
-      // Show student their entered details summary
-      renderSubmittedSummary(data);
-      showToast(`Application submitted! ID: ${generatedId}`, 'success');
+      showConfirmation(data);
     }
+  });
+
+  function showConfirmation(savedData) {
+    document.getElementById('googleApplicationForm').style.display = 'none';
+    const conf = document.getElementById('confirmationCard');
+    document.getElementById('confirmedSubmissionId').textContent = savedData.submissionId || 'ID-0000';
+    conf.style.display = 'block';
+    syncToOfficialApplicationPrintSheet(savedData);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+    showToast('Application submitted successfully!');
   }
 
-  function resetForNewSubmission() {
+  function submitAnotherResponse() {
     form.reset();
     removePhoto();
-    editingSubmissionId = '';
-    document.getElementById('entryFormSheet').style.display = 'block';
-    document.getElementById('studentSummaryView').style.display = 'none';
+    activeSubmissionId = '';
+    document.getElementById('confirmationCard').style.display = 'none';
+    document.getElementById('googleApplicationForm').style.display = 'block';
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }
 
-  window.addEventListener('DOMContentLoaded', loadData);
+  function clearGoogleForm() {
+    if (confirm('Are you sure you want to clear your responses in this form?')) {
+      form.reset();
+      removePhoto();
+      showToast('Form cleared');
+    }
+  }
+
+  // ── Load Existing Draft / Submission ──
+  async function loadInitial() {
+    const subId = new URLSearchParams(window.location.search).get('submissionId')?.trim();
+    if (!subId) return;
+    try {
+      const res = await fetch('/api/submissions');
+      if (res.ok) {
+        const list = await res.json();
+        const found = list.find(s => String(s.submissionId) === subId);
+        if (found) {
+          activeSubmissionId = found.submissionId;
+          Object.entries(found).forEach(([k, v]) => {
+            const el = form.elements[k];
+            if (el && k !== 'photo') el.value = v;
+          });
+          if (found.photo) setPhoto(found.photo);
+          syncToOfficialApplicationPrintSheet(found);
+        }
+      }
+    } catch(e) {}
+  }
+
+  window.addEventListener('DOMContentLoaded', loadInitial);
 </script>
 <script src="theme.js"></script>
 </body>
