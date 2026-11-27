@@ -367,6 +367,33 @@ function getNextSubmissionId(submissions) {
 
 
 
+// Fast lookup endpoint for student user panel to find and alter existing submissions
+app.get('/api/submission-lookup', (req, res) => {
+  const q = (req.query.q || '').trim();
+  if (!q) return res.status(400).json({ error: 'Query parameter q is required' });
+  const submissions = readJson(submissionsFile, []);
+  const cleanQ = q.replace(/\D/g, '');
+  const lowerQ = q.toLowerCase();
+
+  const found = submissions.find(s => {
+    if (s.submissionId && s.submissionId.toLowerCase() === lowerQ) return true;
+    if (s.email && s.email.trim().toLowerCase() === lowerQ) return true;
+    if (s.mobile1 && s.mobile1.trim() === q) return true;
+    if (cleanQ.length >= 10) {
+      const s1 = (s.mobile1 || '').replace(/\D/g, '');
+      const s2 = (s.mobile2 || '').replace(/\D/g, '');
+      if (s1.endsWith(cleanQ.slice(-10)) || s2.endsWith(cleanQ.slice(-10))) return true;
+    }
+    return false;
+  });
+
+  if (found) {
+    res.json({ success: true, submission: found });
+  } else {
+    res.json({ success: false, message: 'No matching submission found' });
+  }
+});
+
 app.post('/api/submit', async (req, res) => {
   const submissions = readJson(submissionsFile, []);
   const payload = req.body || {};
@@ -384,6 +411,12 @@ app.post('/api/submit', async (req, res) => {
       s.name && s.name.trim().toLowerCase() === payload.name.trim().toLowerCase() && 
       s.mobile1 && s.mobile1.trim() === payload.mobile1.trim()
     );
+  }
+  if (targetIndex === -1 && payload.mobile1 && payload.mobile1.trim()) {
+    const cleanPhone = payload.mobile1.trim().replace(/\D/g, '');
+    if (cleanPhone.length >= 10) {
+      targetIndex = submissions.findIndex(s => s.mobile1 && s.mobile1.trim().replace(/\D/g, '').endsWith(cleanPhone.slice(-10)));
+    }
   }
 
   let savedRecord = null;

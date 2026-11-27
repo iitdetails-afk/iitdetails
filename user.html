@@ -18,6 +18,8 @@
     --gf-text-main: #202124;
     --gf-text-secondary: #5f6368;
     --gf-red: #d93025;
+    --gf-green: #10b981;
+    --gf-green-dark: #059669;
   }
 
   * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -128,6 +130,170 @@
     border-top: 1px solid #f1f3f4;
   }
 
+  /* ── Alteration / Lookup Card ── */
+  .gf-lookup-card {
+    background: #ffffff;
+    border: 1px solid #d2e3fc;
+    border-left: 5px solid #1a73e8;
+    border-radius: 8px;
+    padding: 18px 24px;
+    margin-bottom: 12px;
+    box-shadow: 0 1px 3px rgba(60,64,67,0.08);
+  }
+  .gf-lookup-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 6px;
+  }
+  .gf-lookup-badge {
+    background: #e8f0fe;
+    color: #1a73e8;
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    padding: 3px 8px;
+    border-radius: 4px;
+  }
+  .gf-lookup-title {
+    font-size: 15px;
+    font-weight: 600;
+    color: #202124;
+  }
+  .gf-lookup-desc {
+    font-size: 13px;
+    color: #5f6368;
+    line-height: 1.4;
+    margin-bottom: 12px;
+  }
+  .gf-lookup-row {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+  }
+  .gf-lookup-input {
+    flex: 1;
+    border: 1px solid #dadce0;
+    border-radius: 4px;
+    padding: 9px 12px;
+    font-size: 14px;
+    font-family: inherit;
+    color: #202124;
+    background: #f8fafc;
+    outline: none;
+    transition: all 0.2s ease;
+  }
+  .gf-lookup-input:focus {
+    border-color: #1a73e8;
+    background: #ffffff;
+    box-shadow: 0 0 0 2px rgba(26,115,232,0.2);
+  }
+  .btn-gf-lookup {
+    background: #1a73e8;
+    color: #ffffff;
+    border: none;
+    border-radius: 4px;
+    padding: 9px 18px;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: background 0.15s ease;
+  }
+  .btn-gf-lookup:hover {
+    background: #1557b0;
+  }
+  .gf-lookup-status {
+    margin-top: 10px;
+    padding: 10px 14px;
+    border-radius: 6px;
+    font-size: 13px;
+    line-height: 1.4;
+  }
+  .gf-lookup-status.success {
+    background: #ecfdf5;
+    border: 1px solid #a7f3d0;
+    color: #065f46;
+  }
+  .gf-lookup-status.error {
+    background: #fef2f2;
+    border: 1px solid #fecaca;
+    color: #991b1b;
+  }
+
+  /* ── Active Alteration Banner ── */
+  .gf-alter-banner {
+    background: #fef3c7;
+    border: 1.5px solid #f59e0b;
+    border-radius: 8px;
+    padding: 14px 20px;
+    margin-bottom: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 14px;
+    box-shadow: 0 2px 4px rgba(245,158,11,0.15);
+  }
+  .alter-banner-left {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .alter-icon {
+    font-size: 24px;
+  }
+  .alter-banner-heading {
+    font-size: 14px;
+    font-weight: 700;
+    color: #92400e;
+  }
+  .alter-banner-sub {
+    font-size: 12px;
+    color: #78350f;
+    margin-top: 2px;
+  }
+  .btn-alter-cancel {
+    background: #ffffff;
+    border: 1px solid #d97706;
+    color: #b45309;
+    font-size: 12px;
+    font-weight: 600;
+    padding: 6px 12px;
+    border-radius: 4px;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: all 0.15s ease;
+  }
+  .btn-alter-cancel:hover {
+    background: #fffbeb;
+  }
+
+  /* Inline Hint for existing records */
+  .existing-hint-banner {
+    background: #eff6ff;
+    border: 1px solid #bfdbfe;
+    border-radius: 6px;
+    padding: 10px 14px;
+    margin-top: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-size: 13px;
+    color: #1e40af;
+  }
+  .btn-load-inline {
+    background: #2563eb;
+    color: #ffffff;
+    border: none;
+    border-radius: 4px;
+    padding: 4px 10px;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    margin-left: 8px;
+  }
+
   /* Question Cards */
   .gf-card {
     background: var(--gf-card-bg);
@@ -205,7 +371,7 @@
     outline: none;
   }
 
-  /* Photo Upload Component (Google Form Style File Picker) */
+  /* Photo Upload Component */
   .gf-file-upload-box {
     border: 1.5px dashed #dadce0;
     border-radius: 8px;
@@ -284,7 +450,7 @@
     background: #f1f3f4;
   }
 
-  /* Action Buttons Bar */
+  /* Action Buttons Bar (NO print button in user panel) */
   .gf-buttons-row {
     display: flex;
     align-items: center;
@@ -310,23 +476,6 @@
     background: #1557b0;
     box-shadow: 0 2px 4px rgba(60,64,67,0.35);
   }
-  .btn-gf-print {
-    background: #ffffff;
-    color: #0f2744;
-    font-size: 14px;
-    font-weight: 600;
-    border: 1.5px solid #0f2744;
-    border-radius: 4px;
-    padding: 9px 20px;
-    cursor: pointer;
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    transition: background 0.15s ease;
-  }
-  .btn-gf-print:hover {
-    background: #e8f0fe;
-  }
   .btn-gf-clear {
     color: #1a73e8;
     background: none;
@@ -342,349 +491,165 @@
   }
 
   /* ══════════════════════════════════════════
-     CONFIRMATION SCREEN (Google Form Style)
+     SUBMITTED SUCCESSFULLY NOTIFICATION SCREEN
+     Featuring Prominent Vibrant Green Tick Symbol
      ══════════════════════════════════════════ */
   .gf-confirmation-card {
     display: none;
     background: #ffffff;
     border: 1px solid #dadce0;
-    border-top: 10px solid #1a73e8;
+    border-top: 10px solid #10b981;
     border-radius: 8px;
-    padding: 32px 28px;
-    box-shadow: 0 1px 3px rgba(60,64,67,0.08);
+    padding: 36px 30px;
+    box-shadow: 0 2px 8px rgba(16,185,129,0.12);
+    text-align: center;
+    animation: fadeInScale 0.35s ease-out;
   }
+
+  @keyframes fadeInScale {
+    0% { opacity: 0; transform: scale(0.96); }
+    100% { opacity: 1; transform: scale(1); }
+  }
+
+  /* Vibrant Green Tick Symbol Styling */
+  .conf-tick-wrapper {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 20px;
+  }
+  .conf-tick-circle {
+    width: 76px;
+    height: 76px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #10b981, #059669);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 6px 20px rgba(16, 185, 129, 0.38);
+    animation: tickBounce 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  }
+  @keyframes tickBounce {
+    0% { transform: scale(0); opacity: 0; }
+    60% { transform: scale(1.15); opacity: 1; }
+    100% { transform: scale(1); }
+  }
+  .conf-tick-svg {
+    width: 44px;
+    height: 44px;
+    stroke: #ffffff;
+    stroke-width: 4;
+    fill: none;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    stroke-dasharray: 50;
+    stroke-dashoffset: 50;
+    animation: tickStroke 0.4s ease 0.3s forwards;
+  }
+  @keyframes tickStroke {
+    to { stroke-dashoffset: 0; }
+  }
+
   .conf-title {
     font-size: 24px;
-    font-weight: 500;
-    color: #202124;
-    margin-bottom: 12px;
+    font-weight: 600;
+    color: #065f46;
+    margin-bottom: 8px;
   }
   .conf-desc {
     font-size: 14px;
-    color: #5f6368;
+    color: #4b5563;
     line-height: 1.5;
-    margin-bottom: 24px;
+    margin-bottom: 20px;
+    max-width: 480px;
+    margin-left: auto;
+    margin-right: auto;
   }
-  .conf-id-badge {
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    background: #f0fdf4;
-    border: 1.5px solid #22c55e;
-    color: #15803d;
+
+  /* Summary Box inside confirmation */
+  .conf-summary-box {
+    background: #f9fafb;
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+    padding: 16px 20px;
+    max-width: 460px;
+    margin: 0 auto 24px;
+    text-align: left;
+  }
+  .conf-summary-row {
+    display: flex;
+    justify-content: space-between;
+    padding: 6px 0;
+    font-size: 13px;
+    border-bottom: 1px solid #f3f4f6;
+  }
+  .conf-summary-row:last-child {
+    border-bottom: none;
+  }
+  .conf-summary-label {
+    color: #6b7280;
+    font-weight: 500;
+  }
+  .conf-summary-val {
+    color: #111827;
+    font-weight: 600;
+    text-align: right;
+  }
+  .conf-id-highlight {
+    color: #059669;
+    font-family: monospace;
     font-size: 15px;
     font-weight: 700;
-    padding: 10px 18px;
-    border-radius: 8px;
-    margin-bottom: 24px;
   }
-  .conf-id-val {
-    font-family: monospace;
-    font-size: 18px;
-    color: #0f2744;
-  }
+
   .conf-actions {
     display: flex;
-    gap: 12px;
+    justify-content: center;
+    gap: 14px;
     flex-wrap: wrap;
     margin-top: 10px;
   }
-
-  /* ══════════════════════════════════════════
-     OFFICIAL APPLICATION FORM (FOR PRINT)
-     Visible ONLY when printing / window.print()
-     ══════════════════════════════════════════ */
-  .official-print-sheet {
-    display: none;
+  .btn-conf-alter {
+    background: #1a73e8;
+    color: #ffffff;
+    font-size: 14px;
+    font-weight: 600;
+    border: none;
+    border-radius: 4px;
+    padding: 11px 22px;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    box-shadow: 0 1px 3px rgba(26,115,232,0.3);
+    transition: all 0.15s ease;
+  }
+  .btn-conf-alter:hover {
+    background: #1557b0;
+    box-shadow: 0 2px 6px rgba(26,115,232,0.4);
+  }
+  .btn-conf-new {
+    background: #ffffff;
+    color: #374151;
+    font-size: 14px;
+    font-weight: 500;
+    border: 1px solid #d1d5db;
+    border-radius: 4px;
+    padding: 11px 20px;
+    cursor: pointer;
+    transition: all 0.15s ease;
+  }
+  .btn-conf-new:hover {
+    background: #f9fafb;
+    border-color: #9ca3af;
   }
 
-  @media print {
-    @page {
-      size: A4 portrait;
-      margin: 8mm 10mm;
-    }
-    html, body {
-      background: #ffffff !important;
-      padding: 0 !important;
-      margin: 0 !important;
-      color: #000000 !important;
-      font-family: 'Georgia', 'Times New Roman', serif !important;
-    }
-    /* Hide all Google Form screen elements */
-    .topbar, .gf-container, .toast, .no-print {
-      display: none !important;
-    }
-    /* Show ONLY the official Application Form Sheet */
-    .official-print-sheet {
-      display: block !important;
-      width: 100% !important;
-      max-width: 100% !important;
-      height: auto !important;
-      max-height: 275mm !important;
-      margin: 0 auto !important;
-      padding: 0 !important;
-      box-shadow: none !important;
-      border: none !important;
-      page-break-inside: avoid !important;
-      box-sizing: border-box !important;
-    }
-
-    .p-crest {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 4px;
-      margin-bottom: 10px;
-    }
-    .p-crest img {
-      width: 130px;
-      height: 75px;
-      object-fit: contain;
-    }
-
-    h1.p-title {
-      text-align: center;
-      font-size: 20px;
-      letter-spacing: 0.12em;
-      margin: 4px 0 16px;
-      text-decoration: underline;
-      text-underline-offset: 5px;
-      text-transform: uppercase;
-      font-weight: 800;
-      color: #000000;
-    }
-
-    .p-personal-details {
-      display: flex;
-      justify-content: space-between;
-      align-items: flex-start;
-      gap: 18px;
-      margin-bottom: 10px;
-    }
-    .p-left-fields {
-      flex: 1;
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
-    }
-    .p-right-photo {
-      flex-shrink: 0;
-    }
-
-    .p-field-row {
-      display: flex;
-      align-items: flex-end;
-    }
-    .p-field-row.tall {
-      align-items: flex-start;
-    }
-    .p-field-label {
-      font-size: 14px;
-      font-weight: bold;
-      width: 140px;
-      flex-shrink: 0;
-      color: #000000;
-    }
-    .p-field-colon {
-      font-size: 14px;
-      font-weight: bold;
-      width: 16px;
-      flex-shrink: 0;
-      text-align: center;
-      color: #000000;
-    }
-    .p-field-val {
-      font-size: 14px;
-      border-bottom: 1px solid #000000;
-      padding: 2px 4px;
-      flex: 1;
-      min-height: 22px;
-      word-break: break-word;
-      color: #000000;
-      font-weight: 600;
-    }
-
-    .p-photo-box {
-      width: 105px;
-      height: 126px;
-      border: 1.5px solid #000000;
-      border-radius: 4px;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      font-size: 11px;
-      text-align: center;
-      color: #000000;
-      font-weight: bold;
-      overflow: hidden;
-      padding: 3px;
-      line-height: 1.35;
-      background: #fafafa;
-    }
-    .p-photo-box img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-      display: none;
-    }
-
-    .p-contact-container {
-      display: flex;
-      justify-content: space-between;
-      align-items: flex-start;
-      gap: 18px;
-      margin-bottom: 10px;
-    }
-    .p-left-contact {
-      flex: 1;
-    }
-    .p-right-contact {
-      width: 250px;
-      display: flex;
-      flex-direction: column;
-      align-items: stretch;
-      gap: 10px;
-    }
-
-    .p-mobile-row {
-      display: flex;
-      align-items: flex-start;
-    }
-    .p-mobile-inputs {
-      flex: 1;
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
-    }
-    .p-mobile-input-item {
-      display: flex;
-      align-items: flex-end;
-      gap: 6px;
-      width: 100%;
-    }
-    .p-num-prefix {
-      font-size: 13px;
-      font-weight: bold;
-      width: 16px;
-      color: #000000;
-    }
-
-    .p-email-row {
-      display: flex;
-      align-items: flex-end;
-      width: 100%;
-    }
-    .p-email-row .p-field-label {
-      width: 70px;
-      font-size: 13px;
-      font-weight: bold;
-      flex-shrink: 0;
-    }
-    .p-email-row .p-field-colon {
-      width: 12px;
-      font-size: 13px;
-      font-weight: bold;
-      flex-shrink: 0;
-      text-align: center;
-    }
-
-    .p-pincode-container {
-      display: flex;
-      justify-content: flex-end;
-    }
-    .p-pincode-box {
-      border: 1.5px solid #000000;
-      border-radius: 4px;
-      width: 150px;
-      padding: 4px 8px;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      background: #ffffff;
-    }
-    .p-pincode-label {
-      font-size: 10px;
-      font-weight: bold;
-      text-transform: uppercase;
-      letter-spacing: 0.05em;
-      margin-bottom: 2px;
-      color: #000000;
-    }
-    .p-pincode-val {
-      font-size: 14px;
-      font-weight: bold;
-      text-align: center;
-      letter-spacing: 0.1em;
-      color: #000000;
-    }
-
-    .p-course-row {
-      display: flex;
-      align-items: center;
-      margin-bottom: 10px;
-    }
-    .p-course-box {
-      border: 1.5px solid #000000;
-      border-radius: 4px;
-      flex: 1;
-      padding: 5px 10px;
-      font-size: 14px;
-      font-weight: bold;
-      min-height: 28px;
-      display: flex;
-      align-items: center;
-      background: #ffffff;
-      color: #000000;
-    }
-
-    .p-know-signature-container {
-      display: flex;
-      justify-content: space-between;
-      align-items: flex-end;
-      gap: 18px;
-      margin-bottom: 10px;
-    }
-    .p-know-field {
-      flex: 1;
-    }
-    .p-field-label-block {
-      display: block;
-      font-size: 13px;
-      font-weight: bold;
-      margin-bottom: 6px;
-      color: #000000;
-    }
-    .p-signature-field {
-      flex-shrink: 0;
-    }
-    .p-signature-box {
-      border: 1.5px solid #000000;
-      border-radius: 6px;
-      width: 200px;
-      padding: 6px;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      min-height: 56px;
-      justify-content: space-between;
-      background: #ffffff;
-    }
-    .p-signature-label {
-      font-size: 10px;
-      font-weight: bold;
-      text-transform: uppercase;
-      letter-spacing: 0.04em;
-      color: #000000;
-    }
-    .p-signature-val {
-      font-family: 'Brush Script MT', cursive, Georgia, serif;
-      font-size: 19px;
-      text-align: center;
-      width: 100%;
-      min-height: 22px;
-      color: #000000;
-    }
+  .conf-notice-footer {
+    font-size: 12px;
+    color: #6b7280;
+    margin-top: 24px;
+    padding-top: 16px;
+    border-top: 1px solid #f3f4f6;
   }
 
   /* Toast Notification */
@@ -706,12 +671,13 @@
   }
   .toast.show { transform: translateY(0); opacity: 1; }
   .toast.error { background: #d93025; }
+  .toast.success { background: #059669; }
 </style>
 </head>
 <body>
 
 <!-- Topbar Navigation -->
-<div class="topbar no-print">
+<div class="topbar">
   <div class="topbar-brand">
     <img class="topbar-logo" src="logo.png" alt="IIT" onerror="this.style.display='none'">
     <span class="topbar-title">Indian Info Tech — Student Portal</span>
@@ -724,77 +690,113 @@
 <!-- ══════════════════════════════════════════
      GOOGLE FORM STYLE APPLICATION PANEL
      ══════════════════════════════════════════ -->
-<div class="gf-container no-print">
-  
+<div class="gf-container">
+
+  <!-- Header Card -->
+  <div class="gf-header-card">
+    <div class="gf-crest-row">
+      <img src="logo.png" alt="Indian Info Tech" onerror="this.style.display='none'">
+      <div>
+        <div class="gf-form-brand">Indian Info Tech</div>
+        <div style="font-size: 12px; color: #5f6368;">Official Student Registration & Admission</div>
+      </div>
+    </div>
+    <h1 class="gf-form-title">Student Application Form</h1>
+    <p class="gf-form-desc">
+      Fill in all details accurately. If you have already submitted an application, you can alter and update your inserted details using the search box below or from your submission confirmation.
+    </p>
+    <div class="gf-required-notice">* Indicates required question</div>
+  </div>
+
+  <!-- ALREADY SUBMITTED? ALTER DETAILS BOX -->
+  <div class="gf-card gf-lookup-card" id="lookupCard">
+    <div class="gf-lookup-header">
+      <span class="gf-lookup-badge">Already Registered?</span>
+      <span class="gf-lookup-title">Alter / Update Previously Inserted Details</span>
+    </div>
+    <p class="gf-lookup-desc">
+      Enter your Primary Mobile Number, Email Address, or Submission ID to retrieve and edit your submitted details.
+    </p>
+    <div class="gf-lookup-row">
+      <input type="text" id="lookupQuery" class="gf-lookup-input" placeholder="e.g. 9876543210, your-email@gmail.com, or ID-0001">
+      <button type="button" class="btn-gf-lookup" onclick="lookupAndAlterSubmission()">🔍 Find & Alter</button>
+    </div>
+    <div id="lookupStatus" class="gf-lookup-status" style="display:none;"></div>
+  </div>
+
+  <!-- ACTIVE ALTERATION BANNER -->
+  <div id="alterBanner" class="gf-alter-banner" style="display:none;">
+    <div class="alter-banner-left">
+      <span class="alter-icon">✏️</span>
+      <div>
+        <div class="alter-banner-heading">Altering Existing Application: <span id="alterBannerId">ID-0000</span></div>
+        <div class="alter-banner-sub">Updating details for <strong id="alterBannerName">Student</strong>. Submitting will update your existing database record.</div>
+      </div>
+    </div>
+    <button type="button" class="btn-alter-cancel" onclick="cancelAlteration()">✕ Cancel Alteration</button>
+  </div>
+
   <!-- FORM ENTRY VIEW -->
   <form id="googleApplicationForm">
-    
-    <!-- Header Card -->
-    <div class="gf-header-card">
-      <div class="gf-crest-row">
-        <img src="logo.png" alt="Indian Info Tech" onerror="this.style.display='none'">
-        <div>
-          <div class="gf-form-brand">Indian Info Tech</div>
-          <div style="font-size:11px;color:#5f6368;">Official Student Enrollment Portal</div>
-        </div>
-      </div>
-      <h1 class="gf-form-title">Student Application Form</h1>
-      <p class="gf-form-desc">
-        Please complete the application form below. All responses are registered directly into the student database. You can print your official application form anytime using the print option.
-      </p>
-      <div class="gf-required-notice">* Indicates required question</div>
-    </div>
 
-    <!-- Question 1: Name -->
+    <!-- Question 1: Candidate Name -->
     <div class="gf-card">
-      <div class="gf-question-title">Full Name <span class="req">*</span></div>
-      <div class="gf-question-desc">Enter your full legal name as per school or college certificates</div>
-      <input type="text" class="gf-input-text" id="name" name="name" placeholder="Your answer" required>
+      <div class="gf-question-title">Full Name of Student <span class="req">*</span></div>
+      <div class="gf-question-desc">As per official educational certificates</div>
+      <input type="text" class="gf-input-text" id="name" name="name" placeholder="Your answer" required autofocus>
     </div>
 
     <!-- Question 2: Year / Department -->
     <div class="gf-card">
-      <div class="gf-question-title">Year / Department</div>
-      <div class="gf-question-desc">e.g. 2nd Year B.E. / CSE, Final Year BCA, etc.</div>
-      <input type="text" class="gf-input-text" id="yearDept" name="yearDept" placeholder="Your answer">
+      <div class="gf-question-title">Year & Department <span class="req">*</span></div>
+      <div class="gf-question-desc">e.g. 3rd Year B.E. Computer Science & Engineering</div>
+      <input type="text" class="gf-input-text" id="yearDept" name="yearDept" placeholder="Your answer" required>
     </div>
 
     <!-- Question 3: College / School -->
     <div class="gf-card">
       <div class="gf-question-title">College / School Name <span class="req">*</span></div>
-      <div class="gf-question-desc">Name of your current or most recent educational institution</div>
+      <div class="gf-question-desc">Full official name of your current or highest educational institution</div>
       <input type="text" class="gf-input-text" id="collegeSchool" name="collegeSchool" placeholder="Your answer" required>
     </div>
 
     <!-- Question 4: Residential Address -->
     <div class="gf-card">
       <div class="gf-question-title">Full Residential Address <span class="req">*</span></div>
-      <div class="gf-question-desc">Door No, Street name, Town/Village, District, and State</div>
-      <textarea class="gf-input-textarea" id="address" name="address" rows="2" placeholder="Your answer" required></textarea>
+      <div class="gf-question-desc">House no., Street, Area, City, District, and State</div>
+      <textarea class="gf-input-textarea" id="address" name="address" rows="3" placeholder="Your answer" required></textarea>
     </div>
 
-    <!-- Question 5: Primary Mobile Number -->
+    <!-- Question 5: Primary Mobile -->
     <div class="gf-card">
-      <div class="gf-question-title">Primary Mobile Number (Mo:No 1) <span class="req">*</span></div>
-      <div class="gf-question-desc">10-digit active phone number for SMS and WhatsApp communications</div>
-      <input type="tel" class="gf-input-text" id="mobile1" name="mobile1" placeholder="Your answer" required>
+      <div class="gf-question-title">Primary Mobile Number <span class="req">*</span></div>
+      <div class="gf-question-desc">10-digit calling & WhatsApp contact number</div>
+      <input type="tel" class="gf-input-text" id="mobile1" name="mobile1" maxlength="15" placeholder="Your answer" required>
+      <div id="mobile1Hint" class="existing-hint-banner" style="display:none;">
+        <span>💡 Found existing record for this mobile number: <strong id="mobile1HintText"></strong></span>
+        <button type="button" class="btn-load-inline" id="btnLoadMobile1">Alter Details</button>
+      </div>
     </div>
 
-    <!-- Question 6: Secondary Mobile Number -->
+    <!-- Question 6: Secondary Mobile -->
     <div class="gf-card">
-      <div class="gf-question-title">Secondary Mobile Number (Mo:No 2)</div>
-      <div class="gf-question-desc">Alternative contact or parent/guardian mobile number (Optional)</div>
-      <input type="tel" class="gf-input-text" id="mobile2" name="mobile2" placeholder="Your answer">
+      <div class="gf-question-title">Secondary / Parent Mobile Number</div>
+      <div class="gf-question-desc">Emergency contact or parent's phone number (optional)</div>
+      <input type="tel" class="gf-input-text" id="mobile2" name="mobile2" maxlength="15" placeholder="Your answer">
     </div>
 
     <!-- Question 7: Email Address -->
     <div class="gf-card">
       <div class="gf-question-title">Email Address <span class="req">*</span></div>
-      <div class="gf-question-desc">Active email address for enrollment confirmation and notifications</div>
+      <div class="gf-question-desc">Valid email for official communication and verification</div>
       <input type="email" class="gf-input-text" id="email" name="email" placeholder="Your answer" required>
+      <div id="emailHint" class="existing-hint-banner" style="display:none;">
+        <span>💡 Found existing record for this email: <strong id="emailHintText"></strong></span>
+        <button type="button" class="btn-load-inline" id="btnLoadEmail">Alter Details</button>
+      </div>
     </div>
 
-    <!-- Question 8: Postal Pincode -->
+    <!-- Question 8: Pincode -->
     <div class="gf-card">
       <div class="gf-question-title">Postal Pincode <span class="req">*</span></div>
       <div class="gf-question-desc">6-digit postal area code</div>
@@ -818,7 +820,7 @@
     <!-- Question 11: Photo Upload -->
     <div class="gf-card">
       <div class="gf-question-title">Passport Size Photograph</div>
-      <div class="gf-question-desc">Upload a photo file or capture live from your camera for the application form</div>
+      <div class="gf-question-desc">Upload a photo file or capture live from your camera for the application record</div>
       
       <div class="gf-file-upload-box">
         <div id="photoPlaceholderTxt" style="font-size:13px;color:#5f6368;margin-bottom:8px;">
@@ -859,139 +861,73 @@
     <!-- Question 12: Student Signature -->
     <div class="gf-card">
       <div class="gf-question-title">Student Signature (Full Name) <span class="req">*</span></div>
-      <div class="gf-question-desc">Type your name below. It will be printed in stylized signature script on the official form</div>
+      <div class="gf-question-desc">Type your name below. It will be recorded as your official digital signature</div>
       <input type="text" class="gf-input-signature" id="signature" name="signature" placeholder="Type name for stylized signature" required>
     </div>
 
-    <!-- Google Form Buttons Row -->
+    <!-- Google Form Buttons Row (Print button intentionally removed for user panel) -->
     <div class="gf-buttons-row">
-      <button type="submit" class="btn-gf-submit">Submit</button>
-      <button type="button" class="btn-gf-print" onclick="printApplicationDirectly()">
-        🖨️ Print Application Form
-      </button>
+      <button type="submit" class="btn-gf-submit" id="btnSubmitForm">Submit</button>
       <button type="button" class="btn-gf-clear" onclick="clearGoogleForm()">Clear form</button>
     </div>
 
   </form>
 
-  <!-- CONFIRMATION CARD (Shown after submit) -->
+  <!-- ══════════════════════════════════════════
+       CONFIRMATION SCREEN (Shown after submit)
+       With Prominent Vibrant Green Tick Symbol
+       ══════════════════════════════════════════ -->
   <div class="gf-confirmation-card" id="confirmationCard">
-    <div class="gf-crest-row" style="margin-bottom: 16px;">
-      <img src="logo.png" alt="Indian Info Tech" onerror="this.style.display='none'">
-      <div class="gf-form-brand">Indian Info Tech</div>
-    </div>
-    <h2 class="conf-title">Student Application Form</h2>
-    <p class="conf-desc">Your application has been recorded in the database.</p>
     
-    <div class="conf-id-badge">
-      <span>Official Submission ID:</span>
-      <span class="conf-id-val" id="confirmedSubmissionId">ID-0000</span>
+    <!-- Vibrant Circular Green Tick Symbol -->
+    <div class="conf-tick-wrapper">
+      <div class="conf-tick-circle">
+        <svg class="conf-tick-svg" viewBox="0 0 24 24">
+          <polyline points="20 6 9 17 4 12"></polyline>
+        </svg>
+      </div>
+    </div>
+
+    <h2 class="conf-title">Application Submitted Successfully!</h2>
+    <p class="conf-desc">
+      Your application has been registered in the database and synchronized with the Administration office.
+    </p>
+    
+    <!-- Submission Summary Badge -->
+    <div class="conf-summary-box">
+      <div class="conf-summary-row">
+        <span class="conf-summary-label">Submission ID</span>
+        <span class="conf-summary-val conf-id-highlight" id="confirmedSubmissionId">ID-0000</span>
+      </div>
+      <div class="conf-summary-row">
+        <span class="conf-summary-label">Student Name</span>
+        <span class="conf-summary-val" id="confirmedName">—</span>
+      </div>
+      <div class="conf-summary-row">
+        <span class="conf-summary-label">Applied Course</span>
+        <span class="conf-summary-val" id="confirmedCourse">—</span>
+      </div>
+      <div class="conf-summary-row">
+        <span class="conf-summary-label">Submission Date & Time</span>
+        <span class="conf-summary-val" id="confirmedDate">—</span>
+      </div>
     </div>
 
     <div class="conf-actions">
-      <button type="button" class="btn-gf-submit" onclick="printApplicationDirectly()">
-        🖨️ Print Official Application Form (A4)
+      <button type="button" class="btn-conf-alter" onclick="alterCurrentResponse()">
+        ✏️ Alter / Edit Your Details
       </button>
-      <button type="button" class="btn-gf-clear" onclick="submitAnotherResponse()">
-        Submit another response
+      <button type="button" class="btn-conf-new" onclick="submitAnotherResponse()">
+        ➕ Submit Another Response
       </button>
     </div>
+
+    <div class="conf-notice-footer">
+      💡 Need to make any updates or corrections? You can click <strong>"Alter / Edit Your Details"</strong> anytime to update your information.
+    </div>
+
   </div>
 
-</div>
-
-<!-- ══════════════════════════════════════════
-     OFFICIAL APPLICATION FORM (PRINT VIEW)
-     Prints cleanly on 1 single A4 page
-     ══════════════════════════════════════════ -->
-<div class="official-print-sheet">
-  <div class="p-crest">
-    <img src="logo.png" alt="IIT logo" onerror="this.style.display='none';">
-  </div>
-  
-  <h1 class="p-title">Application</h1>
-  
-  <div class="p-personal-details">
-    <div class="p-left-fields">
-      <div class="p-field-row">
-        <span class="p-field-label">Name</span>
-        <span class="p-field-colon">:</span>
-        <span class="p-field-val" id="p_name"></span>
-      </div>
-      <div class="p-field-row">
-        <span class="p-field-label">Year/Dept</span>
-        <span class="p-field-colon">:</span>
-        <span class="p-field-val" id="p_yearDept"></span>
-      </div>
-      <div class="p-field-row">
-        <span class="p-field-label">College/School</span>
-        <span class="p-field-colon">:</span>
-        <span class="p-field-val" id="p_collegeSchool"></span>
-      </div>
-      <div class="p-field-row p-field-row-tall">
-        <span class="p-field-label">Address</span>
-        <span class="p-field-colon">:</span>
-        <span class="p-field-val" id="p_address" style="min-height:45px;"></span>
-      </div>
-    </div>
-    <div class="p-right-photo">
-      <div class="p-photo-box" id="p_photoBox">
-        <img id="p_photoImg" alt="Photo">
-        <span id="p_photoPlaceholder">Fix photo<br>If You Have</span>
-      </div>
-    </div>
-  </div>
-
-  <div class="p-contact-container">
-    <div class="p-left-contact">
-      <div class="p-mobile-row">
-        <span class="p-field-label">Mo:No</span>
-        <span class="p-field-colon">:</span>
-        <div class="p-mobile-inputs">
-          <div class="p-mobile-input-item">
-            <span class="p-num-prefix">1.</span>
-            <span class="p-field-val" id="p_mobile1"></span>
-          </div>
-          <div class="p-mobile-input-item">
-            <span class="p-num-prefix">2.</span>
-            <span class="p-field-val" id="p_mobile2"></span>
-          </div>
-        </div>
-      </div>
-    </div>
-    <div class="p-right-contact">
-      <div class="p-email-row">
-        <span class="p-field-label">email-id</span>
-        <span class="p-field-colon">:</span>
-        <span class="p-field-val" id="p_email"></span>
-      </div>
-      <div class="p-pincode-container">
-        <div class="p-pincode-box">
-          <span class="p-pincode-label">Pincode:</span>
-          <span class="p-pincode-val" id="p_pincode"></span>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <div class="p-course-row">
-    <span class="p-field-label">Title Course/project</span>
-    <span class="p-field-colon">:</span>
-    <div class="p-course-box" id="p_title"></div>
-  </div>
-
-  <div class="p-know-signature-container">
-    <div class="p-know-field">
-      <span class="p-field-label-block">How you Know about this institute?</span>
-      <span class="p-field-val" id="p_howKnow" style="display:block; width:100%;"></span>
-    </div>
-    <div class="p-signature-field">
-      <div class="p-signature-box">
-        <span class="p-signature-label">Student Signature</span>
-        <span class="p-signature-val" id="p_signature"></span>
-      </div>
-    </div>
-  </div>
 </div>
 
 <!-- Toast -->
@@ -1008,20 +944,23 @@
   const photoPreviewImg = document.getElementById('photoPreviewImg');
   const btnRemovePhoto = document.getElementById('btnRemovePhoto');
   const photoPlaceholderTxt = document.getElementById('photoPlaceholderTxt');
+  const btnSubmitForm = document.getElementById('btnSubmitForm');
+  const alterBanner = document.getElementById('alterBanner');
 
   let currentPhotoDataUrl = '';
   let cameraStream = null;
   let useFacingMode = 'user';
   let activeSubmissionId = '';
+  let lastSavedRecord = null;
 
   // ── Toast notification ──
-  function showToast(msg, isError = false) {
+  function showToast(msg, isError = false, isSuccess = false) {
     const t = document.getElementById('toast');
     if (!t) return;
     t.textContent = msg;
-    t.className = 'toast show' + (isError ? ' error' : '');
+    t.className = 'toast show' + (isError ? ' error' : '') + (isSuccess ? ' success' : '');
     clearTimeout(t._timer);
-    t._timer = setTimeout(() => { t.className = 'toast'; }, 3000);
+    t._timer = setTimeout(() => { t.className = 'toast'; }, 3200);
   }
 
   // ── Photo Upload ──
@@ -1113,40 +1052,12 @@
     const dataUrl = canvas.toDataURL('image/jpeg');
     setPhoto(dataUrl);
     stopCamera();
-    showToast('Photo captured successfully!');
+    showToast('Photo captured successfully!', false, true);
   }
 
   function switchCamera() {
     useFacingMode = useFacingMode === 'user' ? 'environment' : 'user';
     startCamera();
-  }
-
-  // ── Sync Google Form Fields into Official Application Print Sheet ──
-  function syncToOfficialApplicationPrintSheet(data) {
-    const fields = ['name', 'yearDept', 'collegeSchool', 'address', 'mobile1', 'mobile2', 'email', 'pincode', 'title', 'howKnow', 'signature'];
-    fields.forEach(f => {
-      const el = document.getElementById('p_' + f);
-      if (el) el.textContent = (data && data[f]) || form.elements[f]?.value?.trim() || '—';
-    });
-
-    const photoUrl = (data && data.photo) || currentPhotoDataUrl;
-    const pPhotoImg = document.getElementById('p_photoImg');
-    const pPhotoPlaceholder = document.getElementById('p_photoPlaceholder');
-    if (photoUrl && photoUrl.length > 50) {
-      pPhotoImg.src = photoUrl;
-      pPhotoImg.style.display = 'block';
-      pPhotoPlaceholder.style.display = 'none';
-    } else {
-      pPhotoImg.style.display = 'none';
-      pPhotoPlaceholder.style.display = 'inline-block';
-    }
-  }
-
-  // ── Print Application Directly From User Panel ──
-  function printApplicationDirectly() {
-    const data = collectFormData();
-    syncToOfficialApplicationPrintSheet(data);
-    window.print();
   }
 
   // ── Data Collection & Storage ──
@@ -1237,8 +1148,16 @@
       if (res.ok && resData.success && resData.saved) {
         const saved = resData.saved;
         activeSubmissionId = saved.submissionId;
+        lastSavedRecord = saved;
+        
+        // Update local storage
         const subs = getStoredSubmissions();
-        subs.push(saved);
+        const existingIdx = subs.findIndex(s => s.submissionId === saved.submissionId);
+        if (existingIdx !== -1) {
+          subs[existingIdx] = saved;
+        } else {
+          subs.push(saved);
+        }
         saveStoredSubmissions(subs);
         showConfirmation(saved);
         return;
@@ -1248,64 +1167,245 @@
       }
     } catch(err) {
       console.warn('Server offline, saving locally:', err);
-      let c = parseInt(localStorage.getItem(COUNTER_KEY) || '0', 10) + 1;
-      localStorage.setItem(COUNTER_KEY, String(c));
-      const generatedId = `ID-${String(c).padStart(4, '0')}`;
-      data.submissionId = generatedId;
-      data.submittedAt = new Date().toLocaleString();
-      activeSubmissionId = generatedId;
+      let subId = activeSubmissionId;
+      if (!subId) {
+        let c = parseInt(localStorage.getItem(COUNTER_KEY) || '0', 10) + 1;
+        localStorage.setItem(COUNTER_KEY, String(c));
+        subId = `ID-${String(c).padStart(4, '0')}`;
+      }
+      data.submissionId = subId;
+      data.submittedAt = data.submittedAt || new Date().toLocaleString();
+      activeSubmissionId = subId;
+      lastSavedRecord = data;
 
       const subs = getStoredSubmissions();
-      subs.push(data);
+      const existingIdx = subs.findIndex(s => s.submissionId === subId);
+      if (existingIdx !== -1) {
+        subs[existingIdx] = data;
+      } else {
+        subs.push(data);
+      }
       saveStoredSubmissions(subs);
       showConfirmation(data);
     }
   });
 
+  // ── Show Confirmation with Green Tick Symbol ──
   function showConfirmation(savedData) {
     document.getElementById('googleApplicationForm').style.display = 'none';
+    document.getElementById('lookupCard').style.display = 'none';
+    alterBanner.style.display = 'none';
+    
     const conf = document.getElementById('confirmationCard');
     document.getElementById('confirmedSubmissionId').textContent = savedData.submissionId || 'ID-0000';
+    document.getElementById('confirmedName').textContent = savedData.name || '—';
+    document.getElementById('confirmedCourse').textContent = savedData.title || '—';
+    document.getElementById('confirmedDate').textContent = savedData.submittedAt || new Date().toLocaleString();
+    
     conf.style.display = 'block';
-    syncToOfficialApplicationPrintSheet(savedData);
     window.scrollTo({ top: 0, behavior: 'smooth' });
-    showToast('Application submitted successfully!');
+    showToast('Application submitted successfully!', false, true);
+  }
+
+  // ── Alter Feature: Return to Form with Populated Details ──
+  function alterCurrentResponse() {
+    if (lastSavedRecord) {
+      populateFormForAlteration(lastSavedRecord);
+    } else {
+      // Just re-display form
+      document.getElementById('confirmationCard').style.display = 'none';
+      document.getElementById('googleApplicationForm').style.display = 'block';
+      document.getElementById('lookupCard').style.display = 'block';
+    }
+  }
+
+  // ── Populate and Enter Alteration Mode ──
+  function populateFormForAlteration(record) {
+    if (!record) return;
+    activeSubmissionId = record.submissionId || '';
+    lastSavedRecord = record;
+
+    const fields = ['name', 'yearDept', 'collegeSchool', 'address', 'mobile1', 'mobile2', 'email', 'pincode', 'title', 'howKnow', 'signature'];
+    fields.forEach(f => {
+      const el = form.elements[f];
+      if (el) el.value = record[f] || '';
+    });
+
+    if (record.photo) {
+      setPhoto(record.photo);
+    } else {
+      removePhoto();
+    }
+
+    // Set alter banner
+    document.getElementById('alterBannerId').textContent = record.submissionId || 'Existing Record';
+    document.getElementById('alterBannerName').textContent = record.name || 'Student';
+    alterBanner.style.display = 'flex';
+    btnSubmitForm.textContent = '💾 Update & Save Details';
+
+    // Show form, hide confirmation
+    document.getElementById('confirmationCard').style.display = 'none';
+    document.getElementById('googleApplicationForm').style.display = 'block';
+    document.getElementById('lookupCard').style.display = 'block';
+
+    window.scrollTo({ top: alterBanner.offsetTop - 70, behavior: 'smooth' });
+    showToast(`Loaded details for ${record.name || 'submission'}. You can alter your details now.`, false, true);
+  }
+
+  // ── Cancel Alteration Mode (Start New) ──
+  function cancelAlteration() {
+    if (confirm('Cancel editing this record and start a fresh form?')) {
+      form.reset();
+      removePhoto();
+      activeSubmissionId = '';
+      lastSavedRecord = null;
+      alterBanner.style.display = 'none';
+      btnSubmitForm.textContent = 'Submit';
+      hideInlineHints();
+      showToast('Switched to fresh form');
+    }
   }
 
   function submitAnotherResponse() {
     form.reset();
     removePhoto();
     activeSubmissionId = '';
+    lastSavedRecord = null;
+    alterBanner.style.display = 'none';
+    btnSubmitForm.textContent = 'Submit';
+    hideInlineHints();
+
     document.getElementById('confirmationCard').style.display = 'none';
     document.getElementById('googleApplicationForm').style.display = 'block';
+    document.getElementById('lookupCard').style.display = 'block';
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }
 
   function clearGoogleForm() {
-    if (confirm('Are you sure you want to clear your responses in this form?')) {
+    if (confirm('Are you sure you want to clear your entries in this form?')) {
       form.reset();
       removePhoto();
+      if (!activeSubmissionId) {
+        alterBanner.style.display = 'none';
+        btnSubmitForm.textContent = 'Submit';
+      }
+      hideInlineHints();
       showToast('Form cleared');
     }
   }
 
-  // ── Load Existing Draft / Submission ──
+  // ── Lookup and Alter Submission by Query (Mobile, Email, or ID) ──
+  async function lookupAndAlterSubmission() {
+    const q = document.getElementById('lookupQuery').value.trim();
+    const statusEl = document.getElementById('lookupStatus');
+    if (!q) {
+      statusEl.style.display = 'block';
+      statusEl.className = 'gf-lookup-status error';
+      statusEl.textContent = 'Please enter your Mobile Number, Email Address, or Submission ID.';
+      return;
+    }
+
+    statusEl.style.display = 'block';
+    statusEl.className = 'gf-lookup-status';
+    statusEl.textContent = 'Searching for your application record...';
+
+    // 1. Try server lookup endpoint
+    try {
+      const res = await fetch(`/api/submission-lookup?q=${encodeURIComponent(q)}`);
+      if (res.ok) {
+        const resData = await res.json();
+        if (resData.success && resData.submission) {
+          statusEl.className = 'gf-lookup-status success';
+          statusEl.textContent = `✓ Found application record for "${resData.submission.name}" (ID: ${resData.submission.submissionId}). Loading details into form...`;
+          setTimeout(() => { statusEl.style.display = 'none'; }, 4000);
+          populateFormForAlteration(resData.submission);
+          return;
+        }
+      }
+    } catch (e) {
+      console.warn('Server lookup error:', e);
+    }
+
+    // 2. Fallback to local storage lookup
+    const subs = getStoredSubmissions();
+    const cleanQ = q.replace(/\D/g, '');
+    const lowerQ = q.toLowerCase();
+
+    const foundLocal = subs.find(s => {
+      if (s.submissionId && s.submissionId.toLowerCase() === lowerQ) return true;
+      if (s.email && s.email.trim().toLowerCase() === lowerQ) return true;
+      if (s.mobile1 && s.mobile1.trim() === q) return true;
+      if (cleanQ.length >= 10) {
+        const s1 = (s.mobile1 || '').replace(/\D/g, '');
+        const s2 = (s.mobile2 || '').replace(/\D/g, '');
+        if (s1.endsWith(cleanQ.slice(-10)) || s2.endsWith(cleanQ.slice(-10))) return true;
+      }
+      return false;
+    });
+
+    if (foundLocal) {
+      statusEl.className = 'gf-lookup-status success';
+      statusEl.textContent = `✓ Found local record for "${foundLocal.name}" (ID: ${foundLocal.submissionId}). Loading details into form...`;
+      setTimeout(() => { statusEl.style.display = 'none'; }, 4000);
+      populateFormForAlteration(foundLocal);
+      return;
+    }
+
+    statusEl.className = 'gf-lookup-status error';
+    statusEl.textContent = `No existing record found matching "${q}". Please check the entered mobile/email/ID, or fill out the form below as a new applicant.`;
+  }
+
+  // ── Inline Duplicate Detection on Mobile & Email Blur ──
+  const mobile1Input = document.getElementById('mobile1');
+  const emailInput = document.getElementById('email');
+  const mobile1Hint = document.getElementById('mobile1Hint');
+  const emailHint = document.getElementById('emailHint');
+
+  function hideInlineHints() {
+    if (mobile1Hint) mobile1Hint.style.display = 'none';
+    if (emailHint) emailHint.style.display = 'none';
+  }
+
+  async function checkInlineExisting(fieldVal, type) {
+    if (activeSubmissionId) return; // Already altering a record
+    const val = fieldVal.trim();
+    if (!val) return;
+    if (type === 'mobile' && val.replace(/\D/g, '').length < 10) return;
+    if (type === 'email' && !val.includes('@')) return;
+
+    try {
+      const res = await fetch(`/api/submission-lookup?q=${encodeURIComponent(val)}`);
+      if (res.ok) {
+        const data = await res.json();
+        if (data.success && data.submission) {
+          const rec = data.submission;
+          if (type === 'mobile' && mobile1Hint) {
+            document.getElementById('mobile1HintText').textContent = `${rec.name} (${rec.submissionId})`;
+            mobile1Hint.style.display = 'flex';
+            document.getElementById('btnLoadMobile1').onclick = () => populateFormForAlteration(rec);
+          } else if (type === 'email' && emailHint) {
+            document.getElementById('emailHintText').textContent = `${rec.name} (${rec.submissionId})`;
+            emailHint.style.display = 'flex';
+            document.getElementById('btnLoadEmail').onclick = () => populateFormForAlteration(rec);
+          }
+        }
+      }
+    } catch(e) {}
+  }
+
+  mobile1Input?.addEventListener('blur', () => checkInlineExisting(mobile1Input.value, 'mobile'));
+  emailInput?.addEventListener('blur', () => checkInlineExisting(emailInput.value, 'email'));
+
+  // ── Load URL Parameter ?submissionId=ID-XXXX ──
   async function loadInitial() {
     const subId = new URLSearchParams(window.location.search).get('submissionId')?.trim();
     if (!subId) return;
     try {
-      const res = await fetch('/api/submissions');
+      const res = await fetch(`/api/submission-lookup?q=${encodeURIComponent(subId)}`);
       if (res.ok) {
-        const list = await res.json();
-        const found = list.find(s => String(s.submissionId) === subId);
-        if (found) {
-          activeSubmissionId = found.submissionId;
-          Object.entries(found).forEach(([k, v]) => {
-            const el = form.elements[k];
-            if (el && k !== 'photo') el.value = v;
-          });
-          if (found.photo) setPhoto(found.photo);
-          syncToOfficialApplicationPrintSheet(found);
+        const resData = await res.json();
+        if (resData.success && resData.submission) {
+          populateFormForAlteration(resData.submission);
         }
       }
     } catch(e) {}
