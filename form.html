@@ -1118,6 +1118,7 @@
 
   function saveSubmissions(submissions) {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(submissions));
+    try { localStorage.setItem('iitSubmissions', JSON.stringify(submissions)); } catch(e) {}
   }
 
   function generateSubmissionId() {
@@ -1306,6 +1307,43 @@
           submissions.push(savedSubmission);
         }
         saveSubmissions(submissions);
+
+        // Direct background auto-push to Google Sheets as live dual-guarantee (no click needed)
+        try {
+          const cloudUrl = 'https://script.google.com/macros/s/AKfycbx_luyKLX-eXPnOibeVsWLxaZps0nC_K_FGEEFKKFEE8FhIt-YKaxmD29fgbYccXdcM/exec';
+          fetch(cloudUrl, {
+            method: 'POST',
+            headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+            body: JSON.stringify({
+              action: 'upsert_user',
+              user: {
+                'User / Submission ID': savedSubmission.submissionId,
+                'User / Student Name': savedSubmission.name || '',
+                'Father / Guardian Name': savedSubmission.fatherName || '',
+                'Course / Applied Title': savedSubmission.title || '',
+                'Email Address': savedSubmission.email || '',
+                'Primary Mobile': savedSubmission.mobile1 || '',
+                'Secondary Mobile': savedSubmission.mobile2 || '',
+                'Date of Birth': savedSubmission.dob || '',
+                'Gender': savedSubmission.gender || '',
+                'City / District': savedSubmission.city || '',
+                'State': savedSubmission.state || '',
+                'Pincode': savedSubmission.pincode || '',
+                'Full Residential Address': savedSubmission.address || '',
+                'College / School': savedSubmission.collegeSchool || '',
+                'Department / Year': savedSubmission.yearDept || '',
+                'Educational Qualification': savedSubmission.qualification || '',
+                'Aadhar / ID Number': savedSubmission.aadhar || '',
+                'Fees Fixed': savedSubmission.feesFixed || '',
+                'Date of Joining': savedSubmission.dateJoining || '',
+                'Certificate No': savedSubmission.certNo || '',
+                'Date of Issue': savedSubmission.dateIssue || '',
+                'Submission Date & Time': savedSubmission.submittedAt || new Date().toLocaleString()
+              }
+            }),
+            redirect: 'follow'
+          }).catch(e => console.warn('[Direct Cloud Sync]', e));
+        } catch(e) {}
       } else {
         alert('❌ Error saving submission: ' + (responseData.error || 'Server rejected application.'));
         if (submitBtn) {

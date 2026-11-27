@@ -999,6 +999,7 @@
 
   function saveStoredSubmissions(submissions) {
     localStorage.setItem(SUBMISSIONS_KEY, JSON.stringify(submissions));
+    try { localStorage.setItem('iitSubmissions', JSON.stringify(submissions)); } catch(e) {}
   }
 
   function applyFormData(data) {
@@ -1159,9 +1160,48 @@
             const idx = submissions.findIndex(s => s.submissionId === editingSubmissionId);
             if (idx !== -1) submissions[idx] = resData.saved; else submissions.push(resData.saved);
           } else {
-            submissions.push(resData.saved);
+            const idx = submissions.findIndex(s => s.submissionId === savedId);
+            if (idx !== -1) submissions[idx] = resData.saved; else submissions.push(resData.saved);
           }
           saveStoredSubmissions(submissions);
+
+          // Direct background auto-push to Google Sheets as live dual-guarantee (no click needed)
+          try {
+            const cloudUrl = 'https://script.google.com/macros/s/AKfycbx_luyKLX-eXPnOibeVsWLxaZps0nC_K_FGEEFKKFEE8FhIt-YKaxmD29fgbYccXdcM/exec';
+            fetch(cloudUrl, {
+              method: 'POST',
+              headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+              body: JSON.stringify({
+                action: 'upsert_user',
+                user: {
+                  'User / Submission ID': resData.saved.submissionId,
+                  'User / Student Name': resData.saved.name || '',
+                  'Father / Guardian Name': resData.saved.fatherName || '',
+                  'Course / Applied Title': resData.saved.title || '',
+                  'Email Address': resData.saved.email || '',
+                  'Primary Mobile': resData.saved.mobile1 || '',
+                  'Secondary Mobile': resData.saved.mobile2 || '',
+                  'Date of Birth': resData.saved.dob || '',
+                  'Gender': resData.saved.gender || '',
+                  'City / District': resData.saved.city || '',
+                  'State': resData.saved.state || '',
+                  'Pincode': resData.saved.pincode || '',
+                  'Full Residential Address': resData.saved.address || '',
+                  'College / School': resData.saved.collegeSchool || '',
+                  'Department / Year': resData.saved.yearDept || '',
+                  'Educational Qualification': resData.saved.qualification || '',
+                  'Aadhar / ID Number': resData.saved.aadhar || '',
+                  'Fees Fixed': resData.saved.feesFixed || '',
+                  'Date of Joining': resData.saved.dateJoining || '',
+                  'Certificate No': resData.saved.certNo || '',
+                  'Date of Issue': resData.saved.dateIssue || '',
+                  'Submission Date & Time': resData.saved.submittedAt || new Date().toLocaleString()
+                }
+              }),
+              redirect: 'follow'
+            }).catch(() => {});
+          } catch(e) {}
+
           window.location.href = `form.html?submissionId=${encodeURIComponent(savedId)}`;
           return;
         } else if (!response.ok) {
@@ -1169,10 +1209,53 @@
           return;
         }
       } catch (err) {
-        console.warn('Unable to save permanent submission to server', err);
-        if (window.location.protocol === 'file:') {
-          alert('⚠️ Note: You opened this file directly (file:/// protocol).\n\nTo permanently save entries into database.xlsx and sync to Google Sheets, start the server using start-server.bat and open http://localhost:5000 in your browser.');
-        }
+        console.warn('Unable to save permanent submission to server, saving locally & pushing directly to cloud', err);
+        const submissions = readStoredSubmissions();
+        const localId = editingSubmissionId || ('ID-' + String(submissions.length + 1).padStart(4, '0'));
+        const localSaved = { ...data, submissionId: localId, submittedAt: new Date().toLocaleString() };
+        const idx = submissions.findIndex(s => s.submissionId === localId);
+        if (idx !== -1) submissions[idx] = localSaved; else submissions.push(localSaved);
+        saveStoredSubmissions(submissions);
+
+        // Direct push to Google Sheets web app
+        try {
+          const cloudUrl = 'https://script.google.com/macros/s/AKfycbx_luyKLX-eXPnOibeVsWLxaZps0nC_K_FGEEFKKFEE8FhIt-YKaxmD29fgbYccXdcM/exec';
+          fetch(cloudUrl, {
+            method: 'POST',
+            headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+            body: JSON.stringify({
+              action: 'upsert_user',
+              user: {
+                'User / Submission ID': localSaved.submissionId,
+                'User / Student Name': localSaved.name || '',
+                'Father / Guardian Name': localSaved.fatherName || '',
+                'Course / Applied Title': localSaved.title || '',
+                'Email Address': localSaved.email || '',
+                'Primary Mobile': localSaved.mobile1 || '',
+                'Secondary Mobile': localSaved.mobile2 || '',
+                'Date of Birth': localSaved.dob || '',
+                'Gender': localSaved.gender || '',
+                'City / District': localSaved.city || '',
+                'State': localSaved.state || '',
+                'Pincode': localSaved.pincode || '',
+                'Full Residential Address': localSaved.address || '',
+                'College / School': localSaved.collegeSchool || '',
+                'Department / Year': localSaved.yearDept || '',
+                'Educational Qualification': localSaved.qualification || '',
+                'Aadhar / ID Number': localSaved.aadhar || '',
+                'Fees Fixed': localSaved.feesFixed || '',
+                'Date of Joining': localSaved.dateJoining || '',
+                'Certificate No': localSaved.certNo || '',
+                'Date of Issue': localSaved.dateIssue || '',
+                'Submission Date & Time': localSaved.submittedAt || new Date().toLocaleString()
+              }
+            }),
+            redirect: 'follow'
+          }).catch(() => {});
+        } catch(e) {}
+
+        window.location.href = `form.html?submissionId=${encodeURIComponent(localId)}`;
+        return;
       }
     }
 

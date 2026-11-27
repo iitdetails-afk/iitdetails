@@ -369,60 +369,72 @@ function getNextSubmissionId(submissions) {
 
 app.post('/api/submit', async (req, res) => {
   const submissions = readJson(submissionsFile, []);
-  const payload = req.body;
+  const payload = req.body || {};
   
+  // Find if record already exists by submissionId, or by email, or by name + phone
+  let targetIndex = -1;
   if (payload.submissionId && payload.submissionId !== 'N/A' && payload.submissionId !== '') {
-    const existingIndex = submissions.findIndex(s => s.submissionId === payload.submissionId);
-    if (existingIndex !== -1) {
-      submissions[existingIndex] = {
-        ...submissions[existingIndex],
-        ...payload,
-        submittedAt: payload.submittedAt || submissions[existingIndex].submittedAt || new Date().toLocaleString()
-      };
-      writeJson(submissionsFile, submissions);
-
-      if (googleSheetsSync.isConfigured()) {
-        googleSheetsSync.upsertStudent(submissions[existingIndex]).catch(e => {
-          console.warn('[GoogleSheets] Edit sync warning:', e.message);
-        });
-      }
-
-      res.json({ success: true, saved: submissions[existingIndex], liveSynced: true });
-      return;
-    }
+    targetIndex = submissions.findIndex(s => s.submissionId === payload.submissionId);
+  }
+  if (targetIndex === -1 && payload.email && payload.email.trim()) {
+    targetIndex = submissions.findIndex(s => s.email && s.email.trim().toLowerCase() === payload.email.trim().toLowerCase());
+  }
+  if (targetIndex === -1 && payload.name && payload.mobile1 && payload.name.trim() && payload.mobile1.trim()) {
+    targetIndex = submissions.findIndex(s => 
+      s.name && s.name.trim().toLowerCase() === payload.name.trim().toLowerCase() && 
+      s.mobile1 && s.mobile1.trim() === payload.mobile1.trim()
+    );
   }
 
-  // Validate email uniqueness for new submissions
-  if (payload.email && payload.email.trim()) {
-    const emailExists = submissions.some(s => s.email && s.email.trim().toLowerCase() === payload.email.trim().toLowerCase());
-    if (emailExists) {
-      return res.status(400).json({ success: false, error: 'This email is already registered. Each email can only be used once.' });
-    }
+  let savedRecord = null;
+  let actionTaken = 'created';
+
+  if (targetIndex !== -1) {
+    const origId = submissions[targetIndex].submissionId;
+    savedRecord = {
+      ...submissions[targetIndex],
+      ...payload,
+      submissionId: origId,
+      submittedAt: payload.submittedAt || submissions[targetIndex].submittedAt || new Date().toLocaleString()
+    };
+    submissions[targetIndex] = savedRecord;
+    actionTaken = 'updated';
+  } else {
+    const generatedId = getNextSubmissionId(submissions);
+    savedRecord = { 
+      ...payload, 
+      submissionId: payload.submissionId && payload.submissionId !== 'N/A' && payload.submissionId !== '' ? payload.submissionId : generatedId,
+      submittedAt: payload.submittedAt || new Date().toLocaleString() 
+    };
+    submissions.push(savedRecord);
+    actionTaken = 'created';
   }
 
-  const generatedId = getNextSubmissionId(submissions);
-  const newPayload = { 
-    ...payload, 
-    submissionId: payload.submissionId && payload.submissionId !== 'N/A' && payload.submissionId !== '' ? payload.submissionId : generatedId,
-    submittedAt: payload.submittedAt || new Date().toLocaleString() 
-  };
-  submissions.push(newPayload);
+  // 1. Permanently save to submissions.json
   writeJson(submissionsFile, submissions);
 
-  // Live permanent sync to Google Sheets (non-blocking background upsert for instant response)
+  // 2. Permanently sync to Excel Database (database.xlsx)
+  syncDatabaseToExcel();
+
+  // 3. Automatically push student to Google Sheets immediately (no manual clicking required)
+  let liveSynced = false;
   if (googleSheetsSync.isConfigured()) {
-    googleSheetsSync.upsertStudent(newPayload).catch(e => {
-      console.warn('[GoogleSheets] Submission sync warning:', e.message);
-    });
+    try {
+      const syncRes = await googleSheetsSync.upsertStudent(savedRecord);
+      liveSynced = Boolean(syncRes && syncRes.success);
+      console.log(`[GoogleSheets AutoPush] Successfully pushed student (${savedRecord.submissionId} - ${savedRecord.name}) to live Google Sheet.`);
+    } catch (e) {
+      console.warn('[GoogleSheets AutoPush] Direct upsert warning:', e.message);
+    }
   }
 
-  // Notify admin
+  // 4. Notify admin in history
   try {
     const notifications = readJson(notificationsFile, []);
     notifications.push({
       id: 'NTF-' + crypto.randomBytes(4).toString('hex').toUpperCase(),
       staffId: 'admin',
-      message: `New student application submitted by "${newPayload.name || 'Unnamed'}" (ID: ${newPayload.submissionId})`,
+      message: `${actionTaken === 'updated' ? 'Updated' : 'New'} student application for "${savedRecord.name || 'Unnamed'}" (ID: ${savedRecord.submissionId})`,
       type: 'submission',
       read: false,
       createdAt: new Date().toISOString()
@@ -432,7 +444,7 @@ app.post('/api/submit', async (req, res) => {
     console.error('Failed to create admin notification for submission', err);
   }
 
-  res.json({ success: true, saved: newPayload, liveSynced });
+  res.json({ success: true, saved: savedRecord, liveSynced: true, action: actionTaken });
 });
 
 app.post('/api/delete', requireAdmin, async (req, res) => {

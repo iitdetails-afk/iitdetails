@@ -239,9 +239,14 @@
 
     list.innerHTML = submissionsList.slice().reverse().map((item) => `
       <div class="card">
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; flex-wrap: wrap; gap: 8px;">
           <h3 style="margin: 0;"><a class="id-link" href="details.html?submissionId=${encodeURIComponent(item.submissionId || '')}">${item.submissionId || 'N/A'}</a></h3>
-          <button type="button" class="delete-btn" onclick="deleteSubmission('${item.submissionId}')" style="background: transparent; color: var(--accent); border: 1px solid var(--accent); padding: 4px 10px; font-size: 11px; cursor: pointer; border-radius: 999px; font-family: inherit;">Delete</button>
+          <div style="display: flex; gap: 6px; align-items: center; flex-wrap: wrap;">
+            <a href="form.html?submissionId=${encodeURIComponent(item.submissionId || '')}" style="background: var(--navy); color: #fff; padding: 4px 10px; font-size: 11px; border-radius: 999px; text-decoration: none; font-weight: 600;">📄 View Form</a>
+            <a href="details.html?submissionId=${encodeURIComponent(item.submissionId || '')}" style="background: transparent; color: var(--navy); border: 1px solid var(--rule); padding: 4px 10px; font-size: 11px; border-radius: 999px; text-decoration: none; font-weight: 600;">✏️ Edit</a>
+            <a href="print.html?submissionId=${encodeURIComponent(item.submissionId || '')}" target="_blank" style="background: transparent; color: var(--navy); border: 1px solid var(--rule); padding: 4px 10px; font-size: 11px; border-radius: 999px; text-decoration: none; font-weight: 600;">🖨️ Print</a>
+            <button type="button" class="delete-btn" onclick="deleteSubmission('${item.submissionId}')" style="background: transparent; color: var(--accent); border: 1px solid var(--accent); padding: 4px 10px; font-size: 11px; cursor: pointer; border-radius: 999px; font-family: inherit;">🗑️ Delete</button>
+          </div>
         </div>
         <div class="meta">Submitted: ${item.submittedAt || '-'}</div>
         <div class="card-content">
