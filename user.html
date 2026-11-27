@@ -550,6 +550,27 @@
     to { stroke-dashoffset: 0; }
   }
 
+  /* Dynamic Status Badge */
+  .conf-status-badge {
+    display: inline-block;
+    padding: 6px 16px;
+    border-radius: 20px;
+    font-size: 13px;
+    font-weight: 700;
+    margin-bottom: 12px;
+    letter-spacing: 0.04em;
+  }
+  .conf-status-badge.created {
+    background: #ecfdf5;
+    border: 1px solid #a7f3d0;
+    color: #065f46;
+  }
+  .conf-status-badge.updated {
+    background: #eff6ff;
+    border: 1px solid #bfdbfe;
+    color: #1e40af;
+  }
+
   .conf-title {
     font-size: 24px;
     font-weight: 600;
@@ -881,15 +902,20 @@
     
     <!-- Vibrant Circular Green Tick Symbol -->
     <div class="conf-tick-wrapper">
-      <div class="conf-tick-circle">
-        <svg class="conf-tick-svg" viewBox="0 0 24 24">
+      <div class="conf-tick-circle" id="confTickCircle">
+        <svg class="conf-tick-svg" id="confTickSvg" viewBox="0 0 24 24">
           <polyline points="20 6 9 17 4 12"></polyline>
         </svg>
       </div>
     </div>
 
-    <h2 class="conf-title">Application Submitted Successfully!</h2>
-    <p class="conf-desc">
+    <!-- Status Badge -->
+    <div>
+      <span id="confStatusBadge" class="conf-status-badge created">✓ Registered in Database</span>
+    </div>
+
+    <h2 class="conf-title" id="confTitle">Application Submitted Successfully!</h2>
+    <p class="conf-desc" id="confDesc">
       Your application has been registered in the database and synchronized with the Administration office.
     </p>
     
@@ -902,6 +928,14 @@
       <div class="conf-summary-row">
         <span class="conf-summary-label">Student Name</span>
         <span class="conf-summary-val" id="confirmedName">—</span>
+      </div>
+      <div class="conf-summary-row">
+        <span class="conf-summary-label">Contact Mobile</span>
+        <span class="conf-summary-val" id="confirmedMobile">—</span>
+      </div>
+      <div class="conf-summary-row">
+        <span class="conf-summary-label">Email Address</span>
+        <span class="conf-summary-val" id="confirmedEmail">—</span>
       </div>
       <div class="conf-summary-row">
         <span class="conf-summary-label">Applied Course</span>
@@ -1135,7 +1169,16 @@
       return;
     }
 
-    pushDirectToGoogleSheet(data);
+    const isUpdate = Boolean(activeSubmissionId);
+    btnSubmitForm.disabled = true;
+    btnSubmitForm.textContent = isUpdate ? '⏳ Updating & Saving Details...' : '⏳ Submitting Application...';
+
+    // Safe background sync to Google Sheet
+    try {
+      pushDirectToGoogleSheet(data);
+    } catch(err) {
+      console.warn('Google Sheet background trigger error:', err);
+    }
 
     try {
       const res = await fetch('/api/submit', {
@@ -1159,7 +1202,7 @@
           subs.push(saved);
         }
         saveStoredSubmissions(subs);
-        showConfirmation(saved);
+        showConfirmation(saved, isUpdate || resData.action === 'updated');
         return;
       } else if (!res.ok) {
         showToast(resData.error || 'Submission failed.', true);
@@ -1186,25 +1229,71 @@
         subs.push(data);
       }
       saveStoredSubmissions(subs);
-      showConfirmation(data);
+      showConfirmation(data, isUpdate);
+    } finally {
+      btnSubmitForm.disabled = false;
+      btnSubmitForm.textContent = activeSubmissionId ? '💾 Update & Save Details' : 'Submit';
     }
   });
 
   // ── Show Confirmation with Green Tick Symbol ──
-  function showConfirmation(savedData) {
+  function showConfirmation(savedData, isUpdate = false) {
     document.getElementById('googleApplicationForm').style.display = 'none';
     document.getElementById('lookupCard').style.display = 'none';
     alterBanner.style.display = 'none';
     
     const conf = document.getElementById('confirmationCard');
+    const titleEl = document.getElementById('confTitle');
+    const descEl = document.getElementById('confDesc');
+    const badgeEl = document.getElementById('confStatusBadge');
+
+    const isAltered = isUpdate || Boolean(activeSubmissionId && activeSubmissionId === savedData.submissionId);
+
+    if (isAltered) {
+      if (titleEl) titleEl.textContent = 'Application Updated & Saved Successfully!';
+      if (descEl) descEl.innerHTML = `Your altered details for Submission ID <strong>${savedData.submissionId || ''}</strong> have been updated and permanently saved in the official database.`;
+      if (badgeEl) {
+        badgeEl.className = 'conf-status-badge updated';
+        badgeEl.textContent = '✓ Details Updated & Saved';
+      }
+      showToast('Details updated & saved successfully!', false, true);
+    } else {
+      if (titleEl) titleEl.textContent = 'Application Submitted Successfully!';
+      if (descEl) descEl.innerHTML = `Your application has been registered in the database and synchronized with the Administration office.`;
+      if (badgeEl) {
+        badgeEl.className = 'conf-status-badge created';
+        badgeEl.textContent = '✓ Registered in Database';
+      }
+      showToast('Application submitted successfully!', false, true);
+    }
+
     document.getElementById('confirmedSubmissionId').textContent = savedData.submissionId || 'ID-0000';
     document.getElementById('confirmedName').textContent = savedData.name || '—';
+    if (document.getElementById('confirmedMobile')) {
+      document.getElementById('confirmedMobile').textContent = savedData.mobile1 || '—';
+    }
+    if (document.getElementById('confirmedEmail')) {
+      document.getElementById('confirmedEmail').textContent = savedData.email || '—';
+    }
     document.getElementById('confirmedCourse').textContent = savedData.title || '—';
     document.getElementById('confirmedDate').textContent = savedData.submittedAt || new Date().toLocaleString();
     
+    // Retrigger animations on tick
+    const circle = document.getElementById('confTickCircle');
+    if (circle) {
+      circle.style.animation = 'none';
+      void circle.offsetHeight;
+      circle.style.animation = null;
+    }
+    const svg = document.getElementById('confTickSvg');
+    if (svg) {
+      svg.style.animation = 'none';
+      void svg.offsetHeight;
+      svg.style.animation = null;
+    }
+
     conf.style.display = 'block';
     window.scrollTo({ top: 0, behavior: 'smooth' });
-    showToast('Application submitted successfully!', false, true);
   }
 
   // ── Alter Feature: Return to Form with Populated Details ──
