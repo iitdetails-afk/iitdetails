@@ -3,43 +3,38 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Indian Info Tech — Student Portal</title>
-<meta name="description" content="Apply and register at Indian Info Tech. Fill your application form and submit your details online.">
+<title>Indian Info Tech — Application User Panel</title>
+<meta name="description" content="Official Student Application and Registration Form for Indian Info Tech.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Playfair+Display:wght@700;800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="theme.css">
 <style>
   :root {
-    --navy: #1e3a8a;
-    --navy-mid: #2563eb;
+    --ink: #000000;
+    --ink-dark: #091322;
+    --navy: #0f2744;
+    --navy-mid: #1e3a8a;
     --accent: #2563eb;
-    --accent-dark: #1d4ed8;
-    --ink: #0f172a;
+    --accent-hover: #1d4ed8;
     --paper: #ffffff;
-    --rule: #e2e8f0;
-    --brass: #3b82f6;
-    --soft: #f8fafc;
-    --red: #ef4444;
-    --white: #ffffff;
-    --success: #10b981;
-    --radius: 16px;
-    --shadow: 0 10px 30px rgba(15, 23, 42, 0.05);
-    --shadow-lg: 0 20px 45px rgba(15, 23, 42, 0.08);
-    --transition: 0.3s cubic-bezier(0.25,0.8,0.25,1);
+    --rule: #000000;
+    --success: #15803d;
+    --red: #dc2626;
   }
 
   * { box-sizing: border-box; margin: 0; padding: 0; }
 
   body {
-    font-family: 'Inter', sans-serif;
-    background: var(--theme-bg-gradient, linear-gradient(135deg, #f8fafc 0%, #f1f5f9 50%, #e2e8f0 100%));
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    background: radial-gradient(circle at 50% 0%, #ffffff 0%, #eef3f9 60%, #e2e8f0 100%);
     min-height: 100vh;
     color: var(--ink);
+    padding: 0 0 60px 0;
   }
 
-  /* ── Top nav ── */
+  /* ── Top Bar ── */
   .topbar {
-    background: var(--navy);
+    background: #0f2744;
     padding: 12px 24px;
     display: flex;
     align-items: center;
@@ -48,7 +43,7 @@
     position: sticky;
     top: 0;
     z-index: 50;
-    box-shadow: 0 2px 16px rgba(0,0,0,0.2);
+    box-shadow: 0 4px 20px rgba(0,0,0,0.15);
   }
   .topbar-brand {
     display: flex;
@@ -64,883 +59,1105 @@
     object-fit: contain;
   }
   .topbar-title {
-    font-family: 'Playfair Display', serif;
-    font-size: 18px;
-    color: #fff;
-    font-weight: 600;
+    font-size: 17px;
+    color: #ffffff;
+    font-weight: 700;
+    letter-spacing: 0.02em;
   }
   .topbar-subtitle {
     font-size: 11px;
-    color: var(--accent);
-    letter-spacing: 0.1em;
+    color: #93c5fd;
+    letter-spacing: 0.12em;
     text-transform: uppercase;
+    font-weight: 600;
   }
   .topbar-right {
     display: flex;
     align-items: center;
-    gap: 12px;
+    gap: 10px;
   }
-  .btn-back {
+  .btn-nav {
     display: inline-flex;
     align-items: center;
     gap: 6px;
-    padding: 8px 16px;
-    background: rgba(255,255,255,0.08);
-    border: 1px solid rgba(255,255,255,0.15);
-    border-radius: 999px;
-    color: rgba(255,255,255,0.7);
-    font-size: 12px;
-    font-family: 'Inter', sans-serif;
-    text-decoration: none;
-    transition: var(--transition);
-  }
-  .btn-back:hover { background: rgba(255,255,255,0.15); color: #fff; }
-
-  /* ── Steps nav ── */
-  .steps-bar {
-    background: var(--white);
-    border-bottom: 1px solid var(--rule);
-    padding: 0 24px;
-    display: flex;
-    justify-content: center;
-    gap: 0;
-  }
-  .step-tab {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    padding: 16px 28px;
-    border-bottom: 3px solid transparent;
-    cursor: pointer;
-    font-size: 13px;
-    font-weight: 500;
-    color: #8a9bb0;
-    transition: var(--transition);
-    border-bottom-color: transparent;
-    white-space: nowrap;
-  }
-  .step-tab:hover { color: var(--navy); }
-  .step-tab.active { color: var(--navy); border-bottom-color: var(--accent); font-weight: 600; }
-  .step-num {
-    width: 26px;
-    height: 26px;
-    border-radius: 50%;
-    background: #e2e8f0;
-    color: #64748b;
-    font-size: 12px;
-    font-weight: 700;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: var(--transition);
-  }
-  .step-tab.active .step-num { background: var(--accent); color: var(--navy); }
-  .step-tab.done .step-num { background: var(--success); color: white; }
-  .step-tab.done { color: var(--success); }
-
-  /* ── Main content ── */
-  .main {
-    max-width: 820px;
-    margin: 0 auto;
-    padding: 32px 20px 80px;
-  }
-
-  .page-section { display: none; }
-  .page-section.active { display: block; }
-
-  /* ── Card ── */
-  .card {
-    background: var(--paper);
-    border-radius: var(--radius);
-    box-shadow: var(--shadow);
-    border: 1px solid rgba(15,39,68,0.06);
-    overflow: hidden;
-    margin-bottom: 20px;
-  }
-  .card-header {
-    padding: 20px 24px 16px;
-    border-bottom: 1px solid var(--rule);
-    display: flex;
-    align-items: center;
-    gap: 12px;
-  }
-  .card-icon {
-    width: 42px;
-    height: 42px;
-    border-radius: 12px;
-    background: linear-gradient(135deg, var(--navy), var(--navy-mid));
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 20px;
-    flex-shrink: 0;
-  }
-  .card-header h2 {
-    font-family: 'Playfair Display', serif;
-    font-size: 20px;
-    color: var(--navy);
-  }
-  .card-header p {
-    font-size: 12px;
-    color: var(--brass);
-    margin-top: 2px;
-  }
-  .card-body { padding: 24px; }
-
-  /* ── Form fields ── */
-  .field { margin-bottom: 18px; }
-  .field label {
-    display: block;
-    font-size: 12px;
-    font-weight: 600;
-    color: var(--navy);
-    text-transform: uppercase;
-    letter-spacing: 0.06em;
-    margin-bottom: 7px;
-  }
-  .field input, .field textarea, .field select {
-    width: 100%;
-    padding: 11px 14px;
-    border: 1.5px solid var(--rule);
-    border-radius: 10px;
-    font-family: 'Inter', sans-serif;
-    font-size: 14px;
-    color: var(--ink);
-    background: #fffdf9;
-    transition: var(--transition);
-    outline: none;
-  }
-  .field input:focus, .field textarea:focus {
-    border-color: var(--accent-dark);
-    box-shadow: 0 0 0 3px rgba(245,200,66,0.18);
-    background: #fff;
-  }
-  .field textarea { min-height: 72px; resize: vertical; }
-
-  .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
-  .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; }
-
-  /* ── Photo upload ── */
-  .photo-modes { display: flex; gap: 8px; margin-bottom: 12px; }
-  .mode-btn {
-    flex: 1; padding: 9px;
-    border: 1.5px solid var(--rule);
-    border-radius: 10px;
-    background: #fffdf9;
-    cursor: pointer;
-    font-size: 12px;
-    font-weight: 600;
-    color: var(--navy);
-    font-family: 'Inter', sans-serif;
-    transition: var(--transition);
-  }
-  .mode-btn.active { background: var(--navy); color: #fff; border-color: var(--navy); }
-
-  .camera-container {
-    border: 1.5px solid var(--rule);
-    border-radius: 12px;
-    padding: 14px;
-    background: #fffdf9;
-    text-align: center;
-    display: none;
-  }
-  .camera-stream-wrapper {
-    position: relative;
-    max-width: 300px;
-    margin: 0 auto;
-    aspect-ratio: 4/3;
-    background: #0f2744;
-    border-radius: 10px;
-    overflow: hidden;
-  }
-  .camera-stream-wrapper video { width: 100%; height: 100%; object-fit: cover; }
-  .camera-controls { margin-top: 10px; display: flex; gap: 8px; justify-content: center; }
-  .btn-sm {
     padding: 7px 14px;
-    border: 1px solid var(--navy);
-    background: transparent;
-    color: var(--navy);
+    background: rgba(255,255,255,0.1);
+    border: 1px solid rgba(255,255,255,0.2);
     border-radius: 999px;
+    color: #ffffff;
     font-size: 12px;
-    cursor: pointer;
-    font-family: 'Inter', sans-serif;
-    transition: var(--transition);
-  }
-  .btn-sm:hover { background: var(--navy); color: #fff; }
-
-  .photo-preview-wrap {
-    display: none;
-    margin-top: 12px;
-    position: relative;
-    width: fit-content;
-  }
-  .photo-preview-wrap.visible { display: inline-block; }
-  .photo-preview-wrap img {
-    width: 120px;
-    height: 120px;
-    object-fit: cover;
-    border-radius: 12px;
-    border: 2px solid var(--rule);
-    display: block;
-  }
-  .remove-photo-btn {
-    position: absolute;
-    top: -8px; right: -8px;
-    width: 24px; height: 24px;
-    border-radius: 50%;
-    border: none;
-    background: var(--red);
-    color: white;
-    cursor: pointer;
-    font-size: 14px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.2);
-    line-height: 1;
-    padding: 0;
-  }
-
-  /* ── Checkbox terms ── */
-  .terms-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-  .term-card {
-    background: #fffdf9;
-    border: 1.5px solid var(--rule);
-    border-radius: 12px;
-    padding: 14px;
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    cursor: pointer;
-    transition: var(--transition);
-  }
-  .term-card:hover { border-color: var(--accent-dark); }
-  .term-card input[type="checkbox"] { width: 18px; height: 18px; accent-color: var(--red); cursor: pointer; flex-shrink: 0; }
-  .term-card label { font-size: 13px; font-weight: 500; color: var(--navy); cursor: pointer; text-transform: none; letter-spacing: 0; }
-
-  /* ── Section divider ── */
-  .section-title {
-    font-size: 11px;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 0.12em;
-    color: var(--brass);
-    padding: 16px 24px 12px;
-    border-bottom: 1px solid var(--rule);
-    background: rgba(245,200,66,0.04);
-    margin-bottom: 0;
-  }
-
-  /* ── Actions ── */
-  .action-bar {
-    display: flex;
-    gap: 12px;
-    flex-wrap: wrap;
-    justify-content: flex-end;
-    margin-top: 24px;
-    padding-top: 20px;
-    border-top: 1px solid var(--rule);
-  }
-
-  .btn {
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    padding: 12px 24px;
-    border-radius: 999px;
-    font-family: 'Inter', sans-serif;
-    font-size: 14px;
     font-weight: 600;
-    cursor: pointer;
-    border: none;
-    transition: var(--transition);
     text-decoration: none;
+    transition: all 0.2s ease;
   }
-  .btn-primary { background: var(--navy); color: #fff; box-shadow: 0 6px 16px rgba(15,39,68,0.2); }
-  .btn-primary:hover { background: var(--navy-mid); transform: translateY(-1px); box-shadow: 0 8px 20px rgba(15,39,68,0.28); }
-  .btn-accent { background: var(--accent); color: var(--navy); box-shadow: 0 6px 16px rgba(245,200,66,0.25); }
-  .btn-accent:hover { background: var(--accent-dark); transform: translateY(-1px); }
-  .btn-ghost { background: transparent; color: var(--navy); border: 1.5px solid var(--rule); }
-  .btn-ghost:hover { border-color: var(--navy); background: rgba(15,39,68,0.04); }
-  .btn-danger { background: transparent; color: var(--red); border: 1.5px solid rgba(139,34,52,0.3); }
-  .btn-danger:hover { background: rgba(139,34,52,0.06); }
+  .btn-nav:hover {
+    background: rgba(255,255,255,0.2);
+    color: #ffffff;
+  }
 
-  /* ── Application form (Step 2 print-style) ── */
-  .form-sheet {
-    background: var(--paper);
-    border-radius: var(--radius);
-    box-shadow: var(--shadow-lg);
-    border: 1px solid rgba(15,39,68,0.08);
-    padding: 32px 36px;
-    margin-bottom: 20px;
+  /* ── Main Sheet ── */
+  .sheet-container {
+    max-width: 860px;
+    margin: 32px auto 0;
+    padding: 0 16px;
   }
-  .form-header {
+
+  .form-sheet {
+    background: #ffffff;
+    border: 1.5px solid #000000;
+    border-radius: 8px;
+    padding: 36px 44px;
+    box-shadow: 0 15px 40px rgba(15, 23, 42, 0.12);
+    position: relative;
+  }
+
+  /* ── Crest & Heading ── */
+  .crest {
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 8px;
-    margin-bottom: 24px;
-    padding-bottom: 20px;
-    border-bottom: 2px solid var(--navy);
+    gap: 4px;
+    margin-bottom: 12px;
+    text-align: center;
   }
-  .form-logo {
-    width: 80px; height: 80px;
-    border-radius: 50%;
-    background: #fff;
-    padding: 8px;
-    box-shadow: 0 4px 16px rgba(0,0,0,0.1);
+  .crest img {
+    width: 105px;
+    height: 70px;
     object-fit: contain;
   }
-  .form-brand {
-    font-size: 13px;
-    font-weight: 700;
-    letter-spacing: 0.18em;
+  .crest .brand-title {
+    font-size: 17px;
+    font-weight: 800;
+    letter-spacing: 0.12em;
     text-transform: uppercase;
-    color: var(--brass);
-    text-align: center;
+    color: #000000;
   }
-  .form-title {
-    font-family: 'Playfair Display', serif;
-    font-size: 26px;
-    color: var(--navy);
+  .crest .brand-sub {
+    font-size: 10px;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: #1e293b;
+    font-weight: 700;
+  }
+
+  h1.title {
+    text-align: center;
+    font-size: 22px;
+    letter-spacing: 0.14em;
+    margin: 8px 0 22px;
     text-decoration: underline;
     text-underline-offset: 6px;
-    letter-spacing: 0.08em;
     text-transform: uppercase;
-    margin-top: 4px;
+    color: #000000;
+    font-weight: 900;
   }
-  .photo-box {
-    float: right;
-    width: 110px;
-    height: 130px;
-    border: 1.5px dashed var(--rule);
-    border-radius: 10px;
+
+  /* ── Form Row Alignment ── */
+  .field-row {
     display: flex;
-    align-items: center;
-    justify-content: center;
-    text-align: center;
-    font-size: 11px;
-    color: var(--brass);
-    margin-left: 20px;
+    align-items: flex-end;
     margin-bottom: 12px;
-    overflow: hidden;
-    background: #fffdf9;
   }
-  .photo-box img { width: 100%; height: 100%; object-fit: cover; display: none; }
+  .field-row.tall {
+    align-items: flex-start;
+  }
 
-  .line-field { margin-bottom: 14px; }
-  .line-field label {
-    font-size: 13px;
-    font-weight: 600;
-    color: var(--navy);
-    display: block;
-    margin-bottom: 4px;
+  .field-label {
+    font-size: 14px;
+    color: #000000;
+    font-weight: 700;
+    width: 140px;
+    flex-shrink: 0;
+    letter-spacing: 0.01em;
   }
+
+  .field-colon {
+    font-size: 14px;
+    color: #000000;
+    font-weight: 800;
+    width: 16px;
+    flex-shrink: 0;
+    text-align: center;
+  }
+
+  /* ── Solid Black Underline Inputs ── */
   .line-input {
-    width: 100%;
     border: none;
-    border-bottom: 1.5px solid rgba(30,50,72,0.2);
+    border-bottom: 1.5px solid #000000;
     background: transparent;
-    font-family: 'Inter', sans-serif;
+    font-family: inherit;
     font-size: 15px;
-    padding: 5px 0;
-    color: var(--ink);
+    font-weight: 600;
+    color: #000000;
+    padding: 2px 6px;
+    flex: 1;
+    width: 100%;
     outline: none;
+    transition: border-color 0.2s ease, background 0.2s ease;
   }
-  .line-input:focus { border-bottom-color: var(--red); }
+  .line-input:focus {
+    border-bottom: 2px solid #2563eb;
+    background: rgba(37, 99, 235, 0.04);
+  }
+  textarea.line-input {
+    resize: vertical;
+    min-height: 48px;
+    line-height: 1.4;
+    padding-top: 4px;
+  }
 
-  .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
-  .three-col { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 20px; }
-
-  .office-section { margin-top: 20px; border-top: 2px solid var(--navy); padding-top: 16px; }
-  .office-title { text-align: center; font-size: 15px; font-weight: 700; text-decoration: underline; margin-bottom: 16px; color: var(--navy); letter-spacing: 0.08em; }
-
-  .term-row-form {
+  /* ── Personal Details Area ── */
+  .personal-details-container {
     display: flex;
     justify-content: space-between;
-    align-items: center;
-    padding: 8px 0;
-    border-bottom: 1px solid var(--rule);
-    font-size: 13px;
+    align-items: flex-start;
+    gap: 24px;
+    margin-bottom: 12px;
   }
-  .term-row-form:last-child { border-bottom: none; }
-  .term-row-form input { width: 18px; height: 18px; accent-color: var(--red); }
+  .left-fields {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+  .right-photo {
+    flex-shrink: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
 
-  /* ── Toast notification ── */
+  /* ── Photo Box ── */
+  .photo-box {
+    width: 115px;
+    height: 140px;
+    border: 1.5px solid #000000;
+    border-radius: 6px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    font-size: 11px;
+    text-align: center;
+    color: #000000;
+    font-weight: 700;
+    overflow: hidden;
+    padding: 4px;
+    line-height: 1.4;
+    background: #f8fafc;
+    position: relative;
+  }
+  .photo-box img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 4px;
+    display: none;
+  }
+
+  .photo-action-controls {
+    display: flex;
+    gap: 4px;
+    margin-top: 6px;
+    justify-content: center;
+    flex-wrap: wrap;
+    max-width: 130px;
+  }
+  .photo-btn {
+    font-size: 11px;
+    font-weight: 600;
+    padding: 4px 8px;
+    border: 1px solid #000000;
+    border-radius: 4px;
+    background: #ffffff;
+    color: #000000;
+    cursor: pointer;
+    text-decoration: none;
+    transition: all 0.15s ease;
+  }
+  .photo-btn:hover {
+    background: #000000;
+    color: #ffffff;
+  }
+  .photo-btn.remove {
+    color: #dc2626;
+    border-color: #dc2626;
+  }
+  .photo-btn.remove:hover {
+    background: #dc2626;
+    color: #ffffff;
+  }
+
+  /* ── Camera Preview Dropdown ── */
+  .camera-container {
+    border: 1.5px solid #000000;
+    border-radius: 8px;
+    padding: 10px;
+    background: #f8fafc;
+    text-align: center;
+    margin-top: 8px;
+    display: none;
+    max-width: 260px;
+  }
+  .camera-stream-wrapper {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 4/3;
+    background: #000000;
+    border-radius: 6px;
+    overflow: hidden;
+  }
+  .camera-stream-wrapper video {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  .camera-controls {
+    margin-top: 8px;
+    display: flex;
+    gap: 6px;
+    justify-content: center;
+  }
+  .btn-cam-action {
+    padding: 5px 10px;
+    font-size: 11px;
+    font-weight: 700;
+    border: 1px solid #000000;
+    background: #ffffff;
+    color: #000000;
+    border-radius: 4px;
+    cursor: pointer;
+  }
+  .btn-cam-action:hover {
+    background: #000000;
+    color: #ffffff;
+  }
+
+  /* ── Contact Details Area ── */
+  .contact-details-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 24px;
+    margin-bottom: 12px;
+  }
+  .left-contact {
+    flex: 1;
+  }
+  .right-contact {
+    width: 270px;
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 12px;
+  }
+
+  .mobile-row {
+    display: flex;
+    align-items: flex-start;
+  }
+  .mobile-inputs {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  .mobile-input-item {
+    display: flex;
+    align-items: flex-end;
+    gap: 6px;
+    width: 100%;
+  }
+  .num-prefix {
+    font-size: 14px;
+    font-weight: 800;
+    color: #000000;
+    width: 16px;
+    flex-shrink: 0;
+  }
+
+  .email-row {
+    display: flex;
+    align-items: flex-end;
+    gap: 8px;
+    width: 100%;
+  }
+  .email-row .field-label {
+    width: 70px;
+    font-size: 13px;
+    font-weight: 700;
+    color: #000000;
+    flex-shrink: 0;
+  }
+  .email-row .field-colon {
+    font-size: 13px;
+    font-weight: 800;
+    color: #000000;
+    width: 12px;
+    flex-shrink: 0;
+    text-align: center;
+  }
+
+  .pincode-container {
+    display: flex;
+    justify-content: flex-end;
+  }
+  .pincode-box-custom {
+    border: 1.5px solid #000000;
+    border-radius: 6px;
+    width: 170px;
+    padding: 6px 10px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background: #ffffff;
+  }
+  .pincode-label {
+    font-size: 11px;
+    color: #000000;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: 2px;
+  }
+  .pincode-box-custom .line-input {
+    border: none;
+    border-bottom: 1.5px solid #000000;
+    text-align: center;
+    font-weight: 800;
+    font-size: 16px;
+    letter-spacing: 0.1em;
+    padding: 2px;
+    width: 100%;
+  }
+
+  /* ── Course Row ── */
+  .course-row {
+    display: flex;
+    align-items: center;
+    margin-bottom: 14px;
+  }
+  .course-box-custom {
+    border: 1.5px solid #000000;
+    border-radius: 6px;
+    flex: 1;
+    padding: 6px 12px;
+    background: #ffffff;
+    display: flex;
+    align-items: center;
+    min-height: 40px;
+  }
+  .course-box-custom .line-input {
+    border: none;
+    font-size: 15px;
+    font-weight: 700;
+    padding: 0;
+  }
+
+  /* ── Referral & Signature Row ── */
+  .know-signature-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    gap: 24px;
+    margin-bottom: 16px;
+  }
+  .know-field {
+    flex: 1;
+  }
+  .field-label-block {
+    display: block;
+    font-size: 14px;
+    font-weight: 700;
+    color: #000000;
+    margin-bottom: 8px;
+  }
+  .signature-field {
+    flex-shrink: 0;
+  }
+  .signature-box-custom {
+    border: 1.5px solid #000000;
+    border-radius: 6px;
+    width: 220px;
+    padding: 8px 12px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-height: 72px;
+    justify-content: space-between;
+    background: #ffffff;
+  }
+  .signature-label {
+    font-size: 10px;
+    font-weight: 800;
+    color: #000000;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+  .signature-val {
+    border: none;
+    border-bottom: 1px dashed #000000;
+    background: transparent;
+    font-family: 'Brush Script MT', cursive, Georgia, serif;
+    font-size: 21px;
+    text-align: center;
+    width: 100%;
+    outline: none;
+    color: #000000;
+    font-weight: 600;
+  }
+
+  /* ── Action Buttons ── */
+  .actions {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 12px;
+    margin-top: 28px;
+    padding-top: 20px;
+    border-top: 1.5px solid #000000;
+    flex-wrap: wrap;
+  }
+  .btn-submit {
+    background: #0f2744;
+    color: #ffffff;
+    font-size: 15px;
+    font-weight: 700;
+    padding: 12px 28px;
+    border: 1.5px solid #0f2744;
+    border-radius: 999px;
+    cursor: pointer;
+    box-shadow: 0 4px 15px rgba(15, 39, 68, 0.25);
+    transition: all 0.2s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .btn-submit:hover {
+    background: #1e3a8a;
+    transform: translateY(-1px);
+    box-shadow: 0 6px 20px rgba(15, 39, 68, 0.35);
+  }
+  .btn-secondary {
+    background: #ffffff;
+    color: #000000;
+    font-size: 14px;
+    font-weight: 700;
+    padding: 11px 22px;
+    border: 1.5px solid #000000;
+    border-radius: 999px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+  .btn-secondary:hover {
+    background: #f1f5f9;
+  }
+
+  /* ── Submission Success Card ── */
+  .submission-success-banner {
+    display: none;
+    background: #f0fdf4;
+    border: 2px solid #22c55e;
+    border-radius: 12px;
+    padding: 24px;
+    text-align: center;
+    margin-bottom: 24px;
+    animation: fadeIn 0.4s ease;
+  }
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(-10px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  .success-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 18px;
+    font-weight: 800;
+    color: #15803d;
+    margin-bottom: 8px;
+  }
+  .success-id {
+    font-family: monospace;
+    font-size: 24px;
+    font-weight: 800;
+    color: #0f2744;
+    background: #ffffff;
+    padding: 6px 16px;
+    border-radius: 8px;
+    border: 1.5px solid #22c55e;
+    display: inline-block;
+    margin: 8px 0;
+  }
+  .success-note {
+    font-size: 13px;
+    color: #166534;
+    margin-bottom: 16px;
+  }
+
+  /* ── Toast Notification ── */
   .toast {
     position: fixed;
     bottom: 28px;
     right: 28px;
     z-index: 999;
-    background: var(--navy);
-    color: #fff;
-    padding: 14px 20px;
-    border-radius: 14px;
+    background: #0f2744;
+    color: #ffffff;
+    padding: 14px 22px;
+    border-radius: 10px;
     font-size: 14px;
-    font-weight: 500;
+    font-weight: 600;
     display: flex;
     align-items: center;
     gap: 10px;
-    box-shadow: 0 8px 24px rgba(0,0,0,0.25);
+    box-shadow: 0 10px 30px rgba(0,0,0,0.3);
     transform: translateY(100px);
     opacity: 0;
-    transition: all 0.4s cubic-bezier(0.34,1.56,0.64,1);
+    transition: all 0.35s cubic-bezier(0.34,1.56,0.64,1);
     pointer-events: none;
   }
   .toast.show { transform: translateY(0); opacity: 1; }
-  .toast.success { background: #166534; }
-  .toast.error { background: #991b1b; }
+  .toast.success { background: #15803d; }
+  .toast.error { background: #b91c1c; }
 
-  /* ── Progress indicator ── */
-  .progress-wrap { margin-bottom: 28px; }
-  .progress-bar {
-    height: 4px;
-    background: var(--rule);
-    border-radius: 99px;
-    overflow: hidden;
-  }
-  .progress-fill {
-    height: 100%;
-    background: linear-gradient(90deg, var(--navy), var(--accent-dark));
-    border-radius: 99px;
-    transition: width 0.5s ease;
-  }
-  .progress-text {
-    font-size: 12px;
-    color: var(--brass);
-    margin-top: 6px;
-    text-align: right;
-  }
-
-  /* ── Submission ID badge ── */
-  .id-badge {
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    padding: 10px 18px;
-    background: linear-gradient(135deg, var(--navy), var(--navy-mid));
-    border-radius: 12px;
-    color: var(--accent);
-    font-size: 20px;
-    font-weight: 700;
-    letter-spacing: 0.05em;
-    margin-bottom: 16px;
-    font-family: monospace;
-    box-shadow: var(--shadow);
-  }
-
-  /* ── Responsive ── */
-  @media (max-width: 600px) {
-    .grid-2, .grid-3, .two-col, .three-col { grid-template-columns: 1fr; }
-    .terms-grid { grid-template-columns: 1fr; }
-    .form-sheet { padding: 20px 18px; }
-    .photo-box { float: none; margin: 0 0 16px; }
-    .topbar { flex-wrap: wrap; }
-    .step-tab { padding: 12px 16px; font-size: 12px; }
-    .main { padding: 20px 16px 80px; }
-  }
-
-  /* ── Print styles ── */
+  /* ── Print Styles ── */
   @media print {
-    body { background: #fff; }
-    .topbar, .steps-bar, .action-bar, #step1 { display: none !important; }
-    .main { padding: 0; max-width: none; }
-    .form-sheet { box-shadow: none; border: none; border-radius: 0; padding: 0; }
-    .page-section { display: block !important; }
+    @page { size: A4 portrait; margin: 8mm 10mm; }
+    html, body {
+      background: #ffffff !important;
+      padding: 0 !important;
+      margin: 0 !important;
+    }
+    .topbar, .actions, .photo-action-controls, .camera-container, .toast, .no-print {
+      display: none !important;
+    }
+    .sheet-container {
+      margin: 0 !important;
+      padding: 0 !important;
+      max-width: 100% !important;
+    }
+    .form-sheet {
+      border: 1px solid #000000 !important;
+      box-shadow: none !important;
+      padding: 10mm 12mm !important;
+      border-radius: 0 !important;
+      page-break-inside: avoid !important;
+    }
+  }
+
+  /* ── Responsive Mobile ── */
+  @media (max-width: 640px) {
+    .form-sheet { padding: 20px 16px; }
+    .personal-details-container { flex-direction: column-reverse; align-items: center; }
+    .right-photo { margin-bottom: 16px; }
+    .contact-details-container { flex-direction: column; }
+    .right-contact { width: 100%; }
+    .know-signature-container { flex-direction: column; align-items: stretch; }
+    .signature-box-custom { width: 100%; }
+    .field-label { width: 120px; font-size: 13px; }
   }
 </style>
 </head>
 <body>
 
-<!-- Top bar -->
-<div class="topbar">
+<!-- Top Navigation -->
+<div class="topbar no-print">
   <div class="topbar-brand">
     <img class="topbar-logo" src="logo.png" alt="IIT" onerror="this.style.display='none'">
     <div>
       <div class="topbar-title">Indian Info Tech</div>
-      <div class="topbar-subtitle">Student Portal</div>
+      <div class="topbar-subtitle">Student Application User Panel</div>
     </div>
+  </div>
+  <div class="topbar-right">
+    <a href="index.html" class="btn-nav">🏠 Home</a>
+    <a href="admin.html" class="btn-nav">🔐 Admin</a>
   </div>
 </div>
 
-<!-- Main content -->
-<div class="main">
+<div class="sheet-container">
 
-  <!-- ══ STEP 1: Details ══ -->
-  <div class="page-section active" id="step1">
-
-    <div class="card">
-      <div class="card-header">
-        <div class="card-icon">👤</div>
-        <div>
-          <h2>Personal Information</h2>
-          <p>Fill in your details to apply</p>
-        </div>
-      </div>
-      <div class="card-body">
-        <form id="detailsForm">
-          <div class="grid-2">
-            <div class="field">
-              <label for="name">Full Name</label>
-              <input id="name" name="name" type="text" placeholder="Enter your full name">
-            </div>
-            <div class="field">
-              <label for="email">Email Address</label>
-              <input id="email" name="email" type="email" placeholder="you@example.com">
-            </div>
-          </div>
-          <div class="grid-2">
-            <div class="field">
-              <label for="yearDept">Year / Department</label>
-              <input id="yearDept" name="yearDept" type="text" placeholder="e.g. 2nd Year / CS">
-            </div>
-            <div class="field">
-              <label for="collegeSchool">College / School</label>
-              <input id="collegeSchool" name="collegeSchool" type="text" placeholder="Institution name">
-            </div>
-          </div>
-          <div class="field">
-            <label for="address">Address</label>
-            <textarea id="address" name="address" placeholder="Your full address"></textarea>
-          </div>
-          <div class="grid-3">
-            <div class="field">
-              <label for="mobile1">Mobile 1</label>
-              <input id="mobile1" name="mobile1" type="tel" placeholder="+91 XXXXX XXXXX">
-            </div>
-            <div class="field">
-              <label for="mobile2">Mobile 2 (optional)</label>
-              <input id="mobile2" name="mobile2" type="tel" placeholder="+91 XXXXX XXXXX">
-            </div>
-            <div class="field">
-              <label for="pincode">Pincode</label>
-              <input id="pincode" name="pincode" type="text" placeholder="6-digit pincode" maxlength="6">
-            </div>
-          </div>
-          <div class="field">
-            <label for="title">Title / Course / Project</label>
-            <input id="title" name="title" type="text" placeholder="e.g. Web Development, Data Science">
-          </div>
-          <div class="field">
-            <label for="howKnow">How did you know about this institute?</label>
-            <input id="howKnow" name="howKnow" type="text" placeholder="Social media, friends, newspaper...">
-          </div>
-          <div class="field">
-            <label for="signature">Signature (type your name)</label>
-            <input id="signature" name="signature" type="text" placeholder="Your signature">
-          </div>
-        </form>
-      </div>
-    </div>
-
-    <!-- Photo card -->
-    <div class="card">
-      <div class="card-header">
-        <div class="card-icon">📷</div>
-        <div>
-          <h2>Photo</h2>
-          <p>Upload or capture your passport-size photo</p>
-        </div>
-      </div>
-      <div class="card-body">
-        <div class="photo-modes">
-          <button type="button" id="btnModeUpload" class="mode-btn active" onclick="switchToUpload()">📁 Upload File</button>
-          <button type="button" id="btnModeCamera" class="mode-btn" onclick="switchToCamera()">📷 Use Camera</button>
-        </div>
-        <div id="uploadContainer">
-          <input id="photoInput" type="file" accept="image/*">
-        </div>
-        <div class="camera-container" id="cameraContainer">
-          <div class="camera-stream-wrapper">
-            <video id="cameraVideo" autoplay playsinline></video>
-            <canvas id="cameraCanvas" style="display:none;"></canvas>
-          </div>
-          <div class="camera-controls">
-            <button type="button" class="btn-sm" id="btnCapture" onclick="capturePhoto()">📸 Capture</button>
-            <button type="button" class="btn-sm" id="btnSwitchCam" onclick="switchCam()" style="display:none;">🔄 Switch</button>
-          </div>
-        </div>
-        <div class="photo-preview-wrap" id="previewWrap">
-          <img id="photoPreview" alt="Preview">
-          <button class="remove-photo-btn" onclick="removePhoto()" title="Remove">×</button>
-        </div>
-      </div>
-    </div>
-
-
-    <!-- Submission ID badge (shown after submit) -->
-    <div id="submissionResult" style="display:none; text-align:center; margin-bottom:20px;">
-      <div class="id-badge" id="submissionIdBadge">🎉 Submitted!</div>
-      <p style="color:var(--brass);font-size:13px;margin-top:8px;">Keep your Submission ID for your records.</p>
-    </div>
-
-    <!-- Action bar -->
-    <div class="action-bar">
-      <button class="btn btn-ghost" onclick="clearDetails()">🗑 Clear</button>
-      <button class="btn btn-primary" onclick="submitApplication()">✅ Submit Application</button>
+  <!-- Submission Success Banner -->
+  <div class="submission-success-banner" id="submissionResult">
+    <div class="success-badge">✅ Application Submitted Successfully!</div>
+    <div>Your official Submission ID is:</div>
+    <div class="success-id" id="submissionIdBadge">ID-0000</div>
+    <div class="success-note">Your application is permanently recorded in the database and synchronized with Google Sheets.</div>
+    <div style="display:flex; justify-content:center; gap:10px; flex-wrap:wrap;">
+      <button type="button" class="btn-submit" onclick="window.print()">🖨️ Print Application Copy</button>
+      <button type="button" class="btn-secondary" onclick="resetForNewSubmission()">➕ New Application</button>
     </div>
   </div>
 
+  <!-- The Official Application Form Sheet -->
+  <div class="form-sheet">
+    <form id="detailsForm">
+      
+      <!-- Crest Header -->
+      <div class="crest">
+        <img src="logo.png" alt="Indian Info Tech Logo" onerror="this.onerror=null; this.style.display='none';">
+        <div class="brand-title">INDIAN INFO TECH</div>
+        <div class="brand-sub">STUDENT REGISTRATION & APPLICATION FORM</div>
+      </div>
+
+      <h1 class="title">Application</h1>
+
+      <!-- Section 1: Personal Details & Photo -->
+      <div class="personal-details-container">
+        <div class="left-fields">
+          <div class="field-row">
+            <span class="field-label">Name</span>
+            <span class="field-colon">:</span>
+            <input class="line-input" id="name" name="name" type="text" placeholder="Enter Full Name" required>
+          </div>
+          <div class="field-row">
+            <span class="field-label">Year/Dept</span>
+            <span class="field-colon">:</span>
+            <input class="line-input" id="yearDept" name="yearDept" type="text" placeholder="e.g. 2nd Year / CSE">
+          </div>
+          <div class="field-row">
+            <span class="field-label">College/School</span>
+            <span class="field-colon">:</span>
+            <input class="line-input" id="collegeSchool" name="collegeSchool" type="text" placeholder="Institution / College Name">
+          </div>
+          <div class="field-row tall">
+            <span class="field-label">Address</span>
+            <span class="field-colon">:</span>
+            <textarea class="line-input" id="address" name="address" rows="2" placeholder="Full Residential Address with Town/City"></textarea>
+          </div>
+        </div>
+
+        <!-- Photo Frame -->
+        <div class="right-photo">
+          <div class="photo-box" id="photoBox">
+            <img id="photoPreview" alt="Applicant Photo">
+            <div id="photoPlaceholder">
+              <div>Fix photo</div>
+              <div style="font-size:10px;font-weight:normal;color:#475569;">If You Have</div>
+            </div>
+          </div>
+          
+          <div class="photo-action-controls no-print">
+            <label class="photo-btn" for="photoInput">
+              📁 Upload
+              <input id="photoInput" name="photoFile" type="file" accept="image/*" style="display:none;">
+            </label>
+            <button type="button" class="photo-btn" id="btnToggleCamera" onclick="toggleCamera()">📷 Camera</button>
+            <button type="button" class="photo-btn remove" id="btnRemovePhoto" onclick="removePhoto()" style="display:none;">✕</button>
+          </div>
+
+          <!-- Camera Stream -->
+          <div class="camera-container" id="cameraContainer">
+            <div class="camera-stream-wrapper">
+              <video id="cameraVideo" autoplay playsinline></video>
+              <canvas id="cameraCanvas" style="display:none;"></canvas>
+            </div>
+            <div class="camera-controls">
+              <button type="button" class="btn-cam-action" onclick="capturePhoto()">📸 Capture</button>
+              <button type="button" class="btn-cam-action" id="btnSwitchCam" onclick="switchCamera()" style="display:none;">🔄</button>
+              <button type="button" class="btn-cam-action" onclick="stopCamera()">✕ Close</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Section 2: Contact Details -->
+      <div class="contact-details-container">
+        <div class="left-contact">
+          <div class="mobile-row">
+            <span class="field-label">Mo:No</span>
+            <span class="field-colon">:</span>
+            <div class="mobile-inputs">
+              <div class="mobile-input-item">
+                <span class="num-prefix">1.</span>
+                <input class="line-input" id="mobile1" name="mobile1" type="tel" placeholder="Primary Mobile Number">
+              </div>
+              <div class="mobile-input-item">
+                <span class="num-prefix">2.</span>
+                <input class="line-input" id="mobile2" name="mobile2" type="tel" placeholder="Secondary Contact (Optional)">
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="right-contact">
+          <div class="email-row">
+            <span class="field-label">email-id</span>
+            <span class="field-colon">:</span>
+            <input class="line-input" id="email" name="email" type="email" placeholder="Email Address">
+          </div>
+          <div class="pincode-container">
+            <div class="pincode-box-custom">
+              <span class="pincode-label">Pincode:</span>
+              <input class="line-input" id="pincode" name="pincode" type="text" maxlength="6" placeholder="Pincode">
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Section 3: Course Title -->
+      <div class="course-row">
+        <span class="field-label">Title Course/project</span>
+        <span class="field-colon">:</span>
+        <div class="course-box-custom">
+          <input class="line-input" id="title" name="title" type="text" placeholder="Applied Course or Project Title (e.g. Python Full Stack)">
+        </div>
+      </div>
+
+      <!-- Section 4: Referral & Signature -->
+      <div class="know-signature-container">
+        <div class="know-field">
+          <span class="field-label-block">How you Know about this institute?</span>
+          <input class="line-input" id="howKnow" name="howKnow" type="text" placeholder="e.g. Friends / Social Media / College Seminar">
+        </div>
+        <div class="signature-field">
+          <div class="signature-box-custom">
+            <span class="signature-label">Student Signature</span>
+            <input class="signature-val" id="signature" name="signature" type="text" placeholder="Sign Name Here">
+          </div>
+        </div>
+      </div>
+
+      <!-- Action Buttons -->
+      <div class="actions no-print" id="formActions">
+        <button type="button" class="btn-submit" onclick="submitApplication()">✈️ Submit Application</button>
+        <button type="button" class="btn-secondary" onclick="window.print()">🖨️ Print Form</button>
+        <button type="button" class="btn-secondary" onclick="clearFormDetails()">🧹 Reset Form</button>
+      </div>
+
+    </form>
+  </div>
 </div>
 
 <!-- Toast -->
 <div class="toast" id="toast"></div>
 
 <script>
-  const DETAILS_KEY = 'iitUserDetails';
-  const STORAGE_KEY = 'iitSubmissions';
+  const DETAILS_KEY = 'indianInfoTechUserDetails';
+  const STORAGE_KEY = 'indianInfoTechSubmissions';
   const COUNTER_KEY = 'iitSubmissionCounter';
-
+  
+  const form = document.getElementById('detailsForm');
+  const photoInput = document.getElementById('photoInput');
+  const photoPreview = document.getElementById('photoPreview');
+  const photoPlaceholder = document.getElementById('photoPlaceholder');
+  const btnRemovePhoto = document.getElementById('btnRemovePhoto');
+  
   let currentPhotoDataUrl = '';
   let cameraStream = null;
   let useFacingMode = 'user';
-  let editingSubmissionId = new URLSearchParams(window.location.search).get('submissionId') || '';
+  let editingSubmissionId = new URLSearchParams(window.location.search).get('submissionId')?.trim() || '';
 
-  // ── Toast ──
+  // ── Toast notification ──
   function showToast(msg, type = '') {
     const t = document.getElementById('toast');
+    if (!t) return;
     t.textContent = msg;
     t.className = 'toast show ' + type;
     clearTimeout(t._timer);
     t._timer = setTimeout(() => { t.className = 'toast'; }, 3200);
   }
 
-  // ── Steps ──
-  function goToStep(n) {
-    document.querySelectorAll('.page-section').forEach(s => s.classList.remove('active'));
-    document.querySelectorAll('.step-tab').forEach(t => t.classList.remove('active'));
-    document.getElementById('step' + n).classList.add('active');
-    document.getElementById('tab' + n).classList.add('active');
-    const fill = n === 1 ? '50%' : '100%';
-    document.getElementById('progressFill').style.width = fill;
-    document.getElementById('progressText').textContent = `Step ${n} of 2`;
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-  }
-
-  function saveAndNext() {
-    collectDetailsFromForm();
-    syncFormFields();
-    goToStep(2);
-    showToast('Details saved! Review your application form.', 'success');
-  }
-
-  // ── Details form ──
-  const detailsForm = document.getElementById('detailsForm');
-
-  function collectDetailsFromForm() {
-    const fd = new FormData(detailsForm);
-    const data = Object.fromEntries(fd.entries());
-    data.photo = currentPhotoDataUrl;
-    localStorage.setItem(DETAILS_KEY, JSON.stringify(data));
-    return data;
-  }
-
-  function applyDataToDetails(data) {
-    if (!data || typeof data !== 'object') return;
-    Object.entries(data).forEach(([k, v]) => {
-      const el = detailsForm.elements[k];
-      if (el && k !== 'photo') el.value = v;
-    });
-    if (data.photo) setPhotoPreview(data.photo);
-  }
-
-  async function loadSavedDetails() {
-    if (editingSubmissionId) {
-      try {
-        const r = await fetch('/api/submissions');
-        if (r.ok) {
-          const subs = await r.json();
-          const found = subs.find(s => s.submissionId === editingSubmissionId);
-          if (found) { applyDataToDetails(found); return; }
-        }
-      } catch(e) {}
+  // ── Photo Handling ──
+  function setPhoto(dataUrl) {
+    currentPhotoDataUrl = dataUrl || '';
+    if (dataUrl) {
+      photoPreview.src = dataUrl;
+      photoPreview.style.display = 'block';
+      photoPlaceholder.style.display = 'none';
+      if (btnRemovePhoto) btnRemovePhoto.style.display = 'inline-block';
+    } else {
+      photoPreview.removeAttribute('src');
+      photoPreview.style.display = 'none';
+      photoPlaceholder.style.display = 'block';
+      if (btnRemovePhoto) btnRemovePhoto.style.display = 'none';
     }
-    try {
-      const r = await fetch('/api/details');
-      if (r.ok) { const d = await r.json(); if (d && Object.keys(d).length) { applyDataToDetails(d); return; } }
-    } catch(e) {}
-    try {
-      const d = JSON.parse(localStorage.getItem(DETAILS_KEY) || '{}');
-      applyDataToDetails(d);
-    } catch(e) {}
-  }
-
-  function clearDetails() {
-    if (!confirm('Clear the form and all saved details?')) return;
-    detailsForm.reset();
-    removePhoto();
-    localStorage.removeItem(DETAILS_KEY);
-    fetch('/api/details', { method:'POST', headers:{'Content-Type':'application/json'}, body:'{}' }).catch(()=>{});
-    showToast('Form cleared.');
-  }
-
-  // ── Photo ──
-  function setPhotoPreview(url) {
-    currentPhotoDataUrl = url || '';
-    const wrap = document.getElementById('previewWrap');
-    const img = document.getElementById('photoPreview');
-    if (url) { img.src = url; wrap.classList.add('visible'); } else { img.src = ''; wrap.classList.remove('visible'); }
   }
 
   function removePhoto() {
-    setPhotoPreview('');
-    document.getElementById('photoInput').value = '';
-  }
-
-  document.getElementById('photoInput').addEventListener('change', async (e) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-    const reader = new FileReader();
-    reader.onload = () => setPhotoPreview(reader.result);
-    reader.readAsDataURL(file);
-  });
-
-  function switchToUpload() {
-    document.getElementById('btnModeUpload').classList.add('active');
-    document.getElementById('btnModeCamera').classList.remove('active');
-    document.getElementById('uploadContainer').style.display = 'block';
-    document.getElementById('cameraContainer').style.display = 'none';
+    setPhoto('');
+    if (photoInput) photoInput.value = '';
     stopCamera();
   }
 
-  function switchToCamera() {
-    document.getElementById('btnModeCamera').classList.add('active');
-    document.getElementById('btnModeUpload').classList.remove('active');
-    document.getElementById('uploadContainer').style.display = 'none';
-    document.getElementById('cameraContainer').style.display = 'block';
-    startCamera();
+  photoInput?.addEventListener('change', (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = () => {
+      setPhoto(reader.result);
+      stopCamera();
+    };
+    reader.readAsDataURL(file);
+  });
+
+  // ── Camera Handling ──
+  async function toggleCamera() {
+    const container = document.getElementById('cameraContainer');
+    if (container.style.display === 'block') {
+      stopCamera();
+    } else {
+      await startCamera();
+    }
   }
 
   async function startCamera() {
-    if (cameraStream) stopCamera();
+    stopCamera();
+    const container = document.getElementById('cameraContainer');
+    container.style.display = 'block';
     try {
-      cameraStream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: useFacingMode }, audio: false });
+      cameraStream = await navigator.mediaDevices.getUserMedia({
+        video: { facingMode: useFacingMode },
+        audio: false
+      });
       const vid = document.getElementById('cameraVideo');
       vid.srcObject = cameraStream;
       vid.play();
-      const devs = await navigator.mediaDevices.enumerateDevices();
-      document.getElementById('btnSwitchCam').style.display = devs.filter(d => d.kind === 'videoinput').length > 1 ? 'inline-flex' : 'none';
-    } catch(e) {
-      alert('Camera access denied. Please upload a file instead.');
-      switchToUpload();
+      
+      const devices = await navigator.mediaDevices.enumerateDevices();
+      const videoDevs = devices.filter(d => d.kind === 'videoinput');
+      const switchBtn = document.getElementById('btnSwitchCam');
+      if (switchBtn) {
+        switchBtn.style.display = videoDevs.length > 1 ? 'inline-block' : 'none';
+      }
+    } catch (err) {
+      alert('Camera access denied or unavailable. Please upload a photo instead.');
+      stopCamera();
     }
   }
 
   function stopCamera() {
-    if (!cameraStream) return;
-    cameraStream.getTracks().forEach(t => t.stop());
-    cameraStream = null;
+    if (cameraStream) {
+      cameraStream.getTracks().forEach(t => t.stop());
+      cameraStream = null;
+    }
+    const container = document.getElementById('cameraContainer');
+    if (container) container.style.display = 'none';
     const vid = document.getElementById('cameraVideo');
     if (vid) vid.srcObject = null;
   }
 
   function capturePhoto() {
     const vid = document.getElementById('cameraVideo');
-    const cvs = document.getElementById('cameraCanvas');
-    cvs.width = vid.videoWidth || 640;
-    cvs.height = vid.videoHeight || 480;
-    cvs.getContext('2d').drawImage(vid, 0, 0);
-    setPhotoPreview(cvs.toDataURL('image/jpeg'));
-    showToast('Photo captured!', 'success');
+    const canvas = document.getElementById('cameraCanvas');
+    if (!vid || !canvas) return;
+    canvas.width = vid.videoWidth || 640;
+    canvas.height = vid.videoHeight || 480;
+    canvas.getContext('2d').drawImage(vid, 0, 0);
+    const dataUrl = canvas.toDataURL('image/jpeg');
+    setPhoto(dataUrl);
+    stopCamera();
+    showToast('Photo captured successfully!', 'success');
   }
 
-  function switchCam() {
+  function switchCamera() {
     useFacingMode = useFacingMode === 'user' ? 'environment' : 'user';
     startCamera();
   }
 
+  // ── Apply Data to Form ──
+  function applyFormData(data) {
+    if (!data || typeof data !== 'object') return;
+    Object.entries(data).forEach(([key, val]) => {
+      const field = form.elements[key];
+      if (field && key !== 'photo') {
+        field.value = val || '';
+      }
+    });
+    if (data.photo) {
+      setPhoto(data.photo);
+    }
+  }
 
+  // ── Load Saved Details / Drafts ──
+  async function loadData() {
+    if (editingSubmissionId) {
+      try {
+        const res = await fetch('/api/submissions');
+        if (res.ok) {
+          const subs = await res.json();
+          const match = subs.find(s => String(s.submissionId) === editingSubmissionId);
+          if (match) {
+            applyFormData(match);
+            return;
+          }
+        }
+      } catch (e) {}
+    }
+
+    try {
+      const res = await fetch('/api/details');
+      if (res.ok) {
+        const details = await res.json();
+        if (details && typeof details === 'object' && Object.keys(details).length) {
+          applyFormData(details);
+          return;
+        }
+      }
+    } catch (e) {}
+
+    try {
+      const local = JSON.parse(localStorage.getItem(DETAILS_KEY) || '{}');
+      applyFormData(local);
+    } catch (e) {}
+  }
+
+  // ── Clear Form ──
+  function clearFormDetails() {
+    if (!confirm('Are you sure you want to reset all fields in the form?')) return;
+    form.reset();
+    removePhoto();
+    localStorage.removeItem(DETAILS_KEY);
+    fetch('/api/details', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({})
+    }).catch(() => {});
+    showToast('Form has been reset.');
+  }
 
   // ── Submit Application ──
-  function getSubmissions() {
-    try { return JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]'); } catch { return []; }
+  function getStoredSubmissions() {
+    try {
+      const d1 = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
+      const d2 = JSON.parse(localStorage.getItem('iitSubmissions') || '[]');
+      return d1.length >= d2.length ? d1 : d2;
+    } catch {
+      return [];
+    }
   }
-  function saveSubmissions(s) { localStorage.setItem(STORAGE_KEY, JSON.stringify(s)); }
 
-  function generateId() {
-    let c = parseInt(localStorage.getItem(COUNTER_KEY) || '0', 10) + 1;
-    localStorage.setItem(COUNTER_KEY, String(c));
-    return `ID-${String(c).padStart(4, '0')}`;
+  function saveStoredSubmissions(subs) {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(subs));
+    localStorage.setItem('iitSubmissions', JSON.stringify(subs));
   }
 
-  function collectAppFormData() {
-    const fd = new FormData(detailsForm);
+  async function pushDirectToGoogleSheet(data) {
+    try {
+      const cloudUrl = 'https://script.google.com/macros/s/AKfycbx_luyKLX-eXPnOibeVsWLxaZps0nC_K_FGEEFKKFEE8FhIt-YKaxmD29fgbYccXdcM/exec';
+      await fetch(cloudUrl, {
+        method: 'POST',
+        headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+        body: JSON.stringify({
+          action: 'upsert_user',
+          user: {
+            'User / Submission ID': data.submissionId || '',
+            'User / Student Name': data.name || '',
+            'Course / Applied Title': data.title || '',
+            'Email Address': data.email || '',
+            'Primary Mobile': data.mobile1 || '',
+            'Secondary Mobile': data.mobile2 || '',
+            'Pincode': data.pincode || '',
+            'Full Residential Address': data.address || '',
+            'College / School': data.collegeSchool || '',
+            'Department / Year': data.yearDept || '',
+            'Submission Date & Time': data.submittedAt || new Date().toLocaleString()
+          }
+        }),
+        redirect: 'follow'
+      });
+      console.log('[GoogleSheet Direct] Synced from user panel successfully.');
+    } catch (e) {
+      console.warn('[GoogleSheet Direct] Error pushing to cloud sheet:', e);
+    }
+  }
+
+  function collectFormData() {
+    const fd = new FormData(form);
     const data = Object.fromEntries(fd.entries());
+    delete data.photoFile;
     data.photo = currentPhotoDataUrl;
     
-    // Default values for office fields
-    ['term1','term2','term3','term4'].forEach(k => {
-      data[k] = false;
-    });
-    ['feesFixed','dateJoining','certNo','dateIssue'].forEach(k => {
-      data[k] = '';
-    });
+    // Default office administration fields
+    ['term1', 'term2', 'term3', 'term4'].forEach(t => { data[t] = false; });
+    ['feesFixed', 'dateJoining', 'certNo', 'dateIssue'].forEach(f => { data[f] = ''; });
     
     return data;
   }
 
   async function submitApplication() {
-    const data = collectAppFormData();
-    if (!data.name || !data.name.trim()) { showToast('Please enter your name before submitting.', 'error'); return; }
+    const data = collectFormData();
+    if (!data.name || !data.name.trim()) {
+      showToast('Please enter your Name before submitting.', 'error');
+      document.getElementById('name').focus();
+      return;
+    }
 
-    const editId = editingSubmissionId;
-    if (editId) data.submissionId = editId;
-    else data.submissionId = '';
+    if (editingSubmissionId) {
+      data.submissionId = editingSubmissionId;
+    }
+
+    // Direct background cloud push
+    pushDirectToGoogleSheet(data);
 
     try {
-      const r = await fetch('/api/submit', {
+      const res = await fetch('/api/submit', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(data)
       });
-      const rd = await r.json();
-      if (r.ok && rd.success && rd.saved) {
-        const subs = getSubmissions();
-        if (editId) {
-          const idx = subs.findIndex(s => s.submissionId === editId);
-          if (idx !== -1) subs[idx] = rd.saved; else subs.push(rd.saved);
-        } else { subs.push(rd.saved); }
-        saveSubmissions(subs);
-        showSubmissionSuccess(rd.saved.submissionId);
-      } else {
-        showToast(rd.error || 'Submission failed.', 'error');
-        return; // Don't clear form or offline save if validation failed
+      const resData = await res.json().catch(() => ({}));
+
+      if (res.ok && resData.success && resData.saved) {
+        const saved = resData.saved;
+        const subs = getStoredSubmissions();
+        if (editingSubmissionId) {
+          const idx = subs.findIndex(s => s.submissionId === editingSubmissionId);
+          if (idx !== -1) subs[idx] = saved; else subs.push(saved);
+        } else {
+          subs.push(saved);
+        }
+        saveStoredSubmissions(subs);
+        showSuccess(saved.submissionId);
+        return;
+      } else if (!res.ok) {
+        showToast(resData.error || 'Submission rejected by server.', 'error');
+        return;
       }
-    } catch(e) {
-      // Offline fallback for network failures
+    } catch (err) {
+      console.warn('Server offline, saving locally:', err);
       if (window.location.protocol === 'file:') {
-        showToast('⚠️ Running via file:///. Start server via start-server.bat for permanent Excel & Google Sheets sync!', 'warning');
+        alert('⚠️ Notice: You opened this file directly via file:///. For live permanent Excel and Google Sheets sync, run start-server.bat and visit http://localhost:5000.');
       }
-      const id = editId || generateId();
-      data.submissionId = id;
+      
+      let c = parseInt(localStorage.getItem(COUNTER_KEY) || '0', 10) + 1;
+      localStorage.setItem(COUNTER_KEY, String(c));
+      const generatedId = editingSubmissionId || `ID-${String(c).padStart(4, '0')}`;
+      data.submissionId = generatedId;
       data.submittedAt = new Date().toLocaleString();
-      const subs = getSubmissions();
-      if (editId) {
-        const idx = subs.findIndex(s => s.submissionId === editId);
-        if (idx !== -1) subs[idx] = data; else subs.push(data);
-      } else { subs.push(data); }
-      saveSubmissions(subs);
-      showSubmissionSuccess(id);
+      
+      const subs = getStoredSubmissions();
+      subs.push(data);
+      saveStoredSubmissions(subs);
+      showSuccess(generatedId);
     }
-
-    // Clear active details
-    localStorage.removeItem(DETAILS_KEY);
-    fetch('/api/details', { method:'POST', headers:{'Content-Type':'application/json'}, body:'{}' }).catch(()=>{});
   }
 
-  function showSubmissionSuccess(id) {
+  function showSuccess(submissionId) {
+    const banner = document.getElementById('submissionResult');
     const badge = document.getElementById('submissionIdBadge');
-    badge.textContent = `🎉 Submitted! ID: ${id}`;
-    document.getElementById('submissionResult').style.display = 'block';
-    showToast(`Application submitted! ID: ${id}`, 'success');
-    
-    // Hide action bar for users after submission
-    const actionBar = document.querySelector('.action-bar');
-    if (actionBar) actionBar.style.display = 'none';
+    if (badge) badge.textContent = submissionId;
+    if (banner) {
+      banner.style.display = 'block';
+      banner.scrollIntoView({ behavior: 'smooth' });
+    }
+    const actions = document.getElementById('formActions');
+    if (actions) actions.style.display = 'none';
+    showToast(`Application successfully submitted! ID: ${submissionId}`, 'success');
   }
 
-  // ── Init ──
-  loadSavedDetails();
+  function resetForNewSubmission() {
+    form.reset();
+    removePhoto();
+    editingSubmissionId = '';
+    const banner = document.getElementById('submissionResult');
+    if (banner) banner.style.display = 'none';
+    const actions = document.getElementById('formActions');
+    if (actions) actions.style.display = 'flex';
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  window.addEventListener('DOMContentLoaded', loadData);
 </script>
 <script src="theme.js"></script>
 </body>
