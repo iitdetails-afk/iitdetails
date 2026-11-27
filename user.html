@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Indian Info Tech — Application User Panel</title>
+<title>Indian Info Tech — Student Application Portal</title>
 <meta name="description" content="Official Student Application and Registration Form for Indian Info Tech.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Playfair+Display:wght@700;800&display=swap" rel="stylesheet">
@@ -11,7 +11,6 @@
 <style>
   :root {
     --ink: #000000;
-    --ink-dark: #091322;
     --navy: #0f2744;
     --navy-mid: #1e3a8a;
     --accent: #2563eb;
@@ -71,11 +70,6 @@
     text-transform: uppercase;
     font-weight: 600;
   }
-  .topbar-right {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-  }
   .btn-nav {
     display: inline-flex;
     align-items: center;
@@ -95,7 +89,7 @@
     color: #ffffff;
   }
 
-  /* ── Main Sheet ── */
+  /* ── Main Container ── */
   .sheet-container {
     max-width: 860px;
     margin: 32px auto 0;
@@ -288,7 +282,7 @@
     color: #ffffff;
   }
 
-  /* ── Camera Preview Dropdown ── */
+  /* ── Camera Stream ── */
   .camera-container {
     border: 1.5px solid #000000;
     border-radius: 8px;
@@ -553,46 +547,103 @@
     background: #f1f5f9;
   }
 
-  /* ── Submission Success Card ── */
-  .submission-success-banner {
-    display: none;
+  /* ══════════════════════════════════════════
+     STUDENT SUMMARY / SUBMITTED RECEIPT VIEW
+     ══════════════════════════════════════════ */
+  .summary-status-header {
     background: #f0fdf4;
-    border: 2px solid #22c55e;
-    border-radius: 12px;
-    padding: 24px;
-    text-align: center;
+    border: 1.5px solid #22c55e;
+    border-radius: 8px;
+    padding: 16px 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
     margin-bottom: 24px;
-    animation: fadeIn 0.4s ease;
+    flex-wrap: wrap;
+    gap: 12px;
   }
-  @keyframes fadeIn {
-    from { opacity: 0; transform: translateY(-10px); }
-    to { opacity: 1; transform: translateY(0); }
-  }
-  .success-badge {
+  .status-badge-pill {
     display: inline-flex;
     align-items: center;
     gap: 8px;
-    font-size: 18px;
+    font-size: 16px;
     font-weight: 800;
     color: #15803d;
-    margin-bottom: 8px;
   }
-  .success-id {
+  .submission-ref-box {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 13px;
+    font-weight: 700;
+  }
+  .ref-id-val {
     font-family: monospace;
-    font-size: 24px;
+    font-size: 18px;
     font-weight: 800;
     color: #0f2744;
     background: #ffffff;
-    padding: 6px 16px;
-    border-radius: 8px;
-    border: 1.5px solid #22c55e;
-    display: inline-block;
-    margin: 8px 0;
+    padding: 4px 10px;
+    border-radius: 6px;
+    border: 1px solid #22c55e;
   }
-  .success-note {
-    font-size: 13px;
+  .ref-date-val {
+    font-size: 12px;
     color: #166534;
-    margin-bottom: 16px;
+  }
+
+  .summary-body-grid {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 24px;
+    margin-bottom: 20px;
+  }
+  .summary-rows-container {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  .summary-val {
+    font-size: 14px;
+    color: #000000;
+    font-weight: 600;
+    padding: 2px 4px;
+    border-bottom: 1.5px solid #000000;
+    flex: 1;
+    min-height: 22px;
+    word-break: break-word;
+  }
+  .summary-media-column {
+    width: 170px;
+    flex-shrink: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 16px;
+  }
+  .summary-sig-box {
+    border: 1.5px solid #000000;
+    border-radius: 6px;
+    width: 100%;
+    padding: 8px;
+    text-align: center;
+    background: #ffffff;
+    min-height: 64px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+  }
+  .summary-footer-notice {
+    background: #f8fafc;
+    border: 1.5px solid #000000;
+    border-radius: 6px;
+    padding: 14px 18px;
+    font-size: 12px;
+    color: #000000;
+    line-height: 1.5;
+    margin-top: 14px;
   }
 
   /* ── Toast Notification ── */
@@ -649,6 +700,8 @@
   @media (max-width: 640px) {
     .form-sheet { padding: 20px 16px; }
     .personal-details-container { flex-direction: column-reverse; align-items: center; }
+    .summary-body-grid { flex-direction: column-reverse; align-items: center; }
+    .summary-media-column { width: 100%; flex-direction: row; justify-content: space-around; }
     .right-photo { margin-bottom: 16px; }
     .contact-details-container { flex-direction: column; }
     .right-contact { width: 100%; }
@@ -660,7 +713,7 @@
 </head>
 <body>
 
-<!-- Top Navigation -->
+<!-- Top Navigation (For Student User Panel) -->
 <div class="topbar no-print">
   <div class="topbar-brand">
     <img class="topbar-logo" src="logo.png" alt="IIT" onerror="this.style.display='none'">
@@ -669,28 +722,15 @@
       <div class="topbar-subtitle">Student Application User Panel</div>
     </div>
   </div>
-  <div class="topbar-right">
+  <div>
     <a href="index.html" class="btn-nav">🏠 Home</a>
-    <a href="admin.html" class="btn-nav">🔐 Admin</a>
   </div>
 </div>
 
 <div class="sheet-container">
 
-  <!-- Submission Success Banner -->
-  <div class="submission-success-banner" id="submissionResult">
-    <div class="success-badge">✅ Application Submitted Successfully!</div>
-    <div>Your official Submission ID is:</div>
-    <div class="success-id" id="submissionIdBadge">ID-0000</div>
-    <div class="success-note">Your application is permanently recorded in the database and synchronized with Google Sheets.</div>
-    <div style="display:flex; justify-content:center; gap:10px; flex-wrap:wrap;">
-      <button type="button" class="btn-submit" onclick="window.print()">🖨️ Print Application Copy</button>
-      <button type="button" class="btn-secondary" onclick="resetForNewSubmission()">➕ New Application</button>
-    </div>
-  </div>
-
-  <!-- The Official Application Form Sheet -->
-  <div class="form-sheet">
+  <!-- VIEW 1: STUDENT ENTRY FORM (Active by default for students to fill & submit) -->
+  <div class="form-sheet" id="entryFormSheet">
     <form id="detailsForm">
       
       <!-- Crest Header -->
@@ -770,7 +810,7 @@
             <div class="mobile-inputs">
               <div class="mobile-input-item">
                 <span class="num-prefix">1.</span>
-                <input class="line-input" id="mobile1" name="mobile1" type="tel" placeholder="Primary Mobile Number">
+                <input class="line-input" id="mobile1" name="mobile1" type="tel" placeholder="Primary Mobile Number" required>
               </div>
               <div class="mobile-input-item">
                 <span class="num-prefix">2.</span>
@@ -818,15 +858,119 @@
         </div>
       </div>
 
-      <!-- Action Buttons -->
+      <!-- Action Buttons for Student -->
       <div class="actions no-print" id="formActions">
         <button type="button" class="btn-submit" onclick="submitApplication()">✈️ Submit Application</button>
-        <button type="button" class="btn-secondary" onclick="window.print()">🖨️ Print Form</button>
         <button type="button" class="btn-secondary" onclick="clearFormDetails()">🧹 Reset Form</button>
       </div>
 
     </form>
   </div>
+
+  <!-- VIEW 2: STUDENT APPLICATION SUMMARY & ACKNOWLEDGMENT (Shown immediately after submit) -->
+  <div class="form-sheet" id="studentSummaryView" style="display:none;">
+    
+    <!-- Crest Header -->
+    <div class="crest">
+      <img src="logo.png" alt="Indian Info Tech Logo" onerror="this.onerror=null; this.style.display='none';">
+      <div class="brand-title">INDIAN INFO TECH</div>
+      <div class="brand-sub">STUDENT APPLICATION RECEIPT & ACKNOWLEDGMENT</div>
+    </div>
+
+    <h1 class="title">Application Details</h1>
+
+    <!-- Status Header -->
+    <div class="summary-status-header">
+      <div class="status-badge-pill">✅ Application Submitted Successfully</div>
+      <div class="submission-ref-box">
+        <span>Submission ID:</span>
+        <span class="ref-id-val" id="sumSubmissionId">ID-0000</span>
+        <span class="ref-date-val" id="sumSubmittedAt"></span>
+      </div>
+    </div>
+
+    <!-- Application Details Grid -->
+    <div class="summary-body-grid">
+      <!-- Left Rows -->
+      <div class="summary-rows-container">
+        <div class="field-row">
+          <span class="field-label">Name</span>
+          <span class="field-colon">:</span>
+          <span class="summary-val" id="sumName">—</span>
+        </div>
+        <div class="field-row">
+          <span class="field-label">Year/Dept</span>
+          <span class="field-colon">:</span>
+          <span class="summary-val" id="sumYearDept">—</span>
+        </div>
+        <div class="field-row">
+          <span class="field-label">College/School</span>
+          <span class="field-colon">:</span>
+          <span class="summary-val" id="sumCollegeSchool">—</span>
+        </div>
+        <div class="field-row tall">
+          <span class="field-label">Address</span>
+          <span class="field-colon">:</span>
+          <span class="summary-val" id="sumAddress" style="white-space: pre-wrap; min-height: 44px;">—</span>
+        </div>
+        <div class="field-row">
+          <span class="field-label">Mo:No (1)</span>
+          <span class="field-colon">:</span>
+          <span class="summary-val" id="sumMobile1">—</span>
+        </div>
+        <div class="field-row">
+          <span class="field-label">Mo:No (2)</span>
+          <span class="field-colon">:</span>
+          <span class="summary-val" id="sumMobile2">—</span>
+        </div>
+        <div class="field-row">
+          <span class="field-label">email-id</span>
+          <span class="field-colon">:</span>
+          <span class="summary-val" id="sumEmail">—</span>
+        </div>
+        <div class="field-row">
+          <span class="field-label">Pincode</span>
+          <span class="field-colon">:</span>
+          <span class="summary-val" id="sumPincode">—</span>
+        </div>
+        <div class="field-row">
+          <span class="field-label">Title Course</span>
+          <span class="field-colon">:</span>
+          <span class="summary-val" id="sumTitle" style="font-weight: 700;">—</span>
+        </div>
+        <div class="field-row">
+          <span class="field-label">Reference</span>
+          <span class="field-colon">:</span>
+          <span class="summary-val" id="sumHowKnow">—</span>
+        </div>
+      </div>
+
+      <!-- Right Media (Photo & Signature) -->
+      <div class="summary-media-column">
+        <div class="photo-box" id="sumPhotoBox">
+          <img id="sumPhotoImg" alt="Applicant Photo">
+          <div id="sumPhotoPlaceholder" style="font-size:11px;color:#64748b;font-weight:600;">No Photo<br>Provided</div>
+        </div>
+        <div class="summary-sig-box">
+          <span class="signature-label">Student Signature</span>
+          <span class="signature-val" id="sumSignatureText">—</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Administrative Notice -->
+    <div class="summary-footer-notice">
+      <strong>📌 Student Notice:</strong> Your application details have been safely registered. The official Application Form with administration records, fee structure, and certificate issuance is managed directly by the Administration Office. Please keep your <strong>Submission ID</strong> for your records.
+    </div>
+
+    <!-- Actions for Student -->
+    <div class="actions no-print">
+      <button type="button" class="btn-submit" onclick="window.print()">🖨️ Print Application Copy</button>
+      <button type="button" class="btn-secondary" onclick="resetForNewSubmission()">➕ Submit Another Application</button>
+    </div>
+
+  </div>
+
 </div>
 
 <!-- Toast -->
@@ -846,7 +990,10 @@
   let currentPhotoDataUrl = '';
   let cameraStream = null;
   let useFacingMode = 'user';
-  let editingSubmissionId = new URLSearchParams(window.location.search).get('submissionId')?.trim() || '';
+  
+  const urlParams = new URLSearchParams(window.location.search);
+  let editingSubmissionId = urlParams.get('submissionId')?.trim() || '';
+  const viewMode = urlParams.get('view')?.trim() || '';
 
   // ── Toast notification ──
   function showToast(msg, type = '') {
@@ -969,6 +1116,42 @@
     }
   }
 
+  // ── Display Submitted Application in Summary View ──
+  function renderSubmittedSummary(data) {
+    document.getElementById('sumSubmissionId').textContent = data.submissionId || 'ID-0000';
+    document.getElementById('sumSubmittedAt').textContent = data.submittedAt ? `(${data.submittedAt})` : '';
+    document.getElementById('sumName').textContent = data.name || '—';
+    document.getElementById('sumYearDept').textContent = data.yearDept || '—';
+    document.getElementById('sumCollegeSchool').textContent = data.collegeSchool || '—';
+    document.getElementById('sumAddress').textContent = data.address || '—';
+    document.getElementById('sumMobile1').textContent = data.mobile1 || '—';
+    document.getElementById('sumMobile2').textContent = data.mobile2 || '—';
+    document.getElementById('sumEmail').textContent = data.email || '—';
+    document.getElementById('sumPincode').textContent = data.pincode || '—';
+    document.getElementById('sumTitle').textContent = data.title || '—';
+    document.getElementById('sumHowKnow').textContent = data.howKnow || '—';
+    
+    // Photo render
+    const photoImg = document.getElementById('sumPhotoImg');
+    const noPhoto = document.getElementById('sumNoPhoto');
+    if (data.photo && data.photo.length > 50) {
+      photoImg.src = data.photo;
+      photoImg.style.display = 'block';
+      noPhoto.style.display = 'none';
+    } else {
+      photoImg.style.display = 'none';
+      noPhoto.style.display = 'block';
+    }
+
+    // Signature render
+    document.getElementById('sumSignatureText').textContent = data.signature || data.name || '—';
+
+    // Transition view
+    document.getElementById('entryFormSheet').style.display = 'none';
+    document.getElementById('studentSummaryView').style.display = 'block';
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
   // ── Load Saved Details / Drafts ──
   async function loadData() {
     if (editingSubmissionId) {
@@ -978,11 +1161,26 @@
           const subs = await res.json();
           const match = subs.find(s => String(s.submissionId) === editingSubmissionId);
           if (match) {
-            applyFormData(match);
+            if (viewMode === 'summary') {
+              renderSubmittedSummary(match);
+            } else {
+              applyFormData(match);
+            }
             return;
           }
         }
       } catch (e) {}
+
+      const localSubs = getStoredSubmissions();
+      const localMatch = localSubs.find(s => String(s.submissionId) === editingSubmissionId);
+      if (localMatch) {
+        if (viewMode === 'summary') {
+          renderSubmittedSummary(localMatch);
+        } else {
+          applyFormData(localMatch);
+        }
+        return;
+      }
     }
 
     try {
@@ -1016,7 +1214,7 @@
     showToast('Form has been reset.');
   }
 
-  // ── Submit Application ──
+  // ── Submissions Storage ──
   function getStoredSubmissions() {
     try {
       const d1 = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
@@ -1082,6 +1280,11 @@
       document.getElementById('name').focus();
       return;
     }
+    if (!data.mobile1 || !data.mobile1.trim()) {
+      showToast('Please enter your Primary Mobile Number.', 'error');
+      document.getElementById('mobile1').focus();
+      return;
+    }
 
     if (editingSubmissionId) {
       data.submissionId = editingSubmissionId;
@@ -1108,7 +1311,10 @@
           subs.push(saved);
         }
         saveStoredSubmissions(subs);
-        showSuccess(saved.submissionId);
+        
+        // Show student their entered details summary
+        renderSubmittedSummary(saved);
+        showToast(`Application successfully submitted! ID: ${saved.submissionId}`, 'success');
         return;
       } else if (!res.ok) {
         showToast(resData.error || 'Submission rejected by server.', 'error');
@@ -1116,10 +1322,6 @@
       }
     } catch (err) {
       console.warn('Server offline, saving locally:', err);
-      if (window.location.protocol === 'file:') {
-        alert('⚠️ Notice: You opened this file directly via file:///. For live permanent Excel and Google Sheets sync, run start-server.bat and visit http://localhost:5000.');
-      }
-      
       let c = parseInt(localStorage.getItem(COUNTER_KEY) || '0', 10) + 1;
       localStorage.setItem(COUNTER_KEY, String(c));
       const generatedId = editingSubmissionId || `ID-${String(c).padStart(4, '0')}`;
@@ -1129,31 +1331,19 @@
       const subs = getStoredSubmissions();
       subs.push(data);
       saveStoredSubmissions(subs);
-      showSuccess(generatedId);
+      
+      // Show student their entered details summary
+      renderSubmittedSummary(data);
+      showToast(`Application submitted! ID: ${generatedId}`, 'success');
     }
-  }
-
-  function showSuccess(submissionId) {
-    const banner = document.getElementById('submissionResult');
-    const badge = document.getElementById('submissionIdBadge');
-    if (badge) badge.textContent = submissionId;
-    if (banner) {
-      banner.style.display = 'block';
-      banner.scrollIntoView({ behavior: 'smooth' });
-    }
-    const actions = document.getElementById('formActions');
-    if (actions) actions.style.display = 'none';
-    showToast(`Application successfully submitted! ID: ${submissionId}`, 'success');
   }
 
   function resetForNewSubmission() {
     form.reset();
     removePhoto();
     editingSubmissionId = '';
-    const banner = document.getElementById('submissionResult');
-    if (banner) banner.style.display = 'none';
-    const actions = document.getElementById('formActions');
-    if (actions) actions.style.display = 'flex';
+    document.getElementById('entryFormSheet').style.display = 'block';
+    document.getElementById('studentSummaryView').style.display = 'none';
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }
 
