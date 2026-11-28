@@ -20,10 +20,19 @@
     {
       "src": "*.js",
       "use": "@vercel/static"
+    },
+    {
+      "src": "*.mp4",
+      "use": "@vercel/static"
+    },
+    {
+      "src": "*.webm",
+      "use": "@vercel/static"
     }
   ],
   "routes": [
     { "src": "/api/(.*)", "dest": "/api/index.js" },
+    { "src": "/background.mp4", "dest": "/background.mp4", "headers": { "Cache-Control": "public, max-age=31536000, immutable" } },
     { "src": "/", "dest": "/index.html" },
     { "src": "/(.*)", "dest": "/$1" }
   ]

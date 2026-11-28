@@ -573,8 +573,9 @@
 
 <!-- Ambient Video Background -->
 <div class="bg-video-wrap">
-  <video id="bgVideo" class="bg-video" autoplay loop muted playsinline preload="auto">
+  <video id="bgVideo" class="bg-video" autoplay loop muted playsinline preload="auto" webkit-playsinline>
     <source src="background.mp4" type="video/mp4">
+    <source src="https://d8j0ntlcm91z4.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/hf_20260624_210218_173f8eba-17ff-4e27-972b-d128af25bf49.mp4" type="video/mp4">
   </video>
   <div class="bg-video-overlay"></div>
 </div>
@@ -865,13 +866,35 @@
     const btn = document.getElementById('btnToggleVideo');
     if (!video) return;
     if (video.paused) {
-      video.play();
+      video.play().catch(e => console.warn('Video play prevented:', e));
       if (btn) btn.innerHTML = '⏸️ Video';
     } else {
       video.pause();
       if (btn) btn.innerHTML = '▶️ Video';
     }
   }
+
+  // Ensure background video plays automatically across modern browsers / mobile in deployment
+  document.addEventListener('DOMContentLoaded', function () {
+    const video = document.getElementById('bgVideo');
+    if (video) {
+      video.muted = true;
+      video.defaultMuted = true;
+      const playPromise = video.play();
+      if (playPromise !== undefined) {
+        playPromise.catch(function () {
+          // If browser policy temporarily pauses until user interaction
+          const resumeOnInteraction = function () {
+            video.play().catch(function () {});
+            window.removeEventListener('click', resumeOnInteraction);
+            window.removeEventListener('touchstart', resumeOnInteraction);
+          };
+          window.addEventListener('click', resumeOnInteraction, { once: true });
+          window.addEventListener('touchstart', resumeOnInteraction, { once: true });
+        });
+      }
+    }
+  });
 </script>
 <script src="theme.js"></script>
 </body>
