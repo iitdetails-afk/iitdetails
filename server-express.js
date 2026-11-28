@@ -600,10 +600,32 @@ app.post('/api/staff', requireAdmin, async (req, res) => {
     };
     
     writeJson(staffFile, staffList);
+    scheduleDatabaseToExcel(100);
+
+    // Notify admin & create permanent history log
+    try {
+      const notifications = readJson(notificationsFile, []);
+      notifications.push({
+        id: 'NTF-' + crypto.randomBytes(4).toString('hex').toUpperCase(),
+        staffId: 'admin',
+        message: `Updated staff profile for "${name}" (ID: ${staffId}, Role: ${role}, Dept: ${department})`,
+        type: 'staff',
+        read: false,
+        createdAt: new Date().toISOString()
+      });
+      writeJson(notificationsFile, notifications);
+    } catch (err) {
+      console.error('Failed to create notification for staff edit', err);
+    }
 
     if (googleSheetsSync.isConfigured()) {
-      googleSheetsSync.upsertStaff(staffList[existingIndex]).catch(e => {
-        console.warn('[GoogleSheets] Staff edit sync warning:', e.message);
+      setImmediate(async () => {
+        try {
+          await googleSheetsSync.upsertStaff(staffList[existingIndex]);
+          console.log(`[GoogleSheets AutoPush] Successfully updated staff (${staffId} - ${name}) in live Google Sheet.`);
+        } catch (e) {
+          console.warn('[GoogleSheets] Staff edit sync warning:', e.message);
+        }
       });
     }
 
@@ -646,10 +668,32 @@ app.post('/api/staff', requireAdmin, async (req, res) => {
   
   staffList.push(newStaff);
   writeJson(staffFile, staffList);
+  scheduleDatabaseToExcel(100);
+
+  // Notify admin & create permanent history log
+  try {
+    const notifications = readJson(notificationsFile, []);
+    notifications.push({
+      id: 'NTF-' + crypto.randomBytes(4).toString('hex').toUpperCase(),
+      staffId: 'admin',
+      message: `Registered new staff member "${name}" (ID: ${newStaff.staffId}, Role: ${role}, Dept: ${department})`,
+      type: 'staff',
+      read: false,
+      createdAt: new Date().toISOString()
+    });
+    writeJson(notificationsFile, notifications);
+  } catch (err) {
+    console.error('Failed to create notification for new staff', err);
+  }
 
   if (googleSheetsSync.isConfigured()) {
-    googleSheetsSync.upsertStaff(newStaff).catch(e => {
-      console.warn('[GoogleSheets] New staff sync warning:', e.message);
+    setImmediate(async () => {
+      try {
+        await googleSheetsSync.upsertStaff(newStaff);
+        console.log(`[GoogleSheets AutoPush] Successfully pushed new staff (${newStaff.staffId} - ${name}) to live Google Sheet.`);
+      } catch (e) {
+        console.warn('[GoogleSheets] New staff sync warning:', e.message);
+      }
     });
   }
   
@@ -1309,10 +1353,34 @@ app.post('/api/addresses', async (req, res) => {
   }
 
   writeJson(addressesFile, addresses);
+  scheduleDatabaseToExcel(100);
+
+  // Notify admin & create permanent history log
+  try {
+    const toName = (recordToSave.to && recordToSave.to.name) || 'Recipient';
+    const city = (recordToSave.to && recordToSave.to.city) || '';
+    const notifications = readJson(notificationsFile, []);
+    notifications.push({
+      id: 'NTF-' + crypto.randomBytes(4).toString('hex').toUpperCase(),
+      staffId: 'admin',
+      message: `${existingIdx !== -1 ? 'Updated' : 'New'} courier address saved for "${toName}" (${recordToSave.id}${city ? ', ' + city : ''})`,
+      type: 'address',
+      read: false,
+      createdAt: new Date().toISOString()
+    });
+    writeJson(notificationsFile, notifications);
+  } catch (err) {
+    console.error('Failed to create notification for address save', err);
+  }
 
   if (googleSheetsSync.isConfigured()) {
-    googleSheetsSync.upsertAddress(recordToSave).catch(e => {
-      console.warn('[GoogleSheets] Address upsert background warning:', e.message);
+    setImmediate(async () => {
+      try {
+        await googleSheetsSync.upsertAddress(recordToSave);
+        console.log(`[GoogleSheets AutoPush] Successfully pushed address (${recordToSave.id}) to live Google Sheet.`);
+      } catch (e) {
+        console.warn('[GoogleSheets] Address upsert background warning:', e.message);
+      }
     });
   }
 
@@ -1368,10 +1436,33 @@ app.put('/api/addresses/:id', async (req, res) => {
 
   addresses[index] = updated;
   writeJson(addressesFile, addresses);
+  scheduleDatabaseToExcel(100);
+
+  // Notify admin & create permanent history log
+  try {
+    const toName = (updated.to && updated.to.name) || 'Recipient';
+    const notifications = readJson(notificationsFile, []);
+    notifications.push({
+      id: 'NTF-' + crypto.randomBytes(4).toString('hex').toUpperCase(),
+      staffId: 'admin',
+      message: `Updated courier address for "${toName}" (${updated.id})`,
+      type: 'address',
+      read: false,
+      createdAt: new Date().toISOString()
+    });
+    writeJson(notificationsFile, notifications);
+  } catch (err) {
+    console.error('Failed to create notification for address update', err);
+  }
 
   if (googleSheetsSync.isConfigured()) {
-    googleSheetsSync.upsertAddress(updated).catch(e => {
-      console.warn('[GoogleSheets] Address update background warning:', e.message);
+    setImmediate(async () => {
+      try {
+        await googleSheetsSync.upsertAddress(updated);
+        console.log(`[GoogleSheets AutoPush] Successfully updated address (${updated.id}) in live Google Sheet.`);
+      } catch (e) {
+        console.warn('[GoogleSheets] Address update background warning:', e.message);
+      }
     });
   }
 

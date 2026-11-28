@@ -3126,16 +3126,32 @@
       const textWeight = n.read ? '' : 'unread-bold';
       const dateStr = new Date(n.createdAt).toLocaleString('en-IN');
       
+      let typeBadge = '<span class="badge" style="background:rgba(99,102,241,0.12); color:var(--purple); font-size:11px; padding:2px 8px; border-radius:999px;">🔔 System</span>';
+      if (n.type === 'submission') {
+        typeBadge = '<span class="badge" style="background:rgba(16,185,129,0.12); color:#059669; font-size:11px; padding:2px 8px; border-radius:999px;">🎓 Student</span>';
+      } else if (n.type === 'staff') {
+        typeBadge = '<span class="badge" style="background:rgba(59,130,246,0.12); color:#2563eb; font-size:11px; padding:2px 8px; border-radius:999px;">👥 Staff</span>';
+      } else if (n.type === 'address') {
+        typeBadge = '<span class="badge" style="background:rgba(245,158,11,0.12); color:#d97706; font-size:11px; padding:2px 8px; border-radius:999px;">📦 Address</span>';
+      } else if (n.type === 'leave') {
+        typeBadge = '<span class="badge" style="background:rgba(236,72,153,0.12); color:#db2777; font-size:11px; padding:2px 8px; border-radius:999px;">🏖️ Leave/OD</span>';
+      } else if (n.type === 'task') {
+        typeBadge = '<span class="badge" style="background:rgba(139,92,246,0.12); color:#7c3aed; font-size:11px; padding:2px 8px; border-radius:999px;">📋 Task</span>';
+      }
+
       // Auto mark read if we view them
       if (!n.read) {
         markAdminNotificationRead(n.id);
       }
 
       return `
-        <div class="ntf-item ${unreadClass}">
-          <div class="ntf-text ${textWeight}">
-            ${n.message}
-            <div class="ntf-time">${dateStr}</div>
+        <div class="ntf-item ${unreadClass}" style="display:flex; justify-content:space-between; align-items:flex-start; gap:12px; padding:12px 14px; border-bottom:1px solid var(--border);">
+          <div class="ntf-text ${textWeight}" style="flex:1;">
+            <div style="display:flex; align-items:center; gap:8px; margin-bottom:4px;">
+              ${typeBadge}
+              <span class="ntf-time" style="font-size:11px; color:var(--text3);">${dateStr}</span>
+            </div>
+            <div style="font-size:13px; color:var(--text); line-height:1.4;">${n.message}</div>
           </div>
         </div>
       `;

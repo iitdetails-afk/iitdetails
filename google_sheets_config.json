@@ -1,0 +1,14 @@
+{
+  "enabled": true,
+  "webAppUrl": "https://script.google.com/macros/s/AKfycbx_luyKLX-eXPnOibeVsWLxaZps0nC_K_FGEEFKKFEE8FhIt-YKaxmD29fgbYccXdcM/exec",
+  "spreadsheetUrl": "https://docs.google.com/spreadsheets/d/1pqBKWRtoJJJX9JE5pgoEevwkthjicMLLnowEbFCPihY/edit",
+  "spreadsheetName": "iit details",
+  "autoSync": true,
+  "lastSyncTime": "2026-11-28T05:31:13.965Z",
+  "lastSyncStatus": "Success",
+  "lastSyncCounts": {
+    "staff": 1,
+    "students": 2,
+    "addresses": 1
+  }
+}
